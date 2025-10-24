@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../controllers/search_controller.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../data/models/ecole_model.dart';
+import '../../../data/models/concours_model.dart';
+import '../../../data/models/ue_model.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -120,7 +123,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           controller.changeCategory(category);
                         },
                         backgroundColor: Colors.white,
-                        selectedColor: const Color(0xFF8B5CF6).withOpacity(0.2),
+                        selectedColor: Color(0xFF8B5CF6).withValues(alpha: 0.2),
                         labelStyle: GoogleFonts.plusJakartaSans(
                           color: isSelected
                               ? const Color(0xFF8B5CF6)
@@ -262,7 +265,7 @@ class _SearchScreenState extends State<SearchScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF8B5CF6).withOpacity(0.1),
+              color: Color(0xFF8B5CF6).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -279,14 +282,14 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildEcoleItem(dynamic ecole) {
+  Widget _buildEcoleItem(EcoleModel ecole) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFF8B5CF6).withOpacity(0.1),
+            color: Color(0xFF8B5CF6).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Icon(Icons.school, color: Color(0xFF8B5CF6)),
@@ -309,14 +312,14 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildConcoursItem(dynamic concours) {
+  Widget _buildConcoursItem(ConcoursModel concours) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.red.withOpacity(0.1),
+            color: Colors.red.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Icon(Icons.emoji_events, color: Colors.red),
@@ -339,14 +342,14 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildUeItem(dynamic ue) {
+  Widget _buildUeItem(UeModel ue) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.green.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: const Icon(Icons.book, color: Colors.green),
