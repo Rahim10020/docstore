@@ -244,7 +244,7 @@ class UeRepository {
   Future<int> getTotalCredits(String idFiliere, AnneeEnum annee) async {
     try {
       final ues = await getUesByAnnee(idFiliere, annee);
-      return ues.fold(0, (sum, ue) => sum + (ue.credits ?? 0));
+      return ues.fold<int>(0, (int sum, ue) => sum + ((ue.credits ?? 0)));
     } catch (e) {
       AppLogger.error('Erreur getTotalCredits', e);
       return 0;
