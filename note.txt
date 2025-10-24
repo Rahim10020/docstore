@@ -1,8 +1,6 @@
-lors du codage avec claude, il faut bien lui expliquer que les options dans les combobox vont varier 
-en fonction des ecoles et les facultes et des filieres donc de me proposer la meilleure maniere de gerer ca.
-mais les combobox au niveau des pages de concours et ue detail ne changeront pas.
+Dans appwrite_constants.dart ligne 12 :
+dartstatic const String fichiersCollectionId = 'TO_BE_CREATED';
+ACTION REQUISE :
 
-les combobox que j'ai mis sur la maquette marchent bien avec l'Ecole polytechnique de Lome (EPL)
-
-- les facultes n'ont pas de concours... (on ne passe pas un concours avant de rentrer dans une faculte)
- il n'ya pas aussi les devoirs. il n ya les devoirs que dans les ecoles.
+Créez la collection Fichiers dans Appwrite
+Remplacez 'TO_BE_CREATED' par l'ID réel de la collection
