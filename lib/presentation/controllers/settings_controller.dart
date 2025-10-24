@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/services/cache_service.dart';
 import '../../core/services/storage_service.dart';
@@ -276,8 +277,7 @@ Découvrez DocStore - L'application pour accéder aux ressources académiques !
 Téléchargez maintenant: ${AppConstants.websiteUrl}
 ''';
 
-      // TODO: Utiliser share_plus
-      // await Share.share(text);
+      await Share.share(text);
 
       AppLogger.info('Application partagée');
     } catch (e) {
