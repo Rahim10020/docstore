@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/utils/logger.dart';
 import '../../core/enums/statut_concours.dart';
 import '../../data/models/concours_model.dart';
@@ -274,8 +275,7 @@ ${concours.dateFin != null ? 'Fin: ${concours.dateFin}' : ''}
 ${concours.lienInscription != null ? 'Inscription: ${concours.lienInscription}' : ''}
 ''';
 
-      // Utilise share_plus
-      // await Share.share(text);
+      await Share.share(text);
 
       AppLogger.info('Concours partagé: ${concours.nom}');
     } catch (e) {
@@ -289,6 +289,7 @@ ${concours.lienInscription != null ? 'Inscription: ${concours.lienInscription}' 
   }
 
   /// Rafraîchit les données
+  @override
   Future<void> refresh() async {
     if (currentEcoleId.value.isNotEmpty) {
       await loadConcoursByEcole(currentEcoleId.value, forceRefresh: true);
