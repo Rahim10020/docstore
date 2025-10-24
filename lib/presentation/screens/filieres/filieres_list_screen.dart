@@ -201,7 +201,7 @@ class _FilieresListScreenState extends State<FilieresListScreen> {
         });
       },
       backgroundColor: Colors.white,
-      selectedColor: const Color(0xFF8B5CF6).withOpacity(0.2),
+      selectedColor: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
       labelStyle: TextStyle(
         color: isSelected ? const Color(0xFF8B5CF6) : Colors.grey[700],
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,

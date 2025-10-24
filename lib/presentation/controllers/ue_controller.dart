@@ -221,6 +221,7 @@ class UeController extends GetxController {
   }
 
   /// Rafraîchit les données
+  @override
   Future<void> refresh() async {
     if (currentFiliereId.value.isNotEmpty) {
       await loadUesByFiliere(currentFiliereId.value, forceRefresh: true);

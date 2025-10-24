@@ -180,7 +180,7 @@ class _ConcoursListScreenState extends State<ConcoursListScreen> {
         });
       },
       backgroundColor: Colors.white,
-      selectedColor: chipColor.withOpacity(0.2),
+      selectedColor: chipColor.withValues(alpha: 0.2),
       labelStyle: GoogleFonts.plusJakartaSans(
         color: isSelected ? chipColor : Colors.grey[700],
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
