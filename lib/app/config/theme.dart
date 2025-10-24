@@ -140,7 +140,7 @@ class AppTheme {
 
       // Chip
       chipTheme: ChipThemeData(
-        backgroundColor: secondaryColor.withOpacity(0.1),
+        backgroundColor: secondaryColor.withValues(alpha: 0.1),
         labelStyle: GoogleFonts.plusJakartaSans(
           color: primaryColor,
           fontWeight: FontWeight.w600,
