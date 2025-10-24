@@ -24,8 +24,6 @@ class AppTheme {
 
   /// Thème clair
   static ThemeData get lightTheme {
-    final textTheme = GoogleFonts.plusJakartaSansTextTheme();
-
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
@@ -38,7 +36,6 @@ class AppTheme {
         primary: primaryColor,
         secondary: secondaryColor,
         error: errorColor,
-        background: backgroundLight,
         surface: cardLight,
       ),
 
@@ -250,7 +247,6 @@ class AppTheme {
         primary: secondaryColor,
         secondary: primaryColor,
         error: errorColor,
-        background: backgroundDark,
         surface: cardDark,
       ),
 
