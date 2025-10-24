@@ -4,18 +4,26 @@ enum AnneeEnum {
   annee3('Année 3'),
   annee4('Année 4'),
   annee5('Année 5'),
-  tronc_commun('Tronc Commun'),
+  troncCommun('Tronc Commun'),
   master1('Master 1'),
   master2('Master 2');
 
   final String label;
   const AnneeEnum(this.label);
 
+  static String _toLowerCamelCase(String input) {
+    List<String> words = input.split(' ');
+    if (words.isEmpty) return '';
+    String result = words[0].toLowerCase();
+    for (int i = 1; i < words.length; i++) {
+      result += words[i][0].toUpperCase() + words[i].substring(1).toLowerCase();
+    }
+    return result;
+  }
+
   static AnneeEnum fromString(String value) {
     return AnneeEnum.values.firstWhere(
-      (e) =>
-          e.label == value ||
-          e.name == value.toLowerCase().replaceAll(' ', '_'),
+      (e) => e.label == value || e.name == _toLowerCamelCase(value),
       orElse: () => AnneeEnum.annee1,
     );
   }
