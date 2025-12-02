@@ -16,7 +16,7 @@ class CoursRepository {
     try {
       final response = await AppwriteService.databases.listDocuments(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollection,
+        collectionId: AppConstants.coursCollectionId,
       );
 
       return response.documents.map((doc) => Cours.fromJson(doc.data)).toList();
@@ -30,7 +30,7 @@ class CoursRepository {
     try {
       final response = await AppwriteService.databases.getDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollection,
+        collectionId: AppConstants.coursCollectionId,
         documentId: id,
       );
 
@@ -45,7 +45,7 @@ class CoursRepository {
     try {
       final response = await AppwriteService.databases.listDocuments(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollection,
+        collectionId: AppConstants.coursCollectionId,
       );
 
       final allCours = response.documents
@@ -63,7 +63,7 @@ class CoursRepository {
     try {
       final response = await AppwriteService.databases.createDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollection,
+        collectionId: AppConstants.coursCollectionId,
         documentId: 'unique()',
         data: cours.toJson(),
       );
@@ -79,7 +79,7 @@ class CoursRepository {
     try {
       final response = await AppwriteService.databases.updateDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollection,
+        collectionId: AppConstants.coursCollectionId,
         documentId: id,
         data: cours.toJson(),
       );
@@ -95,7 +95,7 @@ class CoursRepository {
     try {
       await AppwriteService.databases.deleteDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollection,
+        collectionId: AppConstants.coursCollectionId,
         documentId: id,
       );
     } catch (e) {
@@ -108,7 +108,7 @@ class CoursRepository {
     try {
       final response = await AppwriteService.databases.listDocuments(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollection,
+        collectionId: AppConstants.coursCollectionId,
       );
 
       final allCours = response.documents

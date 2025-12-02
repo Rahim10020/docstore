@@ -14,7 +14,7 @@ class ParcoursRepository {
     try {
       final response = await AppwriteService.databases.listDocuments(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollection,
+        collectionId: AppConstants.parcoursCollectionId,
       );
 
       return response.documents
@@ -30,7 +30,7 @@ class ParcoursRepository {
     try {
       final response = await AppwriteService.databases.getDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollection,
+        collectionId: AppConstants.parcoursCollectionId,
         documentId: id,
       );
 
@@ -45,7 +45,7 @@ class ParcoursRepository {
     try {
       final response = await AppwriteService.databases.createDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollection,
+        collectionId: AppConstants.parcoursCollectionId,
         documentId: 'unique()',
         data: parcours.toJson(),
       );
@@ -61,7 +61,7 @@ class ParcoursRepository {
     try {
       final response = await AppwriteService.databases.updateDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollection,
+        collectionId: AppConstants.parcoursCollectionId,
         documentId: id,
         data: parcours.toJson(),
       );
@@ -77,7 +77,7 @@ class ParcoursRepository {
     try {
       await AppwriteService.databases.deleteDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollection,
+        collectionId: AppConstants.parcoursCollectionId,
         documentId: id,
       );
     } catch (e) {
@@ -90,7 +90,7 @@ class ParcoursRepository {
     try {
       final response = await AppwriteService.databases.listDocuments(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollection,
+        collectionId: AppConstants.parcoursCollectionId,
       );
 
       final allParcours = response.documents

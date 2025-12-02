@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:logger/logger.dart';
+import '../../config/app_constants.dart';
 
 class AppwriteService {
   // Singleton pattern
@@ -17,12 +18,12 @@ class AppwriteService {
 
   final Logger _logger = Logger();
 
-  // IDs de configuration
+  // IDs de configuration (use AppConstants instead)
   static const String databaseId = '67efdc570033ac52dd43';
-  static const String ecolesCollectionId = '67f727d60008a5965d9e';
-  static const String filieresCollectionId = '67f728960028e33b576a';
-  static const String uesCollectionId = '67f72a8f00239ccc2b36';
-  static const String concoursCollectionId = '6893ba70001b392138f7';
+  static String get ecolesCollectionId => AppConstants.ecolesCollectionId;
+  static String get filieresCollectionId => AppConstants.filieresCollectionId;
+  static String get coursCollectionId => AppConstants.coursCollectionId;
+  static String get concoursCollectionId => AppConstants.concoursCollectionId;
   static const String bucketId = '67efdc26000acfe7e2ea';
 
   // Getters pour accès aux services

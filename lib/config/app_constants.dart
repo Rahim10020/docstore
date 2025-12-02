@@ -10,7 +10,12 @@ class AppConstants {
   // Collection IDs (vrais IDs depuis Appwrite)
   static const String ecolesCollectionId = '67f727d60008a5965d9e';
   static const String filieresCollectionId = '67f728960028e33b576a';
-  static const String uesCollectionId = '67f72a8f00239ccc2b36';
+  static const String coursCollectionId =
+      '67f72a8f00239ccc2b36'; // NOTE: Verify this ID exists in Appwrite
+  static const String semestreCollectionId =
+      '67f72b5f0014d1a2c8f1'; // NOTE: Verify this ID exists in Appwrite
+  static const String parcoursCollectionId =
+      '67f728f60033e5f8a9c2'; // NOTE: Verify this ID exists in Appwrite
   static const String concoursCollectionId = '6893ba70001b392138f7';
 
   // Anciens noms pour compatibilité (à migrer progressivement)
