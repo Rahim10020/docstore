@@ -1,5 +1,6 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:logger/logger.dart';
+import '../../config/app_constants.dart';
 import '../models/index.dart';
 import '../services/appwrite_service.dart';
 
@@ -14,8 +15,7 @@ class RessourceRepository {
     try {
       final response = await AppwriteService.databases.listDocuments(
         databaseId: AppwriteService.databaseId,
-        collectionId:
-            AppwriteService.databaseId, // TODO: Use correct collection ID
+        collectionId: AppwriteService.ressourcesCollectionId,
         queries: [Query.equal('filiereId', filiereId)],
       );
 
@@ -35,8 +35,7 @@ class RessourceRepository {
     try {
       final response = await AppwriteService.databases.listDocuments(
         databaseId: AppwriteService.databaseId,
-        collectionId:
-            AppwriteService.databaseId, // TODO: Use correct collection ID
+        collectionId: AppwriteService.ressourcesCollectionId,
         queries: [
           Query.equal('filiereId', filiereId),
           Query.equal('type', type),
@@ -56,8 +55,7 @@ class RessourceRepository {
     try {
       final response = await AppwriteService.databases.getDocument(
         databaseId: AppwriteService.databaseId,
-        collectionId:
-            AppwriteService.databaseId, // TODO: Use correct collection ID
+        collectionId: AppwriteService.ressourcesCollectionId,
         documentId: id,
       );
 

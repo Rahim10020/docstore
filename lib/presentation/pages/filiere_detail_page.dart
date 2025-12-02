@@ -38,9 +38,11 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ressourceRepository = context.read<RessourceRepository>();
+
     return BlocProvider(
       create: (context) =>
-          RessourceBloc(context.read<RessourceRepository>())
+          RessourceBloc(ressourceRepository)
             ..add(FetchRessourcesByFiliere(widget.filiere.id)),
       child: Scaffold(
         appBar: AppBar(title: Text(widget.filiere.nom), elevation: 0),

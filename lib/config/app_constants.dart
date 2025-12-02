@@ -17,6 +17,8 @@ class AppConstants {
   static const String parcoursCollectionId =
       '67f728f60033e5f8a9c2'; // NOTE: Verify this ID exists in Appwrite
   static const String concoursCollectionId = '6893ba70001b392138f7';
+  static const String ressourcesCollectionId =
+      '67f72c5f0018a3e5b2f4'; // TODO: Replace with actual Appwrite collection ID
 
   // Anciens noms pour compatibilité (à migrer progressivement)
   static const String ecolesCollection = 'ecoles';

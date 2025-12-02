@@ -24,6 +24,8 @@ class AppwriteService {
   static String get filieresCollectionId => AppConstants.filieresCollectionId;
   static String get coursCollectionId => AppConstants.coursCollectionId;
   static String get concoursCollectionId => AppConstants.concoursCollectionId;
+  static String get ressourcesCollectionId =>
+      AppConstants.ressourcesCollectionId;
   static const String bucketId = '67efdc26000acfe7e2ea';
 
   // Getters pour accès aux services
