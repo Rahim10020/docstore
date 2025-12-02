@@ -6,3 +6,4 @@ export 'ressource.dart';
 export 'concours.dart';
 export 'semestre.dart';
 export 'annee.dart';
+export 'file_resource.dart';

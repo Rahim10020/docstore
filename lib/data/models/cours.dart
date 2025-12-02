@@ -1,12 +1,11 @@
 import 'package:equatable/equatable.dart';
-import 'ressource.dart';
 
 class Cours extends Equatable {
   final String id;
   final String titre;
   final String description;
   final String semesterId;
-  final List<Ressource> ressources;
+  final List<String> ressources; // IDs Appwrite ou URLs Google Drive
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -27,9 +26,7 @@ class Cours extends Equatable {
       description: json['description'] as String? ?? '',
       semesterId: json['semesterId'] as String,
       ressources:
-          (json['ressources'] as List?)
-              ?.map((r) => Ressource.fromJson(r as Map<String, dynamic>))
-              .toList() ??
+          (json['ressources'] as List?)?.map((r) => r.toString()).toList() ??
           [],
       createdAt: DateTime.parse(json['\$createdAt'] as String),
       updatedAt: DateTime.parse(json['\$updatedAt'] as String),
@@ -41,6 +38,7 @@ class Cours extends Equatable {
       'titre': titre,
       'description': description,
       'semesterId': semesterId,
+      'ressources': ressources,
     };
   }
 

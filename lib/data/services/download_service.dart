@@ -3,11 +3,13 @@ import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import '../models/file_resource.dart';
 
 class DownloadService {
   final Dio _dio = Dio();
   final Logger _logger = Logger();
 
+  /// Télécharge un fichier depuis une URL ou un FileResource
   Future<String?> downloadFile({
     required String url,
     required String fileName,
@@ -36,6 +38,29 @@ class DownloadService {
       return filePath;
     } catch (e) {
       _logger.e('Download error: $e');
+      return null;
+    }
+  }
+
+  /// Télécharge un fichier depuis un FileResource (Appwrite ou Google Drive)
+  Future<String?> downloadFileResource({
+    required FileResource fileResource,
+    required Function(int, int) onProgress,
+  }) async {
+    try {
+      // Utiliser l'URL de téléchargement appropriée
+      final downloadUrl = fileResource.downloadUrl;
+      final fileName = fileResource.name;
+
+      _logger.i('Downloading ${fileResource.sourceType.name} file: $fileName');
+
+      return await downloadFile(
+        url: downloadUrl,
+        fileName: fileName,
+        onProgress: onProgress,
+      );
+    } catch (e) {
+      _logger.e('Download error for FileResource: $e');
       return null;
     }
   }

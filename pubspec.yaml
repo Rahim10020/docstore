@@ -53,6 +53,7 @@ dependencies:
 
   # Network
   connectivity_plus: ^5.0.1
+  http: ^1.2.0
 
   # Utils
   logger: ^2.1.0

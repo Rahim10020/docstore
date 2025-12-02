@@ -2,10 +2,12 @@ import 'package:appwrite/appwrite.dart';
 import 'package:logger/logger.dart';
 import '../models/index.dart';
 import '../services/appwrite_service.dart';
+import '../services/file_service.dart';
 
 class ConcoursRepository {
   // ignore: unused_field
   final AppwriteService _appwriteService;
+  final FileService _fileService = FileService();
   final Logger _logger = Logger();
 
   ConcoursRepository(this._appwriteService);
@@ -142,6 +144,52 @@ class ConcoursRepository {
     } catch (e) {
       _logger.e('Error searching concours: $e');
       rethrow;
+    }
+  }
+
+  /// Récupère les communiqués d'un concours (Appwrite + Google Drive)
+  Future<List<FileResource>> getConcoursCommuniques(String concoursId) async {
+    try {
+      final concours = await getConcoursById(concoursId);
+      return await _fileService.processResources(concours.communiques);
+    } catch (e) {
+      _logger.e('Error fetching concours communiques: $e');
+      rethrow;
+    }
+  }
+
+  /// Récupère les ressources d'un concours (Appwrite + Google Drive)
+  Future<List<FileResource>> getConcoursRessources(String concoursId) async {
+    try {
+      final concours = await getConcoursById(concoursId);
+      return await _fileService.processResources(concours.ressources);
+    } catch (e) {
+      _logger.e('Error fetching concours ressources: $e');
+      rethrow;
+    }
+  }
+
+  /// Récupère les communiqués à partir d'un objet Concours
+  Future<List<FileResource>> getCommuniquesFromConcours(
+    Concours concours,
+  ) async {
+    try {
+      return await _fileService.processResources(concours.communiques);
+    } catch (e) {
+      _logger.e('Error processing concours communiques: $e');
+      return [];
+    }
+  }
+
+  /// Récupère les ressources à partir d'un objet Concours
+  Future<List<FileResource>> getRessourcesFromConcours(
+    Concours concours,
+  ) async {
+    try {
+      return await _fileService.processResources(concours.ressources);
+    } catch (e) {
+      _logger.e('Error processing concours ressources: $e');
+      return [];
     }
   }
 }

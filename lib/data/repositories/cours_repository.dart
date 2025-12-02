@@ -1,11 +1,13 @@
 import 'package:logger/logger.dart';
 import '../models/index.dart';
 import '../services/appwrite_service.dart';
+import '../services/file_service.dart';
 import '../../config/app_constants.dart';
 
 class CoursRepository {
   // ignore: unused_field
   final AppwriteService _appwriteService;
+  final FileService _fileService = FileService();
   final Logger _logger = Logger();
 
   CoursRepository(this._appwriteService);
@@ -124,6 +126,27 @@ class CoursRepository {
     } catch (e) {
       _logger.e('Error searching cours: $e');
       rethrow;
+    }
+  }
+
+  /// Récupère les ressources d'un cours (Appwrite + Google Drive)
+  Future<List<FileResource>> getCoursResources(String coursId) async {
+    try {
+      final cours = await getCoursById(coursId);
+      return await _fileService.processResources(cours.ressources);
+    } catch (e) {
+      _logger.e('Error fetching cours resources: $e');
+      rethrow;
+    }
+  }
+
+  /// Récupère les ressources à partir d'un objet Cours
+  Future<List<FileResource>> getResourcesFromCours(Cours cours) async {
+    try {
+      return await _fileService.processResources(cours.ressources);
+    } catch (e) {
+      _logger.e('Error processing cours resources: $e');
+      return [];
     }
   }
 }

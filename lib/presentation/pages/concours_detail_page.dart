@@ -2,12 +2,60 @@ import 'package:flutter/material.dart';
 import '../../config/app_constants.dart';
 import '../../config/app_theme.dart';
 import '../../data/models/index.dart';
+import '../../data/repositories/concours_repository.dart';
+import '../../data/services/appwrite_service.dart';
+import '../widgets/index.dart';
 
-class ConcoursDetailPage extends StatelessWidget {
+class ConcoursDetailPage extends StatefulWidget {
   final Concours concours;
   final String? ecoleNom;
 
   const ConcoursDetailPage({required this.concours, this.ecoleNom, super.key});
+
+  @override
+  State<ConcoursDetailPage> createState() => _ConcoursDetailPageState();
+}
+
+class _ConcoursDetailPageState extends State<ConcoursDetailPage> {
+  late final ConcoursRepository _repository;
+  List<FileResource>? _communiques;
+  List<FileResource>? _ressources;
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _repository = ConcoursRepository(AppwriteService());
+    _loadFiles();
+  }
+
+  Future<void> _loadFiles() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      final communiques = await _repository.getCommuniquesFromConcours(
+        widget.concours,
+      );
+      final ressources = await _repository.getRessourcesFromConcours(
+        widget.concours,
+      );
+
+      setState(() {
+        _communiques = communiques;
+        _ressources = ressources;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Erreur lors du chargement des fichiers';
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +73,15 @@ class ConcoursDetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    concours.nom,
+                    widget.concours.nom,
                     style: Theme.of(
                       context,
                     ).textTheme.headlineLarge?.copyWith(color: AppColors.white),
                   ),
                   const SizedBox(height: AppConstants.paddingSmall),
-                  if (ecoleNom != null)
+                  if (widget.ecoleNom != null)
                     Text(
-                      ecoleNom!,
+                      widget.ecoleNom!,
                       style: Theme.of(
                         context,
                       ).textTheme.titleMedium?.copyWith(color: AppColors.white),
@@ -48,7 +96,7 @@ class ConcoursDetailPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Année ${concours.annee}',
+                        'Année ${widget.concours.annee}',
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(color: AppColors.white),
                       ),
@@ -68,48 +116,93 @@ class ConcoursDetailPage extends StatelessWidget {
                   ),
                   const SizedBox(height: AppConstants.paddingSmall),
                   Text(
-                    concours.description,
+                    widget.concours.description,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  if (concours.hasCommunique) ...[
-                    const SizedBox(height: AppConstants.paddingLarge),
-                    Text(
-                      'Communiqué',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: AppConstants.paddingSmall),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/pdf-viewer',
-                                arguments: {
-                                  'url': concours.communiquePdfUrl,
-                                  'title':
-                                      concours.communiquePdfNom ?? 'Communiqué',
-                                },
-                              );
-                            },
-                            icon: const Icon(Icons.picture_as_pdf),
-                            label: const Text('Ouvrir le PDF'),
+                  const SizedBox(height: AppConstants.paddingLarge),
+
+                  if (_isLoading)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(AppConstants.paddingLarge),
+                        child: CustomLoader(),
+                      ),
+                    )
+                  else if (_errorMessage != null)
+                    CustomErrorWidget(
+                      message: _errorMessage!,
+                      onRetry: _loadFiles,
+                    )
+                  else ...[
+                    // Communiqués
+                    if (_communiques != null && _communiques!.isNotEmpty) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Communiqués',
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
-                        ),
-                        const SizedBox(width: AppConstants.paddingSmall),
-                        ElevatedButton(
-                          onPressed: () {
-                            // TODO: Implement download
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.border,
+                          Text(
+                            '(${_communiques!.length})',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: AppColors.textLight),
                           ),
-                          child: const Icon(Icons.download),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                      const SizedBox(height: AppConstants.paddingSmall),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _communiques!.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppConstants.paddingSmall),
+                        itemBuilder: (context, index) {
+                          final file = _communiques![index];
+                          return _FileResourceCard(resource: file);
+                        },
+                      ),
+                      const SizedBox(height: AppConstants.paddingLarge),
+                    ],
+
+                    // Ressources
+                    if (_ressources != null && _ressources!.isNotEmpty) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Ressources',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          Text(
+                            '(${_ressources!.length})',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: AppColors.textLight),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: AppConstants.paddingSmall),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _ressources!.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: AppConstants.paddingSmall),
+                        itemBuilder: (context, index) {
+                          final file = _ressources![index];
+                          return _FileResourceCard(resource: file);
+                        },
+                      ),
+                    ],
+
+                    if ((_communiques == null || _communiques!.isEmpty) &&
+                        (_ressources == null || _ressources!.isEmpty))
+                      const EmptyStateWidget(
+                        message: 'Aucun fichier disponible',
+                        icon: Icons.file_present,
+                      ),
                   ],
+
                   const SizedBox(height: AppConstants.paddingLarge),
                   ElevatedButton.icon(
                     onPressed: () {
@@ -123,6 +216,85 @@ class ConcoursDetailPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _FileResourceCard extends StatelessWidget {
+  final FileResource resource;
+
+  const _FileResourceCard({required this.resource});
+
+  String _getSourceLabel() {
+    switch (resource.sourceType) {
+      case FileSourceType.googleDrive:
+        return 'Google Drive';
+      case FileSourceType.appwrite:
+        return 'Appwrite';
+    }
+  }
+
+  IconData _getSourceIcon() {
+    switch (resource.sourceType) {
+      case FileSourceType.googleDrive:
+        return Icons.cloud;
+      case FileSourceType.appwrite:
+        return Icons.storage;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: AppColors.primaryIndigo.withValues(alpha: 0.1),
+          child: Icon(
+            resource.isPdf ? Icons.picture_as_pdf : Icons.insert_drive_file,
+            color: AppColors.primaryIndigo,
+          ),
+        ),
+        title: Text(
+          resource.name,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(_getSourceIcon(), size: 14, color: AppColors.textLight),
+                const SizedBox(width: 4),
+                Text(
+                  _getSourceLabel(),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: AppColors.textLight),
+                ),
+                if (resource.size != null) ...[
+                  const SizedBox(width: 8),
+                  Text(
+                    '• ${resource.formattedSize}',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: AppColors.textLight),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            '/pdf-viewer',
+            arguments: {'url': resource.url, 'title': resource.name},
+          );
+        },
       ),
     );
   }

@@ -6,8 +6,8 @@ class Concours extends Equatable {
   final String description;
   final int annee;
   final String ecoleId;
-  final String? communiquePdfUrl;
-  final String? communiquePdfNom;
+  final List<String> communiques; // IDs Appwrite ou URLs Google Drive
+  final List<String> ressources; // IDs Appwrite ou URLs Google Drive
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -17,8 +17,8 @@ class Concours extends Equatable {
     required this.description,
     required this.annee,
     required this.ecoleId,
-    this.communiquePdfUrl,
-    this.communiquePdfNom,
+    this.communiques = const [],
+    this.ressources = const [],
     required this.createdAt,
     required this.updatedAt,
   });
@@ -30,8 +30,12 @@ class Concours extends Equatable {
       description: json['description'] as String? ?? '',
       annee: json['annee'] as int,
       ecoleId: json['ecoleId'] as String,
-      communiquePdfUrl: json['communiquePdfUrl'] as String?,
-      communiquePdfNom: json['communiquePdfNom'] as String?,
+      communiques:
+          (json['communiques'] as List?)?.map((r) => r.toString()).toList() ??
+          [],
+      ressources:
+          (json['ressources'] as List?)?.map((r) => r.toString()).toList() ??
+          [],
       createdAt: DateTime.parse(json['\$createdAt'] as String),
       updatedAt: DateTime.parse(json['\$updatedAt'] as String),
     );
@@ -43,13 +47,13 @@ class Concours extends Equatable {
       'description': description,
       'annee': annee,
       'ecoleId': ecoleId,
-      'communiquePdfUrl': communiquePdfUrl,
-      'communiquePdfNom': communiquePdfNom,
+      'communiques': communiques,
+      'ressources': ressources,
     };
   }
 
-  bool get hasCommunique =>
-      communiquePdfUrl != null && communiquePdfUrl!.isNotEmpty;
+  bool get hasCommunique => communiques.isNotEmpty;
+  bool get hasRessources => ressources.isNotEmpty;
 
   @override
   List<Object?> get props => [id, nom, annee, ecoleId];
