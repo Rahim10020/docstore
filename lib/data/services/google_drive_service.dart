@@ -47,35 +47,66 @@ class GoogleDriveService {
 
   /// Récupère les métadonnées d'un fichier Google Drive via l'API backend
   /// Retourne un Map avec les informations du fichier ou null en cas d'erreur
+  /// Includes retry logic and fallback for timeout scenarios
   Future<Map<String, dynamic>?> getFileMetadata(String driveUrl) async {
-    try {
-      final encodedUrl = Uri.encodeComponent(driveUrl);
-      final apiUrl = '$_apiEndpoint?url=$encodedUrl';
+    const maxRetries = 2;
+    const timeoutDuration = Duration(seconds: 15);
 
-      final response = await http
-          .get(Uri.parse(apiUrl), headers: {'Accept': 'application/json'})
-          .timeout(const Duration(seconds: 10));
+    for (int attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        final encodedUrl = Uri.encodeComponent(driveUrl);
+        final apiUrl = '$_apiEndpoint?url=$encodedUrl';
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        _logger.d(
+          'Fetching metadata (attempt ${attempt + 1}/$maxRetries) for: $driveUrl',
+        );
 
-        if (data['success'] == true && data['fileInfo'] != null) {
-          return data['fileInfo'] as Map<String, dynamic>;
-        } else if (data['error'] != null) {
-          _logger.w('API error: ${data['error']}');
-          return {
-            'name': data['name'] ?? 'Document Google Drive',
-            'id': extractFileId(driveUrl),
-          };
+        final response = await http
+            .get(Uri.parse(apiUrl), headers: {'Accept': 'application/json'})
+            .timeout(timeoutDuration);
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+
+          if (data['success'] == true && data['fileInfo'] != null) {
+            _logger.i('Successfully fetched metadata from API');
+            return data['fileInfo'] as Map<String, dynamic>;
+          } else if (data['error'] != null) {
+            _logger.w('API error: ${data['error']}');
+            return {
+              'name': data['name'] ?? 'Document Google Drive',
+              'id': extractFileId(driveUrl),
+            };
+          }
+        }
+
+        _logger.w('Failed to fetch metadata: ${response.statusCode}');
+        return null;
+      } on TimeoutException catch (e) {
+        _logger.w('Timeout on attempt ${attempt + 1}/$maxRetries: $e');
+        if (attempt == maxRetries - 1) {
+          // Last attempt failed, return minimal metadata as fallback
+          _logger.e('All metadata fetch attempts timed out. Using fallback.');
+          return _getFallbackMetadata(driveUrl);
+        }
+        // Wait before retrying
+        await Future.delayed(const Duration(milliseconds: 500));
+      } catch (e) {
+        _logger.e('Error fetching file metadata (attempt ${attempt + 1}): $e');
+        if (attempt == maxRetries - 1) {
+          // Return minimal metadata as fallback
+          return _getFallbackMetadata(driveUrl);
         }
       }
-
-      _logger.w('Failed to fetch metadata: ${response.statusCode}');
-      return null;
-    } catch (e) {
-      _logger.e('Error fetching file metadata: $e');
-      return null;
     }
+
+    return null;
+  }
+
+  /// Returns minimal metadata when API fetch fails
+  Map<String, dynamic> _getFallbackMetadata(String driveUrl) {
+    final fileId = extractFileId(driveUrl);
+    return {'name': 'Document Google Drive', 'id': fileId, 'fallback': true};
   }
 
   /// Récupère le nom d'un fichier Google Drive
