@@ -1,22 +1,19 @@
 import 'package:logger/logger.dart';
 import '../models/index.dart';
 import '../services/appwrite_service.dart';
-import '../../config/app_constants.dart';
 
 class EcoleRepository {
+  // ignore: unused_field
   final AppwriteService _appwriteService;
   final Logger _logger = Logger();
 
   EcoleRepository(this._appwriteService);
 
-  Future<List<Ecole>> getEcoles({
-    int limit = AppConstants.itemsPerPage,
-    int offset = 0,
-  }) async {
+  Future<List<Ecole>> getEcoles({int limit = 25, int offset = 0}) async {
     try {
-      final response = await _appwriteService.databases.listDocuments(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.ecolesCollection,
+      final response = await AppwriteService.databases.listDocuments(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.ecolesCollectionId,
       );
 
       return response.documents.map((doc) => Ecole.fromJson(doc.data)).toList();
@@ -28,9 +25,9 @@ class EcoleRepository {
 
   Future<Ecole> getEcoleById(String id) async {
     try {
-      final response = await _appwriteService.databases.getDocument(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.ecolesCollection,
+      final response = await AppwriteService.databases.getDocument(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.ecolesCollectionId,
         documentId: id,
       );
 
@@ -43,9 +40,9 @@ class EcoleRepository {
 
   Future<Ecole> createEcole(Ecole ecole) async {
     try {
-      final response = await _appwriteService.databases.createDocument(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.ecolesCollection,
+      final response = await AppwriteService.databases.createDocument(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.ecolesCollectionId,
         documentId: 'unique()',
         data: ecole.toJson(),
       );
@@ -59,9 +56,9 @@ class EcoleRepository {
 
   Future<Ecole> updateEcole(String id, Ecole ecole) async {
     try {
-      final response = await _appwriteService.databases.updateDocument(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.ecolesCollection,
+      final response = await AppwriteService.databases.updateDocument(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.ecolesCollectionId,
         documentId: id,
         data: ecole.toJson(),
       );
@@ -75,9 +72,9 @@ class EcoleRepository {
 
   Future<void> deleteEcole(String id) async {
     try {
-      await _appwriteService.databases.deleteDocument(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.ecolesCollection,
+      await AppwriteService.databases.deleteDocument(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.ecolesCollectionId,
         documentId: id,
       );
     } catch (e) {
@@ -88,9 +85,9 @@ class EcoleRepository {
 
   Future<List<Ecole>> searchEcoles(String query) async {
     try {
-      final response = await _appwriteService.databases.listDocuments(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.ecolesCollection,
+      final response = await AppwriteService.databases.listDocuments(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.ecolesCollectionId,
       );
 
       final allEcoles = response.documents

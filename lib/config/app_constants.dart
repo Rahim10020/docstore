@@ -1,11 +1,19 @@
 /// App constants
 class AppConstants {
   // Appwrite Configuration
-  static const String appwriteEndpoint = 'YOUR_APPWRITE_ENDPOINT';
-  static const String appwriteProjectId = 'YOUR_PROJECT_ID';
-  static const String appwriteApiKey = 'YOUR_API_KEY';
+  static const String appwriteEndpoint = 'https://cloud.appwrite.io/v1';
+  static const String appwriteProjectId = '67efdbc8003bcb27bcaf';
 
-  // Collection IDs
+  // Database ID
+  static const String databaseId = '67efdc570033ac52dd43';
+
+  // Collection IDs (vrais IDs depuis Appwrite)
+  static const String ecolesCollectionId = '67f727d60008a5965d9e';
+  static const String filieresCollectionId = '67f728960028e33b576a';
+  static const String uesCollectionId = '67f72a8f00239ccc2b36';
+  static const String concoursCollectionId = '6893ba70001b392138f7';
+
+  // Anciens noms pour compatibilité (à migrer progressivement)
   static const String ecolesCollection = 'ecoles';
   static const String filieresCollection = 'filieres';
   static const String parcoursCollection = 'parcours';
@@ -15,8 +23,8 @@ class AppConstants {
   static const String ressourcesCollection = 'ressources';
   static const String concoursCollection = 'concours';
 
-  // Database ID
-  static const String databaseId = 'main_db';
+  // Storage Bucket ID
+  static const String bucketId = '67efdc26000acfe7e2ea';
 
   // Search
   static const int minSearchLength = 2;

@@ -4,18 +4,16 @@ import '../services/appwrite_service.dart';
 import '../../config/app_constants.dart';
 
 class ParcoursRepository {
+  // ignore: unused_field
   final AppwriteService _appwriteService;
   final Logger _logger = Logger();
 
   ParcoursRepository(this._appwriteService);
 
-  Future<List<Parcours>> getParcours({
-    int limit = AppConstants.itemsPerPage,
-    int offset = 0,
-  }) async {
+  Future<List<Parcours>> getParcours({int limit = 25, int offset = 0}) async {
     try {
-      final response = await _appwriteService.databases.listDocuments(
-        databaseId: AppConstants.databaseId,
+      final response = await AppwriteService.databases.listDocuments(
+        databaseId: AppwriteService.databaseId,
         collectionId: AppConstants.parcoursCollection,
       );
 
@@ -30,8 +28,8 @@ class ParcoursRepository {
 
   Future<Parcours> getParcoursById(String id) async {
     try {
-      final response = await _appwriteService.databases.getDocument(
-        databaseId: AppConstants.databaseId,
+      final response = await AppwriteService.databases.getDocument(
+        databaseId: AppwriteService.databaseId,
         collectionId: AppConstants.parcoursCollection,
         documentId: id,
       );
@@ -45,8 +43,8 @@ class ParcoursRepository {
 
   Future<Parcours> createParcours(Parcours parcours) async {
     try {
-      final response = await _appwriteService.databases.createDocument(
-        databaseId: AppConstants.databaseId,
+      final response = await AppwriteService.databases.createDocument(
+        databaseId: AppwriteService.databaseId,
         collectionId: AppConstants.parcoursCollection,
         documentId: 'unique()',
         data: parcours.toJson(),
@@ -61,8 +59,8 @@ class ParcoursRepository {
 
   Future<Parcours> updateParcours(String id, Parcours parcours) async {
     try {
-      final response = await _appwriteService.databases.updateDocument(
-        databaseId: AppConstants.databaseId,
+      final response = await AppwriteService.databases.updateDocument(
+        databaseId: AppwriteService.databaseId,
         collectionId: AppConstants.parcoursCollection,
         documentId: id,
         data: parcours.toJson(),
@@ -77,8 +75,8 @@ class ParcoursRepository {
 
   Future<void> deleteParcours(String id) async {
     try {
-      await _appwriteService.databases.deleteDocument(
-        databaseId: AppConstants.databaseId,
+      await AppwriteService.databases.deleteDocument(
+        databaseId: AppwriteService.databaseId,
         collectionId: AppConstants.parcoursCollection,
         documentId: id,
       );
@@ -90,8 +88,8 @@ class ParcoursRepository {
 
   Future<List<Parcours>> searchParcours(String query) async {
     try {
-      final response = await _appwriteService.databases.listDocuments(
-        databaseId: AppConstants.databaseId,
+      final response = await AppwriteService.databases.listDocuments(
+        databaseId: AppwriteService.databaseId,
         collectionId: AppConstants.parcoursCollection,
       );
 

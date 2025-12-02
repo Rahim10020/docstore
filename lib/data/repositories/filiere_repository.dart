@@ -1,22 +1,20 @@
+import 'package:appwrite/appwrite.dart';
 import 'package:logger/logger.dart';
 import '../models/index.dart';
 import '../services/appwrite_service.dart';
-import '../../config/app_constants.dart';
 
 class FiliereRepository {
+  // ignore: unused_field
   final AppwriteService _appwriteService;
   final Logger _logger = Logger();
 
   FiliereRepository(this._appwriteService);
 
-  Future<List<Filiere>> getFilieres({
-    int limit = AppConstants.itemsPerPage,
-    int offset = 0,
-  }) async {
+  Future<List<Filiere>> getFilieres({int limit = 25, int offset = 0}) async {
     try {
-      final response = await _appwriteService.databases.listDocuments(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.filieresCollection,
+      final response = await AppwriteService.databases.listDocuments(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.filieresCollectionId,
       );
 
       return response.documents
@@ -30,9 +28,9 @@ class FiliereRepository {
 
   Future<Filiere> getFiliereById(String id) async {
     try {
-      final response = await _appwriteService.databases.getDocument(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.filieresCollection,
+      final response = await AppwriteService.databases.getDocument(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.filieresCollectionId,
         documentId: id,
       );
 
@@ -43,29 +41,28 @@ class FiliereRepository {
     }
   }
 
-  Future<List<Filiere>> getFilieresByParcours(String parcoursId) async {
+  Future<List<Filiere>> getFilieresByEcole(String ecoleId) async {
     try {
-      final response = await _appwriteService.databases.listDocuments(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.filieresCollection,
+      final response = await AppwriteService.databases.listDocuments(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.filieresCollectionId,
+        queries: [Query.equal('idEcole', ecoleId)],
       );
 
-      final allFilieres = response.documents
+      return response.documents
           .map((doc) => Filiere.fromJson(doc.data))
           .toList();
-
-      return allFilieres.where((f) => f.parcoursId == parcoursId).toList();
     } catch (e) {
-      _logger.e('Error fetching filieres for parcours: $e');
+      _logger.e('Error fetching filieres for ecole: $e');
       rethrow;
     }
   }
 
   Future<Filiere> createFiliere(Filiere filiere) async {
     try {
-      final response = await _appwriteService.databases.createDocument(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.filieresCollection,
+      final response = await AppwriteService.databases.createDocument(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.filieresCollectionId,
         documentId: 'unique()',
         data: filiere.toJson(),
       );
@@ -79,9 +76,9 @@ class FiliereRepository {
 
   Future<Filiere> updateFiliere(String id, Filiere filiere) async {
     try {
-      final response = await _appwriteService.databases.updateDocument(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.filieresCollection,
+      final response = await AppwriteService.databases.updateDocument(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.filieresCollectionId,
         documentId: id,
         data: filiere.toJson(),
       );
@@ -95,9 +92,9 @@ class FiliereRepository {
 
   Future<void> deleteFiliere(String id) async {
     try {
-      await _appwriteService.databases.deleteDocument(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.filieresCollection,
+      await AppwriteService.databases.deleteDocument(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.filieresCollectionId,
         documentId: id,
       );
     } catch (e) {
@@ -108,9 +105,9 @@ class FiliereRepository {
 
   Future<List<Filiere>> searchFilieres(String query) async {
     try {
-      final response = await _appwriteService.databases.listDocuments(
-        databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.filieresCollection,
+      final response = await AppwriteService.databases.listDocuments(
+        databaseId: AppwriteService.databaseId,
+        collectionId: AppwriteService.filieresCollectionId,
       );
 
       final allFilieres = response.documents
