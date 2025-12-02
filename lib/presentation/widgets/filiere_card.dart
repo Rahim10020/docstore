@@ -18,12 +18,11 @@ class FiliereCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.white,
+            gradient: AppColors.filiereGradient,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border, width: 1),
             boxShadow: [
               BoxShadow(
-                color: AppColors.black.withValues(alpha: 0.05),
+                color: AppColors.black.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -34,11 +33,7 @@ class FiliereCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.folder_special,
-                  color: AppColors.primaryIndigo,
-                  size: 32,
-                ),
+                Icon(Icons.folder_special, color: AppColors.white, size: 28),
                 const SizedBox(height: AppConstants.paddingSmall),
                 Text(
                   filiere.nom,
@@ -46,7 +41,7 @@ class FiliereCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textDark,
+                    color: AppColors.white,
                   ),
                 ),
                 const SizedBox(height: AppConstants.paddingSmall),
@@ -54,9 +49,9 @@ class FiliereCard extends StatelessWidget {
                   filiere.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.textLight),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.9),
+                  ),
                 ),
               ],
             ),

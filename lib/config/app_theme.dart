@@ -42,6 +42,12 @@ class AppColors {
     colors: [secondaryOrange, secondaryYellow],
   );
 
+  static const LinearGradient filiereGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF8B5CF6), Color(0xFF6366F1)],
+  );
+
   static const LinearGradient bgGradient = LinearGradient(
     begin: Alignment.topRight,
     end: Alignment.bottomLeft,

@@ -16,6 +16,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String _ecoleSearchQuery = '';
+  String _concoursSearchQuery = '';
 
   @override
   void initState() {
@@ -91,29 +93,65 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildEcolesList(BuildContext context, List<Ecole> ecoles) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        context.read<EcoleBloc>().add(const FetchEcoles());
-      },
-      child: GridView.builder(
-        padding: const EdgeInsets.all(AppConstants.paddingDefault),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: _getCrossAxisCount(context),
-          mainAxisSpacing: AppConstants.paddingDefault,
-          crossAxisSpacing: AppConstants.paddingDefault,
-          childAspectRatio: 1.2,
-        ),
-        itemCount: ecoles.length,
-        itemBuilder: (context, index) {
-          final ecole = ecoles[index];
-          return EcoleCard(
-            ecole: ecole,
-            onTap: () {
-              Navigator.pushNamed(context, '/ecole-detail', arguments: ecole);
+    // Filtrer les écoles selon la recherche
+    final filteredEcoles = _ecoleSearchQuery.isEmpty
+        ? ecoles
+        : ecoles.where((ecole) {
+            final query = _ecoleSearchQuery.toLowerCase();
+            return ecole.nom.toLowerCase().contains(query) ||
+                ecole.description.toLowerCase().contains(query) ||
+                ecole.lieu.toLowerCase().contains(query);
+          }).toList();
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(AppConstants.paddingDefault),
+          child: CustomSearchBar(
+            onChanged: (query) {
+              setState(() {
+                _ecoleSearchQuery = query;
+              });
             },
-          );
-        },
-      ),
+            hintText: 'Rechercher une école...',
+          ),
+        ),
+        Expanded(
+          child: filteredEcoles.isEmpty
+              ? const EmptyStateWidget(
+                  message: 'Aucune école trouvée',
+                  icon: Icons.search_off,
+                )
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<EcoleBloc>().add(const FetchEcoles());
+                  },
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(AppConstants.paddingDefault),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: _getCrossAxisCount(context),
+                      mainAxisSpacing: AppConstants.paddingDefault,
+                      crossAxisSpacing: AppConstants.paddingDefault,
+                      childAspectRatio: 1.5,
+                    ),
+                    itemCount: filteredEcoles.length,
+                    itemBuilder: (context, index) {
+                      final ecole = filteredEcoles[index];
+                      return EcoleCard(
+                        ecole: ecole,
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/ecole-detail',
+                            arguments: ecole,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
@@ -143,29 +181,65 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildConcoursList(BuildContext context, List<Concours> concours) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        context.read<ConcoursBloc>().add(const FetchConcours());
-      },
-      child: GridView.builder(
-        padding: const EdgeInsets.all(AppConstants.paddingDefault),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: _getCrossAxisCount(context),
-          mainAxisSpacing: AppConstants.paddingDefault,
-          crossAxisSpacing: AppConstants.paddingDefault,
-          childAspectRatio: 1.1,
-        ),
-        itemCount: concours.length,
-        itemBuilder: (context, index) {
-          final c = concours[index];
-          return ConcoursCard(
-            concours: c,
-            onTap: () {
-              Navigator.pushNamed(context, '/concours-detail', arguments: c);
+    // Filtrer les concours selon la recherche
+    final filteredConcours = _concoursSearchQuery.isEmpty
+        ? concours
+        : concours.where((c) {
+            final query = _concoursSearchQuery.toLowerCase();
+            return c.nom.toLowerCase().contains(query) ||
+                c.description.toLowerCase().contains(query) ||
+                c.annee.toString().contains(query);
+          }).toList();
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(AppConstants.paddingDefault),
+          child: CustomSearchBar(
+            onChanged: (query) {
+              setState(() {
+                _concoursSearchQuery = query;
+              });
             },
-          );
-        },
-      ),
+            hintText: 'Rechercher un concours...',
+          ),
+        ),
+        Expanded(
+          child: filteredConcours.isEmpty
+              ? const EmptyStateWidget(
+                  message: 'Aucun concours trouvé',
+                  icon: Icons.search_off,
+                )
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<ConcoursBloc>().add(const FetchConcours());
+                  },
+                  child: GridView.builder(
+                    padding: const EdgeInsets.all(AppConstants.paddingDefault),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: _getCrossAxisCount(context),
+                      mainAxisSpacing: AppConstants.paddingDefault,
+                      crossAxisSpacing: AppConstants.paddingDefault,
+                      childAspectRatio: 1.4,
+                    ),
+                    itemCount: filteredConcours.length,
+                    itemBuilder: (context, index) {
+                      final c = filteredConcours[index];
+                      return ConcoursCard(
+                        concours: c,
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/concours-detail',
+                            arguments: c,
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
