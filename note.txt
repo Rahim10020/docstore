@@ -1,6 +1,0 @@
-Dans appwrite_constants.dart ligne 12 :
-dartstatic const String fichiersCollectionId = 'TO_BE_CREATED';
-ACTION REQUISE :
-
-Créez la collection Fichiers dans Appwrite
-Remplacez 'TO_BE_CREATED' par l'ID réel de la collection
