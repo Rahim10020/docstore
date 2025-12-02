@@ -5,8 +5,7 @@ class CustomLoader extends StatelessWidget {
   final String? message;
   final double size;
 
-  const CustomLoader({this.message, this.size = 50.0, Key? key})
-    : super(key: key);
+  const CustomLoader({this.message, this.size = 50.0, super.key});
 
   @override
   Widget build(BuildContext context) {

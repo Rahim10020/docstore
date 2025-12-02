@@ -6,7 +6,7 @@ import '../../data/models/index.dart';
 class EcoleDetailPage extends StatelessWidget {
   final Ecole ecole;
 
-  const EcoleDetailPage({required this.ecole, Key? key}) : super(key: key);
+  const EcoleDetailPage({required this.ecole, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class EcoleDetailPage extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.location_on,
-                        color: AppColors.white.withOpacity(0.8),
+                        color: AppColors.white.withValues(alpha: 0.8),
                         size: 20,
                       ),
                       const SizedBox(width: 8),

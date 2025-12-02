@@ -12,8 +12,8 @@ class ConcoursCard extends StatelessWidget {
     required this.concours,
     required this.onTap,
     this.ecoleNom,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class ConcoursCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: AppColors.white.withOpacity(0.2),
+                          color: AppColors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Icon(
@@ -64,7 +64,7 @@ class ConcoursCard extends StatelessWidget {
                   Text(
                     ecoleNom!,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withOpacity(0.9),
+                      color: AppColors.white.withValues(alpha: 0.9),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -76,13 +76,13 @@ class ConcoursCard extends StatelessWidget {
                     Icon(
                       Icons.calendar_today,
                       size: 14,
-                      color: AppColors.white.withOpacity(0.8),
+                      color: AppColors.white.withValues(alpha: 0.8),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       concours.annee.toString(),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.white.withOpacity(0.8),
+                        color: AppColors.white.withValues(alpha: 0.8),
                       ),
                     ),
                   ],

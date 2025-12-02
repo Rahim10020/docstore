@@ -12,8 +12,8 @@ class EcoleCard extends StatelessWidget {
     required this.ecole,
     required this.onTap,
     this.onLongPress,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class EcoleCard extends StatelessWidget {
                 Text(
                   ecole.description,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.white.withOpacity(0.9),
+                    color: AppColors.white.withValues(alpha: 0.9),
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -63,14 +63,14 @@ class EcoleCard extends StatelessWidget {
                     Icon(
                       Icons.location_on,
                       size: 16,
-                      color: AppColors.white.withOpacity(0.8),
+                      color: AppColors.white.withValues(alpha: 0.8),
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         ecole.lieu,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.white.withOpacity(0.8),
+                          color: AppColors.white.withValues(alpha: 0.8),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

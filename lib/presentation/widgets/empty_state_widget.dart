@@ -14,8 +14,8 @@ class EmptyStateWidget extends StatelessWidget {
     this.icon = Icons.search_off,
     this.onAction,
     this.actionLabel,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

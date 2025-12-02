@@ -13,8 +13,8 @@ class CustomSearchBar extends StatefulWidget {
     this.onClear,
     this.hintText = 'Rechercher...',
     this.textInputAction = TextInputAction.search,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<CustomSearchBar> createState() => _CustomSearchBarState();

@@ -5,8 +5,7 @@ class PdfViewerPage extends StatefulWidget {
   final String url;
   final String title;
 
-  const PdfViewerPage({required this.url, required this.title, Key? key})
-    : super(key: key);
+  const PdfViewerPage({required this.url, required this.title, super.key});
 
   @override
   State<PdfViewerPage> createState() => _PdfViewerPageState();

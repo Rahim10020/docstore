@@ -7,8 +7,7 @@ class ConcoursDetailPage extends StatelessWidget {
   final Concours concours;
   final String? ecoleNom;
 
-  const ConcoursDetailPage({required this.concours, this.ecoleNom, Key? key})
-    : super(key: key);
+  const ConcoursDetailPage({required this.concours, this.ecoleNom, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +43,7 @@ class ConcoursDetailPage extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.calendar_today,
-                        color: AppColors.white.withOpacity(0.8),
+                        color: AppColors.white.withValues(alpha: 0.8),
                         size: 20,
                       ),
                       const SizedBox(width: 8),

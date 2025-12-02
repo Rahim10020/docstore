@@ -15,8 +15,8 @@ class RessourceCard extends StatelessWidget {
     required this.onTap,
     this.isDownloading = false,
     this.downloadProgress = 0.0,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   Color _getTypeColor() {
     switch (type.toLowerCase()) {
@@ -66,7 +66,7 @@ class RessourceCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: _getTypeColor().withOpacity(0.1),
+                      color: _getTypeColor().withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(

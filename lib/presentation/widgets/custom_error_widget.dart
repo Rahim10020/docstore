@@ -10,8 +10,8 @@ class CustomErrorWidget extends StatelessWidget {
     required this.message,
     this.onRetry,
     this.retryLabel = 'Réessayer',
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

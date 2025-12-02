@@ -7,7 +7,7 @@ import '../widgets/index.dart';
 class CoursDetailPage extends StatelessWidget {
   final Cours cours;
 
-  const CoursDetailPage({required this.cours, Key? key}) : super(key: key);
+  const CoursDetailPage({required this.cours, super.key});
 
   @override
   Widget build(BuildContext context) {

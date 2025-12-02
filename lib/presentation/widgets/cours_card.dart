@@ -12,8 +12,8 @@ class CoursCard extends StatelessWidget {
     required this.cours,
     required this.onTap,
     this.onDownload,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
