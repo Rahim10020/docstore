@@ -3,6 +3,7 @@ class AppRoutes {
   static const String ecoles = '/ecoles';
   static const String ecoleDetail = '/ecole/:id';
   static const String filiere = '/filiere/:id';
+  static const String filiereDetail = '/filiere-detail/:id';
   static const String parcours = '/parcours/:id';
   static const String cours = '/cours/:id';
   static const String coursDetail = '/cours-detail/:id';

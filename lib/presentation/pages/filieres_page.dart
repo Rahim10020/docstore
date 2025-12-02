@@ -11,6 +11,7 @@ import '../widgets/custom_loader.dart';
 import '../widgets/custom_search_bar.dart';
 import '../widgets/empty_state_widget.dart';
 import '../widgets/filiere_card.dart';
+import 'filiere_detail_page.dart';
 
 class FiliersPage extends StatefulWidget {
   final String ecoleId;
@@ -114,9 +115,12 @@ class _FiliersPageState extends State<FiliersPage> {
                       return FiliereCard(
                         filiere: filiere,
                         onTap: () {
-                          // TODO: Navigate to filiere detail page
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Filière: ${filiere.nom}')),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  FiliereDetailPage(filiere: filiere),
+                            ),
                           );
                         },
                       );
