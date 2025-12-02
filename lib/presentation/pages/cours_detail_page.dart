@@ -208,7 +208,11 @@ class _FileResourceCard extends StatelessWidget {
           Navigator.pushNamed(
             context,
             '/pdf-viewer',
-            arguments: {'url': resource.url, 'title': resource.name},
+            arguments: {
+              'url': resource.url,
+              'downloadUrl': resource.downloadUrl,
+              'title': resource.name,
+            },
           );
         },
       ),

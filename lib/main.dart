@@ -81,7 +81,11 @@ class MyApp extends StatelessWidget {
               final args =
                   ModalRoute.of(context)!.settings.arguments
                       as Map<String, dynamic>;
-              return PdfViewerPage(url: args['url'], title: args['title']);
+              return PdfViewerPage(
+                url: args['url'],
+                title: args['title'],
+                downloadUrl: args['downloadUrl'],
+              );
             },
           },
         ),
