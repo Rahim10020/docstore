@@ -68,6 +68,15 @@ class MyApp extends StatelessWidget {
               final ecole = ModalRoute.of(context)!.settings.arguments as Ecole;
               return EcoleDetailPage(ecole: ecole);
             },
+            '/filieres': (context) {
+              final args =
+                  ModalRoute.of(context)!.settings.arguments
+                      as Map<String, dynamic>;
+              return FiliersPage(
+                ecoleId: args['ecoleId'],
+                ecoleName: args['ecoleName'],
+              );
+            },
             '/concours-detail': (context) {
               final concours =
                   ModalRoute.of(context)!.settings.arguments as Concours;

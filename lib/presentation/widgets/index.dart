@@ -6,3 +6,4 @@ export 'cours_card.dart';
 export 'concours_card.dart';
 export 'custom_search_bar.dart';
 export 'ressource_card.dart';
+export 'filiere_card.dart';

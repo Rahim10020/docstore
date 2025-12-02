@@ -7,3 +7,6 @@ export 'concours_state.dart';
 export 'search_bloc.dart';
 export 'search_event.dart';
 export 'search_state.dart';
+export 'filiere_bloc.dart';
+export 'filiere_event.dart';
+export 'filiere_state.dart';

@@ -70,7 +70,10 @@ class EcoleDetailPage extends StatelessWidget {
                       Navigator.pushNamed(
                         context,
                         '/filieres',
-                        arguments: ecole.id,
+                        arguments: {
+                          'ecoleId': ecole.id,
+                          'ecoleName': ecole.nom,
+                        },
                       );
                     },
                     icon: const Icon(Icons.arrow_forward),
