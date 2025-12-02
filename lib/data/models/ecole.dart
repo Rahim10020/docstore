@@ -23,14 +23,18 @@ class Ecole extends Equatable {
 
   factory Ecole.fromJson(Map<String, dynamic> json) {
     return Ecole(
-      id: json['\$id'] as String,
-      nom: json['nom'] as String,
-      description: json['description'] as String,
-      lieu: json['lieu'] as String,
+      id: json['\$id'] as String? ?? '',
+      nom: json['nom'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      lieu: json['lieu'] as String? ?? '',
       logo: json['logo'] as String?,
       couleur: json['couleur'] as String?,
-      createdAt: DateTime.parse(json['\$createdAt'] as String),
-      updatedAt: DateTime.parse(json['\$updatedAt'] as String),
+      createdAt: json['\$createdAt'] != null
+          ? DateTime.parse(json['\$createdAt'].toString())
+          : DateTime.now(),
+      updatedAt: json['\$updatedAt'] != null
+          ? DateTime.parse(json['\$updatedAt'].toString())
+          : DateTime.now(),
     );
   }
 

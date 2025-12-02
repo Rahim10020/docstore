@@ -17,11 +17,15 @@ class Parcours extends Equatable {
 
   factory Parcours.fromJson(Map<String, dynamic> json) {
     return Parcours(
-      id: json['\$id'] as String,
-      nom: json['nom'] as String,
+      id: json['\$id'] as String? ?? '',
+      nom: json['nom'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      createdAt: DateTime.parse(json['\$createdAt'] as String),
-      updatedAt: DateTime.parse(json['\$updatedAt'] as String),
+      createdAt: json['\$createdAt'] != null
+          ? DateTime.parse(json['\$createdAt'].toString())
+          : DateTime.now(),
+      updatedAt: json['\$updatedAt'] != null
+          ? DateTime.parse(json['\$updatedAt'].toString())
+          : DateTime.now(),
     );
   }
 

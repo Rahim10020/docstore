@@ -24,20 +24,34 @@ class Concours extends Equatable {
   });
 
   factory Concours.fromJson(Map<String, dynamic> json) {
+    int annee = 0;
+    final anneeValue = json['annee'];
+    if (anneeValue != null) {
+      if (anneeValue is int) {
+        annee = anneeValue;
+      } else if (anneeValue is String) {
+        annee = int.tryParse(anneeValue) ?? 0;
+      }
+    }
+
     return Concours(
-      id: json['\$id'] as String,
-      nom: json['nom'] as String,
+      id: json['\$id'] as String? ?? '',
+      nom: json['nom'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      annee: json['annee'] as int,
-      ecoleId: json['ecoleId'] as String,
+      annee: annee,
+      ecoleId: json['ecoleId'] as String? ?? '',
       communiques:
           (json['communiques'] as List?)?.map((r) => r.toString()).toList() ??
           [],
       ressources:
           (json['ressources'] as List?)?.map((r) => r.toString()).toList() ??
           [],
-      createdAt: DateTime.parse(json['\$createdAt'] as String),
-      updatedAt: DateTime.parse(json['\$updatedAt'] as String),
+      createdAt: json['\$createdAt'] != null
+          ? DateTime.parse(json['\$createdAt'].toString())
+          : DateTime.now(),
+      updatedAt: json['\$updatedAt'] != null
+          ? DateTime.parse(json['\$updatedAt'].toString())
+          : DateTime.now(),
     );
   }
 

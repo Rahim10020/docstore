@@ -21,15 +21,19 @@ class Cours extends Equatable {
 
   factory Cours.fromJson(Map<String, dynamic> json) {
     return Cours(
-      id: json['\$id'] as String,
-      titre: json['titre'] as String,
+      id: json['\$id'] as String? ?? '',
+      titre: json['titre'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      semesterId: json['semesterId'] as String,
+      semesterId: json['semesterId'] as String? ?? '',
       ressources:
           (json['ressources'] as List?)?.map((r) => r.toString()).toList() ??
           [],
-      createdAt: DateTime.parse(json['\$createdAt'] as String),
-      updatedAt: DateTime.parse(json['\$updatedAt'] as String),
+      createdAt: json['\$createdAt'] != null
+          ? DateTime.parse(json['\$createdAt'].toString())
+          : DateTime.now(),
+      updatedAt: json['\$updatedAt'] != null
+          ? DateTime.parse(json['\$updatedAt'].toString())
+          : DateTime.now(),
     );
   }
 

@@ -64,7 +64,6 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           home: const HomePage(),
           routes: {
-            '/': (context) => const HomePage(),
             '/ecole-detail': (context) {
               final ecole = ModalRoute.of(context)!.settings.arguments as Ecole;
               return EcoleDetailPage(ecole: ecole);
