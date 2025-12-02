@@ -1,6 +1,5 @@
 import 'package:appwrite/appwrite.dart';
 import 'package:logger/logger.dart';
-import '../../config/app_constants.dart';
 import '../models/index.dart';
 import '../services/appwrite_service.dart';
 
