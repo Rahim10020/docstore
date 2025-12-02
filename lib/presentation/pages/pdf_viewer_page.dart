@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:logger/logger.dart';
+import 'dart:async';
 import '../../data/services/index.dart';
 
 class PdfViewerPage extends StatefulWidget {
@@ -146,6 +147,22 @@ class _PdfViewerWrapper extends StatefulWidget {
 
 class _PdfViewerWrapperState extends State<_PdfViewerWrapper> {
   final Logger _logger = Logger();
+  bool _errorHandled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Add a delay to allow the widget to render before potential errors
+    _scheduleDocumentLoad();
+  }
+
+  void _scheduleDocumentLoad() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,9 +173,17 @@ class _PdfViewerWrapperState extends State<_PdfViewerWrapper> {
       interactionMode: PdfInteractionMode.selection,
       enableDocumentLinkAnnotation: true,
       canShowScrollHead: true,
+      onDocumentLoaded: (PdfDocumentLoadedDetails details) {
+        if (mounted && !_errorHandled) {
+          _logger.i('PDF document loaded successfully');
+        }
+      },
       onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+        _errorHandled = true;
         _logger.e('PDF load failed: ${details.description}');
-        widget.onError();
+        if (mounted) {
+          widget.onError();
+        }
       },
     );
   }
