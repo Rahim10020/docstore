@@ -268,16 +268,22 @@ class _FileResourceCard extends StatelessWidget {
               children: [
                 Icon(_getSourceIcon(), size: 14, color: AppColors.textLight),
                 const SizedBox(width: 4),
-                Text(
-                  _getSourceLabel(),
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: AppColors.textLight),
+                Expanded(
+                  child: Text(
+                    _getSourceLabel(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: AppColors.textLight),
+                  ),
                 ),
                 if (resource.size != null) ...[
                   const SizedBox(width: 8),
                   Text(
                     '• ${resource.formattedSize}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(
                       context,
                     ).textTheme.bodySmall?.copyWith(color: AppColors.textLight),
