@@ -98,8 +98,8 @@ class EcoleRepository {
       return allEcoles
           .where(
             (ecole) =>
-                ecole.nom.toLowerCase().contains(lowerQuery) ||
-                ecole.lieu.toLowerCase().contains(lowerQuery),
+                ecole.title.toLowerCase().contains(lowerQuery) ||
+                ecole.description.toLowerCase().contains(lowerQuery),
           )
           .toList();
     } catch (e) {

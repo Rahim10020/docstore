@@ -3,48 +3,38 @@ import 'package:equatable/equatable.dart';
 class Concours extends Equatable {
   final String id;
   final String nom;
+  final String annee; // Changed to String to match DB
   final String description;
-  final int annee;
-  final String ecoleId;
-  final List<String> communiques; // IDs Appwrite ou URLs Google Drive
   final List<String> ressources; // IDs Appwrite ou URLs Google Drive
+  final String idEcole; // Changed from ecoleId to match DB
+  final List<String> communiques; // IDs Appwrite ou URLs Google Drive
   final DateTime createdAt;
   final DateTime updatedAt;
 
   const Concours({
     required this.id,
     required this.nom,
-    required this.description,
     required this.annee,
-    required this.ecoleId,
-    this.communiques = const [],
+    required this.description,
     this.ressources = const [],
+    required this.idEcole,
+    this.communiques = const [],
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory Concours.fromJson(Map<String, dynamic> json) {
-    int annee = 0;
-    final anneeValue = json['annee'];
-    if (anneeValue != null) {
-      if (anneeValue is int) {
-        annee = anneeValue;
-      } else if (anneeValue is String) {
-        annee = int.tryParse(anneeValue) ?? 0;
-      }
-    }
-
     return Concours(
       id: json['\$id'] as String? ?? '',
       nom: json['nom'] as String? ?? '',
+      annee: json['annee'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      annee: annee,
-      ecoleId: json['ecoleId'] as String? ?? '',
-      communiques:
-          (json['communiques'] as List?)?.map((r) => r.toString()).toList() ??
-          [],
       ressources:
           (json['ressources'] as List?)?.map((r) => r.toString()).toList() ??
+          [],
+      idEcole: json['idEcole'] as String? ?? '',
+      communiques:
+          (json['communiques'] as List?)?.map((r) => r.toString()).toList() ??
           [],
       createdAt: json['\$createdAt'] != null
           ? DateTime.parse(json['\$createdAt'].toString())
@@ -58,11 +48,11 @@ class Concours extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       'nom': nom,
-      'description': description,
       'annee': annee,
-      'ecoleId': ecoleId,
-      'communiques': communiques,
+      'description': description,
       'ressources': ressources,
+      'idEcole': idEcole,
+      'communiques': communiques,
     };
   }
 
@@ -70,5 +60,5 @@ class Concours extends Equatable {
   bool get hasRessources => ressources.isNotEmpty;
 
   @override
-  List<Object?> get props => [id, nom, annee, ecoleId];
+  List<Object?> get props => [id, nom, annee, idEcole];
 }

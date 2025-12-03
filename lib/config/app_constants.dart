@@ -8,19 +8,19 @@ class AppConstants {
   static const String databaseId = '67efdc570033ac52dd43';
 
   // Collection IDs (vrais IDs depuis Appwrite)
-  static const String ecolesCollectionId = '67f727d60008a5965d9e';
-  static const String filieresCollectionId = '67f728960028e33b576a';
-  static const String anneeCollectionId =
-      '67f729730010cc44e7f2'; // NOTE: Verify this ID exists in Appwrite
-  static const String coursCollectionId =
-      '67f72a8f00239ccc2b36'; // NOTE: Verify this ID exists in Appwrite
-  static const String semestreCollectionId =
-      '67f72b5f0014d1a2c8f1'; // NOTE: Verify this ID exists in Appwrite
-  static const String parcoursCollectionId =
-      '67f728f60033e5f8a9c2'; // NOTE: Verify this ID exists in Appwrite
   static const String concoursCollectionId = '6893ba70001b392138f7';
-  static const String ressourcesCollectionId =
-      '67f72c5f0018a3e5b2f4'; // TODO: Replace with actual Appwrite collection ID
+  static const String uesCollectionId = '67f72a8f00239ccc2b36';
+  static const String coursCollectionId =
+      '67f72a8f00239ccc2b36'; // Même ID que UEs
+  static const String filieresCollectionId = '67f728960028e33b576a';
+  static const String ecolesCollectionId = '67f727d60008a5965d9e';
+  static const String ecoleCollectionId = '67f04e7200176527757a';
+
+  // NOTE: Ces collections n'apparaissent pas dans les screenshots, à vérifier
+  static const String anneeCollectionId = '67f729730010cc44e7f2';
+  static const String semestreCollectionId = '67f72b5f0014d1a2c8f1';
+  static const String parcoursCollectionId = '67f728f60033e5f8a9c2';
+  static const String ressourcesCollectionId = '67f72c5f0018a3e5b2f4';
 
   // Anciens noms pour compatibilité (à migrer progressivement)
   static const String ecolesCollection = 'ecoles';
@@ -29,6 +29,7 @@ class AppConstants {
   static const String anneesCollection = 'annees';
   static const String semestresCollection = 'semestres';
   static const String coursCollection = 'cours';
+  static const String uesCollection = 'ues';
   static const String ressourcesCollection = 'ressources';
   static const String concoursCollection = 'concours';
 

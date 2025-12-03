@@ -98,9 +98,8 @@ class _HomePageState extends State<HomePage>
         ? ecoles
         : ecoles.where((ecole) {
             final query = _ecoleSearchQuery.toLowerCase();
-            return ecole.nom.toLowerCase().contains(query) ||
-                ecole.description.toLowerCase().contains(query) ||
-                ecole.lieu.toLowerCase().contains(query);
+            return ecole.title.toLowerCase().contains(query) ||
+                ecole.description.toLowerCase().contains(query);
           }).toList();
 
     return Column(
@@ -370,7 +369,7 @@ class _HomePageState extends State<HomePage>
     return ecoles
         .map(
           (ecole) => ActionChip(
-            label: Text(ecole.nom),
+            label: Text(ecole.title),
             onPressed: () {
               Navigator.pushNamed(context, '/ecole-detail', arguments: ecole);
             },

@@ -11,7 +11,7 @@ class EcoleDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(ecole.nom)),
+      appBar: AppBar(title: Text(ecole.title)),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,7 +24,7 @@ class EcoleDetailPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    ecole.nom,
+                    ecole.title,
                     style: Theme.of(
                       context,
                     ).textTheme.headlineLarge?.copyWith(color: AppColors.white),
@@ -33,14 +33,14 @@ class EcoleDetailPage extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.location_on,
+                        Icons.insert_drive_file,
                         color: AppColors.white.withValues(alpha: 0.8),
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          ecole.lieu,
+                          '${ecole.fileIds.length} fichier(s) disponible(s)',
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(color: AppColors.white),
                         ),
@@ -72,7 +72,7 @@ class EcoleDetailPage extends StatelessWidget {
                         '/filieres',
                         arguments: {
                           'ecoleId': ecole.id,
-                          'ecoleName': ecole.nom,
+                          'ecoleName': ecole.title,
                         },
                       );
                     },

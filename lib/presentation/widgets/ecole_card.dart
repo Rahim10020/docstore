@@ -37,7 +37,7 @@ class EcoleCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        ecole.nom,
+                        ecole.title,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: AppColors.white,
                         ),
@@ -61,14 +61,14 @@ class EcoleCard extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.location_on,
+                      Icons.insert_drive_file,
                       size: 16,
                       color: AppColors.white.withValues(alpha: 0.8),
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        ecole.lieu,
+                        '${ecole.fileIds.length} fichier(s)',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.white.withValues(alpha: 0.8),
                         ),

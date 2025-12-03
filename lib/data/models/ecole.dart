@@ -2,21 +2,17 @@ import 'package:equatable/equatable.dart';
 
 class Ecole extends Equatable {
   final String id;
-  final String nom;
+  final String title; // Changed from nom to match DB
   final String description;
-  final String lieu;
-  final String? logo;
-  final String? couleur;
+  final List<String> fileIds; // Changed to match DB column name
   final DateTime createdAt;
   final DateTime updatedAt;
 
   const Ecole({
     required this.id,
-    required this.nom,
+    required this.title,
     required this.description,
-    required this.lieu,
-    this.logo,
-    this.couleur,
+    this.fileIds = const [],
     required this.createdAt,
     required this.updatedAt,
   });
@@ -24,11 +20,10 @@ class Ecole extends Equatable {
   factory Ecole.fromJson(Map<String, dynamic> json) {
     return Ecole(
       id: json['\$id'] as String? ?? '',
-      nom: json['nom'] as String? ?? '',
+      title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      lieu: json['lieu'] as String? ?? '',
-      logo: json['logo'] as String?,
-      couleur: json['couleur'] as String?,
+      fileIds:
+          (json['fileIds'] as List?)?.map((r) => r.toString()).toList() ?? [],
       createdAt: json['\$createdAt'] != null
           ? DateTime.parse(json['\$createdAt'].toString())
           : DateTime.now(),
@@ -39,15 +34,9 @@ class Ecole extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'nom': nom,
-      'description': description,
-      'lieu': lieu,
-      'logo': logo,
-      'couleur': couleur,
-    };
+    return {'title': title, 'description': description, 'fileIds': fileIds};
   }
 
   @override
-  List<Object?> get props => [id, nom, description, lieu];
+  List<Object?> get props => [id, title, description];
 }
