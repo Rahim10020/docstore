@@ -155,7 +155,7 @@ class _ConcoursDetailPageState extends State<ConcoursDetailPage> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _communiques!.length,
-                        separatorBuilder: (_, __) =>
+                        separatorBuilder: (context, index) =>
                             const SizedBox(height: AppConstants.paddingSmall),
                         itemBuilder: (context, index) {
                           final file = _communiques![index];
@@ -186,7 +186,7 @@ class _ConcoursDetailPageState extends State<ConcoursDetailPage> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: _ressources!.length,
-                        separatorBuilder: (_, __) =>
+                        separatorBuilder: (context, index) =>
                             const SizedBox(height: AppConstants.paddingSmall),
                         itemBuilder: (context, index) {
                           final file = _ressources![index];

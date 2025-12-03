@@ -115,7 +115,7 @@ class _CoursDetailPageState extends State<CoursDetailPage> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: _ressources!.length,
-                      separatorBuilder: (_, __) =>
+                      separatorBuilder: (context, index) =>
                           const SizedBox(height: AppConstants.paddingSmall),
                       itemBuilder: (context, index) {
                         final resource = _ressources![index];

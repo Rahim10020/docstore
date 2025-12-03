@@ -4,21 +4,21 @@ class ConnectivityService {
   final Connectivity _connectivity = Connectivity();
 
   Stream<bool> get onConnectivityChanged => _connectivity.onConnectivityChanged
-      .map((result) => result != ConnectivityResult.none);
+      .map((results) => !results.contains(ConnectivityResult.none));
 
   Future<bool> isConnected() async {
-    final result = await _connectivity.checkConnectivity();
-    return result != ConnectivityResult.none;
+    final results = await _connectivity.checkConnectivity();
+    return !results.contains(ConnectivityResult.none);
   }
 
   Future<String> getConnectionType() async {
-    final result = await _connectivity.checkConnectivity();
+    final results = await _connectivity.checkConnectivity();
 
-    if (result == ConnectivityResult.mobile) {
+    if (results.contains(ConnectivityResult.mobile)) {
       return 'Mobile';
-    } else if (result == ConnectivityResult.wifi) {
+    } else if (results.contains(ConnectivityResult.wifi)) {
       return 'WiFi';
-    } else if (result == ConnectivityResult.ethernet) {
+    } else if (results.contains(ConnectivityResult.ethernet)) {
       return 'Ethernet';
     } else {
       return 'None';

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:appwrite/appwrite.dart';
 import '../models/index.dart';
 import '../../config/app_constants.dart';
@@ -18,7 +20,7 @@ class UERepository {
 
       return response.rows.map((doc) => UE.fromJson(doc.data)).toList();
     } catch (e) {
-      print('Erreur lors de la récupération des UEs: $e');
+      log('Erreur lors de la récupération des UEs', error: e);
       return [];
     }
   }
@@ -34,7 +36,7 @@ class UERepository {
 
       return UE.fromJson(response.data);
     } catch (e) {
-      print('Erreur lors de la récupération de l\'UE $id: $e');
+      log('Erreur lors de la récupération de l\'UE $id', error: e);
       return null;
     }
   }
@@ -50,8 +52,9 @@ class UERepository {
 
       return response.rows.map((doc) => UE.fromJson(doc.data)).toList();
     } catch (e) {
-      print(
-        'Erreur lors de la récupération des UEs pour la filière $filiereId: $e',
+      log(
+        'Erreur lors de la récupération des UEs pour la filière $filiereId',
+        error: e,
       );
       return [];
     }
@@ -69,7 +72,7 @@ class UERepository {
 
       return UE.fromJson(response.data);
     } catch (e) {
-      print('Erreur lors de la création de l\'UE: $e');
+      log('Erreur lors de la création de l\'UE', error: e);
       return null;
     }
   }
@@ -86,7 +89,7 @@ class UERepository {
 
       return UE.fromJson(response.data);
     } catch (e) {
-      print('Erreur lors de la mise à jour de l\'UE $id: $e');
+      log('Erreur lors de la mise à jour de l\'UE $id', error: e);
       return null;
     }
   }
@@ -101,7 +104,7 @@ class UERepository {
       );
       return true;
     } catch (e) {
-      print('Erreur lors de la suppression de l\'UE $id: $e');
+      log('Erreur lors de la suppression de l\'UE $id', error: e);
       return false;
     }
   }
@@ -121,7 +124,7 @@ class UERepository {
             u.description.toLowerCase().contains(lowerQuery);
       }).toList();
     } catch (e) {
-      print('Erreur lors de la recherche d\'UEs: $e');
+      log('Erreur lors de la recherche d\'UEs', error: e);
       return [];
     }
   }
