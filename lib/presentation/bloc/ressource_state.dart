@@ -13,7 +13,7 @@ class RessourceInitial extends RessourceState {}
 class RessourceLoading extends RessourceState {}
 
 class RessourceLoaded extends RessourceState {
-  final List<Ressource> ressources;
+  final List<FileResource> ressources;
 
   const RessourceLoaded(this.ressources);
 

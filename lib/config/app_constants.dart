@@ -10,6 +10,8 @@ class AppConstants {
   // Collection IDs (vrais IDs depuis Appwrite)
   static const String ecolesCollectionId = '67f727d60008a5965d9e';
   static const String filieresCollectionId = '67f728960028e33b576a';
+  static const String anneeCollectionId =
+      '67f729730010cc44e7f2'; // NOTE: Verify this ID exists in Appwrite
   static const String coursCollectionId =
       '67f72a8f00239ccc2b36'; // NOTE: Verify this ID exists in Appwrite
   static const String semestreCollectionId =

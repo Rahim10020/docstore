@@ -20,6 +20,12 @@ class RessourceCard extends StatelessWidget {
 
   Color _getTypeColor() {
     switch (type.toLowerCase()) {
+      case 'pdf':
+        return AppColors.errorRed;
+      case 'image':
+        return AppColors.secondaryOrange;
+      case 'document':
+        return AppColors.primaryBlue;
       case 'cours':
         return AppColors.primaryBlue;
       case 'exercices':
@@ -36,6 +42,12 @@ class RessourceCard extends StatelessWidget {
 
   IconData _getTypeIcon() {
     switch (type.toLowerCase()) {
+      case 'pdf':
+        return Icons.picture_as_pdf;
+      case 'image':
+        return Icons.image;
+      case 'document':
+        return Icons.description;
       case 'cours':
         return Icons.book;
       case 'exercices':

@@ -4,7 +4,6 @@ import '../../config/app_constants.dart';
 import '../../config/app_theme.dart';
 import '../../data/models/index.dart';
 import '../../data/repositories/index.dart';
-import '../../data/services/appwrite_service.dart';
 import '../bloc/ressource_bloc.dart';
 import '../bloc/ressource_event.dart';
 import '../bloc/ressource_state.dart';
@@ -177,13 +176,13 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
     );
   }
 
-  Widget _buildRessourcesContent(List<Ressource> ressources) {
+  Widget _buildRessourcesContent(List<FileResource> ressources) {
     // Filtrer par recherche
     final filteredRessources = _searchQuery.isEmpty
         ? ressources
         : ressources.where((ressource) {
             final query = _searchQuery.toLowerCase();
-            return ressource.nom.toLowerCase().contains(query) ||
+            return ressource.name.toLowerCase().contains(query) ||
                 (ressource.description?.toLowerCase().contains(query) ?? false);
           }).toList();
 
@@ -194,13 +193,23 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
       );
     }
 
-    // Grouper par type
-    final groupedRessources = <String, List<Ressource>>{};
+    // Grouper par type de fichier
+    final groupedRessources = <String, List<FileResource>>{};
     for (final ressource in filteredRessources) {
-      if (!groupedRessources.containsKey(ressource.type)) {
-        groupedRessources[ressource.type] = [];
+      // Grouper par type de fichier (PDF, Image, Document, etc.)
+      String type = 'Fichier';
+      if (ressource.isPdf) {
+        type = 'PDF';
+      } else if (ressource.isImage) {
+        type = 'Image';
+      } else if (ressource.isDocument) {
+        type = 'Document';
       }
-      groupedRessources[ressource.type]!.add(ressource);
+
+      if (!groupedRessources.containsKey(type)) {
+        groupedRessources[type] = [];
+      }
+      groupedRessources[type]!.add(ressource);
     }
 
     return RefreshIndicator(
@@ -271,8 +280,8 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
                     bottom: AppConstants.paddingSmall,
                   ),
                   child: RessourceCard(
-                    nom: ressource.nom,
-                    type: ressource.type,
+                    nom: ressource.name,
+                    type: type,
                     onTap: () => _handleRessourceTap(ressource),
                   ),
                 ),
@@ -285,19 +294,20 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
     );
   }
 
-  void _handleRessourceTap(Ressource ressource) {
-    // TODO: Implémenter le téléchargement/ouverture de la ressource
-    final appwriteService = AppwriteService();
-    final fileUrl = appwriteService.getFileView(ressource.url);
+  void _handleRessourceTap(FileResource ressource) {
+    // Ouvrir le fichier (utilise directement les URLs de FileResource)
+    final fileUrl = ressource.url;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Ouverture de ${ressource.nom}...'),
+        content: Text('Ouverture de ${ressource.name}...'),
         action: SnackBarAction(
           label: 'Voir',
           onPressed: () {
             // TODO: Ouvrir le PDF viewer ou télécharger
             debugPrint('File URL: $fileUrl');
+            debugPrint('Download URL: ${ressource.downloadUrl}');
+            debugPrint('Source Type: ${ressource.sourceType}');
           },
         ),
       ),
@@ -306,6 +316,12 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
 
   Color _getTypeColor(String type) {
     switch (type.toLowerCase()) {
+      case 'pdf':
+        return AppColors.errorRed;
+      case 'image':
+        return AppColors.secondaryOrange;
+      case 'document':
+        return AppColors.primaryBlue;
       case 'cours':
         return AppColors.primaryBlue;
       case 'exercices':
@@ -322,6 +338,12 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
 
   IconData _getTypeIcon(String type) {
     switch (type.toLowerCase()) {
+      case 'pdf':
+        return Icons.picture_as_pdf;
+      case 'image':
+        return Icons.image;
+      case 'document':
+        return Icons.description;
       case 'cours':
         return Icons.book;
       case 'exercices':
