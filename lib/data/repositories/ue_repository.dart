@@ -4,19 +4,19 @@ import '../../config/app_constants.dart';
 
 /// Repository pour gérer les opérations CRUD sur les UEs (Unités d'Enseignement)
 class UERepository {
-  final Databases _databases;
+  final TablesDB _tables;
 
-  UERepository(this._databases);
+  UERepository(this._tables);
 
   /// Récupère toutes les UEs
   Future<List<UE>> getAllUEs() async {
     try {
-      final response = await _databases.listDocuments(
+      final response = await _tables.listRows(
         databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.uesCollectionId,
+        tableId: AppConstants.uesCollectionId,
       );
 
-      return response.documents.map((doc) => UE.fromJson(doc.data)).toList();
+      return response.rows.map((doc) => UE.fromJson(doc.data)).toList();
     } catch (e) {
       print('Erreur lors de la récupération des UEs: $e');
       return [];
@@ -26,10 +26,10 @@ class UERepository {
   /// Récupère une UE par son ID
   Future<UE?> getUEById(String id) async {
     try {
-      final response = await _databases.getDocument(
+      final response = await _tables.getRow(
         databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.uesCollectionId,
-        documentId: id,
+        tableId: AppConstants.uesCollectionId,
+        rowId: id,
       );
 
       return UE.fromJson(response.data);
@@ -42,13 +42,13 @@ class UERepository {
   /// Récupère toutes les UEs d'une filière
   Future<List<UE>> getUEsByFiliere(String filiereId) async {
     try {
-      final response = await _databases.listDocuments(
+      final response = await _tables.listRows(
         databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.uesCollectionId,
+        tableId: AppConstants.uesCollectionId,
         queries: [Query.equal('idFiliere', filiereId)],
       );
 
-      return response.documents.map((doc) => UE.fromJson(doc.data)).toList();
+      return response.rows.map((doc) => UE.fromJson(doc.data)).toList();
     } catch (e) {
       print(
         'Erreur lors de la récupération des UEs pour la filière $filiereId: $e',
@@ -60,10 +60,10 @@ class UERepository {
   /// Crée une nouvelle UE
   Future<UE?> createUE(UE ue) async {
     try {
-      final response = await _databases.createDocument(
+      final response = await _tables.createRow(
         databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.uesCollectionId,
-        documentId: ID.unique(),
+        tableId: AppConstants.uesCollectionId,
+        rowId: ID.unique(),
         data: ue.toJson(),
       );
 
@@ -77,10 +77,10 @@ class UERepository {
   /// Met à jour une UE
   Future<UE?> updateUE(String id, UE ue) async {
     try {
-      final response = await _databases.updateDocument(
+      final response = await _tables.updateRow(
         databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.uesCollectionId,
-        documentId: id,
+        tableId: AppConstants.uesCollectionId,
+        rowId: id,
         data: ue.toJson(),
       );
 
@@ -94,10 +94,10 @@ class UERepository {
   /// Supprime une UE
   Future<bool> deleteUE(String id) async {
     try {
-      await _databases.deleteDocument(
+      await _tables.deleteRow(
         databaseId: AppConstants.databaseId,
-        collectionId: AppConstants.uesCollectionId,
-        documentId: id,
+        tableId: AppConstants.uesCollectionId,
+        rowId: id,
       );
       return true;
     } catch (e) {
