@@ -30,14 +30,14 @@ class RessourceRepository {
       }
 
       // 1. Récupérer tous les années de la filière
-      final anneeResponse = await AppwriteService.databases.listDocuments(
+      final anneeResponse = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.anneeCollectionId,
+        tableId: AppConstants.anneeCollectionId,
         queries: [Query.equal('filiereId', filiereId)],
       );
 
-      final anneeList = anneeResponse.documents.isNotEmpty
-          ? anneeResponse.documents.map((doc) => doc.$id).toList()
+      final anneeList = anneeResponse.rows.isNotEmpty
+          ? anneeResponse.rows.map((doc) => doc.$id).toList()
           : [];
 
       _logger.i('Found ${anneeList.length} annees for filiere $filiereId');
@@ -45,13 +45,13 @@ class RessourceRepository {
       // 2. Récupérer tous les semestres pour chaque année
       final List<String> semestreIds = [];
       for (final anneeId in anneeList) {
-        final semestreResponse = await AppwriteService.databases.listDocuments(
+        final semestreResponse = await AppwriteService.tables.listRows(
           databaseId: AppwriteService.databaseId,
-          collectionId: AppConstants.semestreCollectionId,
+          tableId: AppConstants.semestreCollectionId,
           queries: [Query.equal('anneeId', anneeId)],
         );
 
-        semestreIds.addAll(semestreResponse.documents.map((doc) => doc.$id));
+        semestreIds.addAll(semestreResponse.rows.map((doc) => doc.$id));
       }
 
       _logger.i('Found ${semestreIds.length} semestres for filiere $filiereId');
@@ -59,13 +59,13 @@ class RessourceRepository {
       // 3. Récupérer tous les cours pour chaque semestre
       final List<FileResource> allResources = [];
       for (final semestreId in semestreIds) {
-        final coursResponse = await AppwriteService.databases.listDocuments(
+        final coursResponse = await AppwriteService.tables.listRows(
           databaseId: AppwriteService.databaseId,
-          collectionId: AppConstants.coursCollectionId,
+          tableId: AppConstants.coursCollectionId,
           queries: [Query.equal('semesterId', semestreId)],
         );
 
-        final coursList = coursResponse.documents
+        final coursList = coursResponse.rows
             .map((doc) => Cours.fromJson(doc.data))
             .toList();
 
@@ -108,10 +108,10 @@ class RessourceRepository {
       _logger.i('Fetching resources for cours: $coursId, type: $type');
 
       // Récupérer le cours
-      final coursResponse = await AppwriteService.databases.getDocument(
+      final coursResponse = await AppwriteService.tables.getRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
-        documentId: coursId,
+        tableId: AppConstants.coursCollectionId,
+        rowId: coursId,
       );
 
       final cours = Cours.fromJson(coursResponse.data);
@@ -141,10 +141,10 @@ class RessourceRepository {
       }
 
       // Récupérer le cours
-      final coursResponse = await AppwriteService.databases.getDocument(
+      final coursResponse = await AppwriteService.tables.getRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
-        documentId: coursId,
+        tableId: AppConstants.coursCollectionId,
+        rowId: coursId,
       );
 
       final cours = Cours.fromJson(coursResponse.data);
@@ -232,39 +232,39 @@ class RessourceRepository {
       _logger.i('Fetching cours with resources for filiere: $filiereId');
 
       // Récupérer tous les années de la filière
-      final anneeResponse = await AppwriteService.databases.listDocuments(
+      final anneeResponse = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.anneeCollectionId,
+        tableId: AppConstants.anneeCollectionId,
         queries: [Query.equal('filiereId', filiereId)],
       );
 
-      final anneeList = anneeResponse.documents.isNotEmpty
-          ? anneeResponse.documents.map((doc) => doc.$id).toList()
+      final anneeList = anneeResponse.rows.isNotEmpty
+          ? anneeResponse.rows.map((doc) => doc.$id).toList()
           : [];
 
       // Récupérer tous les semestres pour chaque année
       final List<String> semestreIds = [];
       for (final anneeId in anneeList) {
-        final semestreResponse = await AppwriteService.databases.listDocuments(
+        final semestreResponse = await AppwriteService.tables.listRows(
           databaseId: AppwriteService.databaseId,
-          collectionId: AppConstants.semestreCollectionId,
+          tableId: AppConstants.semestreCollectionId,
           queries: [Query.equal('anneeId', anneeId)],
         );
 
-        semestreIds.addAll(semestreResponse.documents.map((doc) => doc.$id));
+        semestreIds.addAll(semestreResponse.rows.map((doc) => doc.$id));
       }
 
       // Récupérer tous les cours pour chaque semestre
       final Map<Cours, List<FileResource>> coursResources = {};
 
       for (final semestreId in semestreIds) {
-        final coursResponse = await AppwriteService.databases.listDocuments(
+        final coursResponse = await AppwriteService.tables.listRows(
           databaseId: AppwriteService.databaseId,
-          collectionId: AppConstants.coursCollectionId,
+          tableId: AppConstants.coursCollectionId,
           queries: [Query.equal('semesterId', semestreId)],
         );
 
-        final coursList = coursResponse.documents
+        final coursList = coursResponse.rows
             .map((doc) => Cours.fromJson(doc.data))
             .toList();
 

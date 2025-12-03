@@ -14,14 +14,12 @@ class ConcoursRepository {
 
   Future<List<Concours>> getConcours({int limit = 25, int offset = 0}) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.concoursCollectionId,
+        tableId: AppwriteService.concoursCollectionId,
       );
 
-      return response.documents
-          .map((doc) => Concours.fromJson(doc.data))
-          .toList();
+      return response.rows.map((doc) => Concours.fromJson(doc.data)).toList();
     } catch (e) {
       _logger.e('Error fetching concours: $e');
       rethrow;
@@ -30,10 +28,10 @@ class ConcoursRepository {
 
   Future<Concours> getConcoursById(String id) async {
     try {
-      final response = await AppwriteService.databases.getDocument(
+      final response = await AppwriteService.tables.getRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.concoursCollectionId,
-        documentId: id,
+        tableId: AppwriteService.concoursCollectionId,
+        rowId: id,
       );
 
       return Concours.fromJson(response.data);
@@ -45,15 +43,13 @@ class ConcoursRepository {
 
   Future<List<Concours>> getConcoursByEcoleId(String ecoleId) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.concoursCollectionId,
+        tableId: AppwriteService.concoursCollectionId,
         queries: [Query.equal('idEcole', ecoleId)],
       );
 
-      return response.documents
-          .map((doc) => Concours.fromJson(doc.data))
-          .toList();
+      return response.rows.map((doc) => Concours.fromJson(doc.data)).toList();
     } catch (e) {
       _logger.e('Error fetching concours for ecole: $e');
       rethrow;
@@ -62,15 +58,13 @@ class ConcoursRepository {
 
   Future<List<Concours>> getConcourssByYear(int year) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.concoursCollectionId,
+        tableId: AppwriteService.concoursCollectionId,
         queries: [Query.equal('annee', year)],
       );
 
-      return response.documents
-          .map((doc) => Concours.fromJson(doc.data))
-          .toList();
+      return response.rows.map((doc) => Concours.fromJson(doc.data)).toList();
     } catch (e) {
       _logger.e('Error fetching concours by year: $e');
       rethrow;
@@ -79,10 +73,10 @@ class ConcoursRepository {
 
   Future<Concours> createConcours(Concours concours) async {
     try {
-      final response = await AppwriteService.databases.createDocument(
+      final response = await AppwriteService.tables.createRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.concoursCollectionId,
-        documentId: 'unique()',
+        tableId: AppwriteService.concoursCollectionId,
+        rowId: 'unique()',
         data: concours.toJson(),
       );
 
@@ -95,10 +89,10 @@ class ConcoursRepository {
 
   Future<Concours> updateConcours(String id, Concours concours) async {
     try {
-      final response = await AppwriteService.databases.updateDocument(
+      final response = await AppwriteService.tables.updateRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.concoursCollectionId,
-        documentId: id,
+        tableId: AppwriteService.concoursCollectionId,
+        rowId: id,
         data: concours.toJson(),
       );
 
@@ -111,10 +105,10 @@ class ConcoursRepository {
 
   Future<void> deleteConcours(String id) async {
     try {
-      await AppwriteService.databases.deleteDocument(
+      await AppwriteService.tables.deleteRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.concoursCollectionId,
-        documentId: id,
+        tableId: AppwriteService.concoursCollectionId,
+        rowId: id,
       );
     } catch (e) {
       _logger.e('Error deleting concours: $e');
@@ -124,12 +118,12 @@ class ConcoursRepository {
 
   Future<List<Concours>> searchConcours(String query) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.concoursCollectionId,
+        tableId: AppwriteService.concoursCollectionId,
       );
 
-      final allConcours = response.documents
+      final allConcours = response.rows
           .map((doc) => Concours.fromJson(doc.data))
           .toList();
 

@@ -14,6 +14,7 @@ class AppwriteService {
     ..setProject('67efdbc8003bcb27bcaf');
 
   static final Databases databases = Databases(client);
+  static final TablesDB tables = TablesDB(client);
   static final Storage storage = Storage(client);
 
   final Logger _logger = Logger();
@@ -30,6 +31,7 @@ class AppwriteService {
 
   // Getters pour accès aux services
   Databases get db => databases;
+  TablesDB get tbl => tables;
   Storage get stor => storage;
   Logger get logger => _logger;
 
@@ -49,9 +51,9 @@ class AppwriteService {
     try {
       _logger.i('Testing Appwrite connection...');
       // Test de connexion en récupérant les écoles
-      await databases.listDocuments(
+      await tables.listRows(
         databaseId: databaseId,
-        collectionId: ecolesCollectionId,
+        tableId: ecolesCollectionId,
         queries: [Query.limit(1)],
       );
       _logger.i('Appwrite connection successful');

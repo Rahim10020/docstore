@@ -12,14 +12,12 @@ class ParcoursRepository {
 
   Future<List<Parcours>> getParcours({int limit = 25, int offset = 0}) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollectionId,
+        tableId: AppConstants.parcoursCollectionId,
       );
 
-      return response.documents
-          .map((doc) => Parcours.fromJson(doc.data))
-          .toList();
+      return response.rows.map((doc) => Parcours.fromJson(doc.data)).toList();
     } catch (e) {
       _logger.e('Error fetching parcours: $e');
       rethrow;
@@ -28,10 +26,10 @@ class ParcoursRepository {
 
   Future<Parcours> getParcoursById(String id) async {
     try {
-      final response = await AppwriteService.databases.getDocument(
+      final response = await AppwriteService.tables.getRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollectionId,
-        documentId: id,
+        tableId: AppConstants.parcoursCollectionId,
+        rowId: id,
       );
 
       return Parcours.fromJson(response.data);
@@ -43,10 +41,10 @@ class ParcoursRepository {
 
   Future<Parcours> createParcours(Parcours parcours) async {
     try {
-      final response = await AppwriteService.databases.createDocument(
+      final response = await AppwriteService.tables.createRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollectionId,
-        documentId: 'unique()',
+        tableId: AppConstants.parcoursCollectionId,
+        rowId: 'unique()',
         data: parcours.toJson(),
       );
 
@@ -59,10 +57,10 @@ class ParcoursRepository {
 
   Future<Parcours> updateParcours(String id, Parcours parcours) async {
     try {
-      final response = await AppwriteService.databases.updateDocument(
+      final response = await AppwriteService.tables.updateRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollectionId,
-        documentId: id,
+        tableId: AppConstants.parcoursCollectionId,
+        rowId: id,
         data: parcours.toJson(),
       );
 
@@ -75,10 +73,10 @@ class ParcoursRepository {
 
   Future<void> deleteParcours(String id) async {
     try {
-      await AppwriteService.databases.deleteDocument(
+      await AppwriteService.tables.deleteRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollectionId,
-        documentId: id,
+        tableId: AppConstants.parcoursCollectionId,
+        rowId: id,
       );
     } catch (e) {
       _logger.e('Error deleting parcours: $e');
@@ -88,12 +86,12 @@ class ParcoursRepository {
 
   Future<List<Parcours>> searchParcours(String query) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.parcoursCollectionId,
+        tableId: AppConstants.parcoursCollectionId,
       );
 
-      final allParcours = response.documents
+      final allParcours = response.rows
           .map((doc) => Parcours.fromJson(doc.data))
           .toList();
 

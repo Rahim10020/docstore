@@ -14,12 +14,12 @@ class CoursRepository {
 
   Future<List<Cours>> getCours({int limit = 25, int offset = 0}) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
+        tableId: AppConstants.coursCollectionId,
       );
 
-      return response.documents.map((doc) => Cours.fromJson(doc.data)).toList();
+      return response.rows.map((doc) => Cours.fromJson(doc.data)).toList();
     } catch (e) {
       _logger.e('Error fetching cours: $e');
       rethrow;
@@ -28,10 +28,10 @@ class CoursRepository {
 
   Future<Cours> getCoursById(String id) async {
     try {
-      final response = await AppwriteService.databases.getDocument(
+      final response = await AppwriteService.tables.getRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
-        documentId: id,
+        tableId: AppConstants.coursCollectionId,
+        rowId: id,
       );
 
       return Cours.fromJson(response.data);
@@ -43,12 +43,12 @@ class CoursRepository {
 
   Future<List<Cours>> getCoursBySemestre(String semestreId) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
+        tableId: AppConstants.coursCollectionId,
       );
 
-      final allCours = response.documents
+      final allCours = response.rows
           .map((doc) => Cours.fromJson(doc.data))
           .toList();
 
@@ -61,10 +61,10 @@ class CoursRepository {
 
   Future<Cours> createCours(Cours cours) async {
     try {
-      final response = await AppwriteService.databases.createDocument(
+      final response = await AppwriteService.tables.createRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
-        documentId: 'unique()',
+        tableId: AppConstants.coursCollectionId,
+        rowId: 'unique()',
         data: cours.toJson(),
       );
 
@@ -77,10 +77,10 @@ class CoursRepository {
 
   Future<Cours> updateCours(String id, Cours cours) async {
     try {
-      final response = await AppwriteService.databases.updateDocument(
+      final response = await AppwriteService.tables.updateRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
-        documentId: id,
+        tableId: AppConstants.coursCollectionId,
+        rowId: id,
         data: cours.toJson(),
       );
 
@@ -93,10 +93,10 @@ class CoursRepository {
 
   Future<void> deleteCours(String id) async {
     try {
-      await AppwriteService.databases.deleteDocument(
+      await AppwriteService.tables.deleteRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
-        documentId: id,
+        tableId: AppConstants.coursCollectionId,
+        rowId: id,
       );
     } catch (e) {
       _logger.e('Error deleting cours: $e');
@@ -106,12 +106,12 @@ class CoursRepository {
 
   Future<List<Cours>> searchCours(String query) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppConstants.coursCollectionId,
+        tableId: AppConstants.coursCollectionId,
       );
 
-      final allCours = response.documents
+      final allCours = response.rows
           .map((doc) => Cours.fromJson(doc.data))
           .toList();
 

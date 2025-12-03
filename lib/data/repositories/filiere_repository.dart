@@ -12,14 +12,12 @@ class FiliereRepository {
 
   Future<List<Filiere>> getFilieres({int limit = 25, int offset = 0}) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.filieresCollectionId,
+        tableId: AppwriteService.filieresCollectionId,
       );
 
-      return response.documents
-          .map((doc) => Filiere.fromJson(doc.data))
-          .toList();
+      return response.rows.map((doc) => Filiere.fromJson(doc.data)).toList();
     } catch (e) {
       _logger.e('Error fetching filieres: $e');
       rethrow;
@@ -28,10 +26,10 @@ class FiliereRepository {
 
   Future<Filiere> getFiliereById(String id) async {
     try {
-      final response = await AppwriteService.databases.getDocument(
+      final response = await AppwriteService.tables.getRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.filieresCollectionId,
-        documentId: id,
+        tableId: AppwriteService.filieresCollectionId,
+        rowId: id,
       );
 
       return Filiere.fromJson(response.data);
@@ -43,15 +41,13 @@ class FiliereRepository {
 
   Future<List<Filiere>> getFilieresByEcole(String ecoleId) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.filieresCollectionId,
+        tableId: AppwriteService.filieresCollectionId,
         queries: [Query.equal('idEcole', ecoleId)],
       );
 
-      return response.documents
-          .map((doc) => Filiere.fromJson(doc.data))
-          .toList();
+      return response.rows.map((doc) => Filiere.fromJson(doc.data)).toList();
     } catch (e) {
       _logger.e('Error fetching filieres for ecole: $e');
       rethrow;
@@ -60,10 +56,10 @@ class FiliereRepository {
 
   Future<Filiere> createFiliere(Filiere filiere) async {
     try {
-      final response = await AppwriteService.databases.createDocument(
+      final response = await AppwriteService.tables.createRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.filieresCollectionId,
-        documentId: 'unique()',
+        tableId: AppwriteService.filieresCollectionId,
+        rowId: 'unique()',
         data: filiere.toJson(),
       );
 
@@ -76,10 +72,10 @@ class FiliereRepository {
 
   Future<Filiere> updateFiliere(String id, Filiere filiere) async {
     try {
-      final response = await AppwriteService.databases.updateDocument(
+      final response = await AppwriteService.tables.updateRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.filieresCollectionId,
-        documentId: id,
+        tableId: AppwriteService.filieresCollectionId,
+        rowId: id,
         data: filiere.toJson(),
       );
 
@@ -92,10 +88,10 @@ class FiliereRepository {
 
   Future<void> deleteFiliere(String id) async {
     try {
-      await AppwriteService.databases.deleteDocument(
+      await AppwriteService.tables.deleteRow(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.filieresCollectionId,
-        documentId: id,
+        tableId: AppwriteService.filieresCollectionId,
+        rowId: id,
       );
     } catch (e) {
       _logger.e('Error deleting filiere: $e');
@@ -105,12 +101,12 @@ class FiliereRepository {
 
   Future<List<Filiere>> searchFilieres(String query) async {
     try {
-      final response = await AppwriteService.databases.listDocuments(
+      final response = await AppwriteService.tables.listRows(
         databaseId: AppwriteService.databaseId,
-        collectionId: AppwriteService.filieresCollectionId,
+        tableId: AppwriteService.filieresCollectionId,
       );
 
-      final allFilieres = response.documents
+      final allFilieres = response.rows
           .map((doc) => Filiere.fromJson(doc.data))
           .toList();
 
