@@ -152,39 +152,81 @@ class _PdfViewerWrapperState extends State<_PdfViewerWrapper> {
   @override
   void initState() {
     super.initState();
-    // Add a delay to allow the widget to render before potential errors
-    _scheduleDocumentLoad();
+    _initializePdfViewer();
   }
 
-  void _scheduleDocumentLoad() {
-    Future.delayed(const Duration(milliseconds: 100), () {
+  Future<void> _initializePdfViewer() async {
+    try {
+      // Give the widget tree time to settle before loading PDF
+      await Future.delayed(const Duration(milliseconds: 100));
       if (mounted) {
         setState(() {});
       }
-    });
+    } catch (e, stackTrace) {
+      _logger.e('Error initializing PDF viewer: $e\n$stackTrace');
+      if (mounted) {
+        widget.onError();
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return SfPdfViewer.network(
-      widget.url,
-      controller: widget.controller,
-      pageLayoutMode: PdfPageLayoutMode.continuous,
-      interactionMode: PdfInteractionMode.selection,
-      enableDocumentLinkAnnotation: true,
-      canShowScrollHead: true,
-      onDocumentLoaded: (PdfDocumentLoadedDetails details) {
-        if (mounted && !_errorHandled) {
-          _logger.i('PDF document loaded successfully');
-        }
-      },
-      onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
-        _errorHandled = true;
-        _logger.e('PDF load failed: ${details.description}');
-        if (mounted) {
-          widget.onError();
-        }
-      },
-    );
+    return SafeArea(child: _buildPdfViewer());
+  }
+
+  Widget _buildPdfViewer() {
+    try {
+      return SfPdfViewer.network(
+        widget.url,
+        controller: widget.controller,
+        pageLayoutMode: PdfPageLayoutMode.continuous,
+        interactionMode: PdfInteractionMode.selection,
+        enableDocumentLinkAnnotation: true,
+        canShowScrollHead: true,
+        onDocumentLoaded: (PdfDocumentLoadedDetails details) {
+          if (mounted && !_errorHandled) {
+            _logger.i('PDF document loaded successfully');
+          }
+        },
+        onDocumentLoadFailed: (PdfDocumentLoadFailedDetails details) {
+          _errorHandled = true;
+          _logger.e('PDF load failed: ${details.description}');
+          if (mounted) {
+            widget.onError();
+          }
+        },
+      );
+    } catch (e, stackTrace) {
+      _logger.e('Exception building PDF viewer: $e\n$stackTrace');
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            const Text('Error loading PDF viewer'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {});
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    try {
+      // Clean up the PDF viewer properly
+      widget.controller.dispose();
+    } catch (e) {
+      _logger.e('Error disposing PDF viewer: $e');
+    }
+    super.dispose();
   }
 }

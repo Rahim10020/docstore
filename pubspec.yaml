@@ -46,7 +46,7 @@ dependencies:
 
   # PDF Viewer
   syncfusion_flutter_pdfviewer: ^28.1.37
-  device_info_plus: ^10.1.0
+  device_info_plus: ^10.1.2
 
   # File & Storage
   path_provider: ^2.1.1

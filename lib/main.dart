@@ -8,6 +8,8 @@ import 'presentation/bloc/index.dart';
 import 'presentation/pages/index.dart';
 
 void main() {
+  // Workaround for device_info_plus compatibility issue
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
