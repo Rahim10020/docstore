@@ -8,13 +8,13 @@ abstract class RessourceEvent extends Equatable {
 }
 
 class FetchRessourcesByType extends RessourceEvent {
-  final String filiereId;
+  final String coursId;
   final String type;
 
-  const FetchRessourcesByType(this.filiereId, this.type);
+  const FetchRessourcesByType(this.coursId, this.type);
 
   @override
-  List<Object?> get props => [filiereId, type];
+  List<Object?> get props => [coursId, type];
 }
 
 class SearchRessources extends RessourceEvent {

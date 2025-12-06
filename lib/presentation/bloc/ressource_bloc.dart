@@ -18,7 +18,7 @@ class RessourceBloc extends Bloc<RessourceEvent, RessourceState> {
     emit(RessourceLoading());
     try {
       final ressources = await ressourceRepository.getRessourcesByType(
-        event.filiereId,
+        event.coursId,
         event.type,
       );
       if (ressources.isEmpty) {
