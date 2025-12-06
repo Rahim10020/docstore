@@ -2,11 +2,13 @@ import 'dart:developer';
 
 import 'package:appwrite/appwrite.dart';
 import '../models/index.dart';
+import '../services/file_service.dart';
 import '../../config/app_constants.dart';
 
 /// Repository pour gérer les opérations CRUD sur les UEs (Unités d'Enseignement)
 class UERepository {
   final TablesDB _tables;
+  final FileService _fileService = FileService();
 
   UERepository(this._tables);
 
@@ -125,6 +127,57 @@ class UERepository {
       }).toList();
     } catch (e) {
       log('Erreur lors de la recherche d\'UEs', error: e);
+      return [];
+    }
+  }
+
+  /// Récupère les UEs d'une filière avec leurs ressources résolues
+  Future<List<UE>> getUEsByFiliereWithResources(String filiereId) async {
+    try {
+      final ues = await getUEsByFiliere(filiereId);
+      final uesWithFiles = <UE>[];
+
+      for (final ue in ues) {
+        // Résoudre les ressources de chaque UE
+        final files = await _fileService.processResources(ue.ressources);
+        uesWithFiles.add(ue.copyWith(files: files));
+      }
+
+      return uesWithFiles;
+    } catch (e) {
+      log(
+        'Erreur lors de la récupération des UEs avec ressources pour la filière $filiereId',
+        error: e,
+      );
+      return [];
+    }
+  }
+
+  /// Recherche des UEs avec leurs ressources résolues
+  Future<List<UE>> searchUEsWithResources(
+    String filiereId,
+    String query,
+  ) async {
+    try {
+      final ues = await getUEsByFiliere(filiereId);
+      final lowerQuery = query.toLowerCase();
+
+      // Filtrer par recherche
+      final filteredUEs = ues.where((u) {
+        return u.nom.toLowerCase().contains(lowerQuery) ||
+            u.description.toLowerCase().contains(lowerQuery);
+      }).toList();
+
+      // Résoudre les ressources pour chaque UE filtrée
+      final uesWithFiles = <UE>[];
+      for (final ue in filteredUEs) {
+        final files = await _fileService.processResources(ue.ressources);
+        uesWithFiles.add(ue.copyWith(files: files));
+      }
+
+      return uesWithFiles;
+    } catch (e) {
+      log('Erreur lors de la recherche d\'UEs avec ressources', error: e);
       return [];
     }
   }

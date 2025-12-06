@@ -10,3 +10,6 @@ export 'search_state.dart';
 export 'filiere_bloc.dart';
 export 'filiere_event.dart';
 export 'filiere_state.dart';
+export 'ue_bloc.dart';
+export 'ue_event.dart';
+export 'ue_state.dart';

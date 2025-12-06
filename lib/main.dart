@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
     final coursRepository = CoursRepository(appwriteService);
     final concoursRepository = ConcoursRepository(appwriteService);
     final ressourceRepository = RessourceRepository(appwriteService);
+    final ueRepository = UERepository(AppwriteService.tables);
 
     return MultiRepositoryProvider(
       providers: [
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<RessourceRepository>(
           create: (_) => ressourceRepository,
         ),
+        RepositoryProvider<UERepository>(create: (_) => ueRepository),
       ],
       child: MultiBlocProvider(
         providers: [
