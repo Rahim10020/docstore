@@ -16,23 +16,6 @@ class AppConstants {
   static const String ecolesCollectionId = '67f727d60008a5965d9e';
   static const String ecoleCollectionId = '67f04e7200176527757a';
 
-  // NOTE: Ces collections n'apparaissent pas dans les screenshots, à vérifier
-  static const String anneeCollectionId = '67f729730010cc44e7f2';
-  static const String semestreCollectionId = '67f72b5f0014d1a2c8f1';
-  static const String parcoursCollectionId = '67f728f60033e5f8a9c2';
-  static const String ressourcesCollectionId = '67f72c5f0018a3e5b2f4';
-
-  // Anciens noms pour compatibilité (à migrer progressivement)
-  static const String ecolesCollection = 'ecoles';
-  static const String filieresCollection = 'filieres';
-  static const String parcoursCollection = 'parcours';
-  static const String anneesCollection = 'annees';
-  static const String semestresCollection = 'semestres';
-  static const String coursCollection = 'cours';
-  static const String uesCollection = 'ues';
-  static const String ressourcesCollection = 'ressources';
-  static const String concoursCollection = 'concours';
-
   // Storage Bucket ID
   static const String bucketId = '67efdc26000acfe7e2ea';
 

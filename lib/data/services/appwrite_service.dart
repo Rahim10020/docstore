@@ -10,8 +10,8 @@ class AppwriteService {
 
   // Client Appwrite
   static final Client client = Client()
-    ..setEndpoint('https://cloud.appwrite.io/v1')
-    ..setProject('67efdbc8003bcb27bcaf');
+    ..setEndpoint(AppConstants.appwriteEndpoint)
+    ..setProject(AppConstants.appwriteProjectId);
 
   static final Databases databases = Databases(client);
   static final TablesDB tables = TablesDB(client);
@@ -19,15 +19,13 @@ class AppwriteService {
 
   final Logger _logger = Logger();
 
-  // IDs de configuration (use AppConstants instead)
-  static const String databaseId = '67efdc570033ac52dd43';
+  // IDs de configuration (utilise AppConstants)
+  static String get databaseId => AppConstants.databaseId;
   static String get ecolesCollectionId => AppConstants.ecolesCollectionId;
   static String get filieresCollectionId => AppConstants.filieresCollectionId;
   static String get coursCollectionId => AppConstants.coursCollectionId;
   static String get concoursCollectionId => AppConstants.concoursCollectionId;
-  static String get ressourcesCollectionId =>
-      AppConstants.ressourcesCollectionId;
-  static const String bucketId = '67efdc26000acfe7e2ea';
+  static String get bucketId => AppConstants.bucketId;
 
   // Getters pour accès aux services
   Databases get db => databases;
@@ -37,13 +35,15 @@ class AppwriteService {
 
   /// Récupère l'URL de visualisation d'un fichier
   String getFileView(String fileId) {
-    return storage.getFileView(bucketId: bucketId, fileId: fileId).toString();
+    return storage
+        .getFileView(bucketId: AppConstants.bucketId, fileId: fileId)
+        .toString();
   }
 
   /// Récupère l'URL de téléchargement d'un fichier
   String getFileDownload(String fileId) {
     return storage
-        .getFileDownload(bucketId: bucketId, fileId: fileId)
+        .getFileDownload(bucketId: AppConstants.bucketId, fileId: fileId)
         .toString();
   }
 

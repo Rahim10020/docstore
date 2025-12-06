@@ -5,7 +5,6 @@ import '../../config/app_theme.dart';
 import '../../data/models/index.dart';
 import '../../data/repositories/index.dart';
 import '../bloc/ressource_bloc.dart';
-import '../bloc/ressource_event.dart';
 import '../bloc/ressource_state.dart';
 import '../widgets/custom_error_widget.dart';
 import '../widgets/custom_loader.dart';
@@ -40,9 +39,7 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
     final ressourceRepository = context.read<RessourceRepository>();
 
     return BlocProvider(
-      create: (context) =>
-          RessourceBloc(ressourceRepository)
-            ..add(FetchRessourcesByFiliere(widget.filiere.id)),
+      create: (context) => RessourceBloc(ressourceRepository),
       child: Scaffold(
         appBar: AppBar(title: Text(widget.filiere.nom), elevation: 0),
         body: Column(
@@ -119,14 +116,12 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
                 setState(() {
                   if (type == 'Tous') {
                     _selectedType = null;
-                    context.read<RessourceBloc>().add(
-                      FetchRessourcesByFiliere(widget.filiere.id),
-                    );
+                    // Note: FetchRessourcesByFiliere n'est plus disponible
+                    // car les collections annee/semestre n'existent pas
                   } else {
                     _selectedType = type;
-                    context.read<RessourceBloc>().add(
-                      FetchRessourcesByType(widget.filiere.id, type),
-                    );
+                    // Note: FetchRessourcesByType nécessite un coursId, pas un filiereId
+                    // Cette fonctionnalité nécessite une refactorisation
                   }
                 });
               },
@@ -159,15 +154,8 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
           return CustomErrorWidget(
             message: state.message,
             onRetry: () {
-              if (_selectedType == null) {
-                context.read<RessourceBloc>().add(
-                  FetchRessourcesByFiliere(widget.filiere.id),
-                );
-              } else {
-                context.read<RessourceBloc>().add(
-                  FetchRessourcesByType(widget.filiere.id, _selectedType!),
-                );
-              }
+              // Note: Les méthodes de récupération par filière ne sont plus disponibles
+              // car les collections annee/semestre n'existent pas
             },
           );
         }
@@ -214,15 +202,8 @@ class _FiliereDetailPageState extends State<FiliereDetailPage> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        if (_selectedType == null) {
-          context.read<RessourceBloc>().add(
-            FetchRessourcesByFiliere(widget.filiere.id),
-          );
-        } else {
-          context.read<RessourceBloc>().add(
-            FetchRessourcesByType(widget.filiere.id, _selectedType!),
-          );
-        }
+        // Note: Les méthodes de récupération par filière ne sont plus disponibles
+        // car les collections annee/semestre n'existent pas
       },
       child: ListView.builder(
         padding: const EdgeInsets.all(AppConstants.paddingDefault),

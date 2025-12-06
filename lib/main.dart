@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
     // Initialize repositories
     final ecoleRepository = EcoleRepository(appwriteService);
     final filiereRepository = FiliereRepository(appwriteService);
-    final parcoursRepository = ParcoursRepository(appwriteService);
     final coursRepository = CoursRepository(appwriteService);
     final concoursRepository = ConcoursRepository(appwriteService);
     final ressourceRepository = RessourceRepository(appwriteService);
@@ -40,9 +39,6 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider<EcoleRepository>(create: (_) => ecoleRepository),
         RepositoryProvider<FiliereRepository>(create: (_) => filiereRepository),
-        RepositoryProvider<ParcoursRepository>(
-          create: (_) => parcoursRepository,
-        ),
         RepositoryProvider<CoursRepository>(create: (_) => coursRepository),
         RepositoryProvider<ConcoursRepository>(
           create: (_) => concoursRepository,

@@ -1,4 +1,3 @@
-import 'package:appwrite/appwrite.dart';
 import 'package:logger/logger.dart';
 import '../models/index.dart';
 import '../services/appwrite_service.dart';
@@ -16,88 +15,6 @@ class RessourceRepository {
   final Map<String, DateTime> _cacheTimestamps = {};
 
   RessourceRepository(this._appwriteService);
-
-  /// Récupère les ressources d'une filière en suivant le flux:
-  /// Filière -> Année -> Semestre -> Cours (UE) -> Ressources (Google Drive + Appwrite Storage)
-  Future<List<FileResource>> getRessourcesByFiliere(String filiereId) async {
-    try {
-      _logger.i('Fetching resources for filiere: $filiereId');
-
-      // Vérifier le cache
-      if (_isCacheValid(filiereId)) {
-        _logger.i('Returning cached resources for filiere: $filiereId');
-        return _resourcesCache[filiereId]!;
-      }
-
-      // 1. Récupérer tous les années de la filière
-      final anneeResponse = await AppwriteService.tables.listRows(
-        databaseId: AppwriteService.databaseId,
-        tableId: AppConstants.anneeCollectionId,
-        queries: [Query.equal('filiereId', filiereId)],
-      );
-
-      final anneeList = anneeResponse.rows.isNotEmpty
-          ? anneeResponse.rows.map((doc) => doc.$id).toList()
-          : [];
-
-      _logger.i('Found ${anneeList.length} annees for filiere $filiereId');
-
-      // 2. Récupérer tous les semestres pour chaque année
-      final List<String> semestreIds = [];
-      for (final anneeId in anneeList) {
-        final semestreResponse = await AppwriteService.tables.listRows(
-          databaseId: AppwriteService.databaseId,
-          tableId: AppConstants.semestreCollectionId,
-          queries: [Query.equal('anneeId', anneeId)],
-        );
-
-        semestreIds.addAll(semestreResponse.rows.map((doc) => doc.$id));
-      }
-
-      _logger.i('Found ${semestreIds.length} semestres for filiere $filiereId');
-
-      // 3. Récupérer tous les cours pour chaque semestre
-      final List<FileResource> allResources = [];
-      for (final semestreId in semestreIds) {
-        final coursResponse = await AppwriteService.tables.listRows(
-          databaseId: AppwriteService.databaseId,
-          tableId: AppConstants.coursCollectionId,
-          queries: [Query.equal('semesterId', semestreId)],
-        );
-
-        final coursList = coursResponse.rows
-            .map((doc) => Cours.fromJson(doc.data))
-            .toList();
-
-        _logger.i('Found ${coursList.length} cours for semestre $semestreId');
-
-        // 4. Récupérer les ressources de chaque cours
-        for (final cours in coursList) {
-          if (cours.ressources.isNotEmpty) {
-            _logger.i(
-              'Processing ${cours.ressources.length} resources for cours: ${cours.titre}',
-            );
-
-            final resources = await _fileService.processResources(
-              cours.ressources,
-            );
-            allResources.addAll(resources);
-          }
-        }
-      }
-
-      _logger.i('Total resources found: ${allResources.length}');
-
-      // Mettre en cache
-      _resourcesCache[filiereId] = allResources;
-      _cacheTimestamps[filiereId] = DateTime.now();
-
-      return allResources;
-    } catch (e) {
-      _logger.e('Error fetching ressources for filiere $filiereId: $e');
-      rethrow;
-    }
-  }
 
   /// Récupère les ressources d'un cours spécifique par type
   Future<List<FileResource>> getRessourcesByType(
@@ -177,23 +94,19 @@ class RessourceRepository {
   }
 
   /// Recherche de ressources dans une filière
+  /// Note: Cette méthode nécessite une implémentation basée sur la structure réelle de votre BD
   Future<List<FileResource>> searchRessources(
     String filiereId,
     String query,
   ) async {
     try {
       _logger.i('Searching resources in filiere $filiereId with query: $query');
-
-      final ressources = await getRessourcesByFiliere(filiereId);
-      final lowerQuery = query.toLowerCase();
-
-      return ressources
-          .where(
-            (r) =>
-                r.name.toLowerCase().contains(lowerQuery) ||
-                (r.description?.toLowerCase().contains(lowerQuery) ?? false),
-          )
-          .toList();
+      // TODO: Implémenter la recherche basée sur la structure réelle de votre base de données
+      // Pour l'instant, retourne une liste vide car getRessourcesByFiliere a été supprimé
+      _logger.w(
+        'searchRessources not implemented - collections annee/semestre do not exist',
+      );
+      return [];
     } catch (e) {
       _logger.e('Error searching ressources: $e');
       rethrow;
@@ -221,69 +134,6 @@ class RessourceRepository {
       _resourcesCache.clear();
       _cacheTimestamps.clear();
       _logger.i('All cache cleared');
-    }
-  }
-
-  /// Récupère tous les cours d'une filière avec leurs ressources
-  Future<Map<Cours, List<FileResource>>> getCoursWithRessources(
-    String filiereId,
-  ) async {
-    try {
-      _logger.i('Fetching cours with resources for filiere: $filiereId');
-
-      // Récupérer tous les années de la filière
-      final anneeResponse = await AppwriteService.tables.listRows(
-        databaseId: AppwriteService.databaseId,
-        tableId: AppConstants.anneeCollectionId,
-        queries: [Query.equal('filiereId', filiereId)],
-      );
-
-      final anneeList = anneeResponse.rows.isNotEmpty
-          ? anneeResponse.rows.map((doc) => doc.$id).toList()
-          : [];
-
-      // Récupérer tous les semestres pour chaque année
-      final List<String> semestreIds = [];
-      for (final anneeId in anneeList) {
-        final semestreResponse = await AppwriteService.tables.listRows(
-          databaseId: AppwriteService.databaseId,
-          tableId: AppConstants.semestreCollectionId,
-          queries: [Query.equal('anneeId', anneeId)],
-        );
-
-        semestreIds.addAll(semestreResponse.rows.map((doc) => doc.$id));
-      }
-
-      // Récupérer tous les cours pour chaque semestre
-      final Map<Cours, List<FileResource>> coursResources = {};
-
-      for (final semestreId in semestreIds) {
-        final coursResponse = await AppwriteService.tables.listRows(
-          databaseId: AppwriteService.databaseId,
-          tableId: AppConstants.coursCollectionId,
-          queries: [Query.equal('semesterId', semestreId)],
-        );
-
-        final coursList = coursResponse.rows
-            .map((doc) => Cours.fromJson(doc.data))
-            .toList();
-
-        for (final cours in coursList) {
-          if (cours.ressources.isNotEmpty) {
-            final resources = await _fileService.processResources(
-              cours.ressources,
-            );
-            coursResources[cours] = resources;
-          } else {
-            coursResources[cours] = [];
-          }
-        }
-      }
-
-      return coursResources;
-    } catch (e) {
-      _logger.e('Error fetching cours with resources: $e');
-      rethrow;
     }
   }
 }

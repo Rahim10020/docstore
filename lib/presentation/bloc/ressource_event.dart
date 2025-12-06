@@ -7,15 +7,6 @@ abstract class RessourceEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class FetchRessourcesByFiliere extends RessourceEvent {
-  final String filiereId;
-
-  const FetchRessourcesByFiliere(this.filiereId);
-
-  @override
-  List<Object?> get props => [filiereId];
-}
-
 class FetchRessourcesByType extends RessourceEvent {
   final String filiereId;
   final String type;
