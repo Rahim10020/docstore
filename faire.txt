@@ -1,8 +1,2 @@
-- creer une version de apprite.js en flutter afin de connecter le projet flutter au projet apprite.
-- aller sur le dashboard apprite, voir les models et les creer dans le code flutter. apres 
-    voir comment recuperer les donnees et les afficher.
-
-GOOGLE DRIVE
-- creer un backend(en js) et le deployer sur vercel.
-    * voir avec l'ia comment creer le backend et le deployer sur vercel
+url de l'api: https://docstore-api.vercel.app/
 - apres prendre le lien deploye et l'utiliser pour recuperer les donnees dans mon app flutter.
