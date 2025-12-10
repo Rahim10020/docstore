@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
 import '../../data/models/drive_file.dart';
 
-class PdfViewerScreen extends StatelessWidget {
-  final DriveFile file;
+  final String pdfUrl;
+  final String title;
 
   const PdfViewerScreen({
     super.key,
-    required this.file,
-  });
+    required this.pdfUrl,
+    required this.title,
 
   String get _pdfUrl {
     // Utiliser webContentLink si disponible, sinon webViewLink
     return file.webContentLink ?? file.webViewLink ?? '';
-  }
+    if (pdfUrl.isEmpty) {
 
   @override
-  Widget build(BuildContext context) {
+          title: Text(title),
     if (_pdfUrl.isEmpty) {
       return Scaffold(
         appBar: AppBar(
@@ -41,7 +41,7 @@ class PdfViewerScreen extends StatelessWidget {
         ),
       );
     }
-
+          title,
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -77,7 +77,7 @@ class PdfViewerScreen extends StatelessWidget {
         onPageError: (int? page, dynamic error) {
           debugPrint('Erreur page $page: $error');
         },
-        onLinkHandler: (String? uri) {
+        pdfUrl,
           debugPrint('Lien cliqué: $uri');
         },
       ).cachedFromUrl(

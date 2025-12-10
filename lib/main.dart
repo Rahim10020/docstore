@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       title: 'DocStore EPL',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: HomeScreen(),
     );
   }
 }

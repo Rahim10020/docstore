@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../data/models/drive_file.dart';
 
-class FileListItem extends StatelessWidget {
-  final DriveFile file;
-  final VoidCallback onTap;
-
-  const FileListItem({
+  final String resourceId;
+  final String title;
+  final String? subtitle;
+  final String fileUrl;
+  final String downloadUrl;
     super.key,
     required this.file,
     required this.onTap,
   });
-
-  @override
-  Widget build(BuildContext context) {
-    final isPdf = file.mimeType == 'application/pdf';
-
+    required this.resourceId,
+    required this.title,
+    this.subtitle,
+    required this.fileUrl,
+    required this.downloadUrl,
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ListTile(
@@ -28,16 +28,16 @@ class FileListItem extends StatelessWidget {
           ),
           child: Icon(
             isPdf ? Icons.picture_as_pdf : Icons.insert_drive_file,
-            color: isPdf ? Colors.red : Colors.blue,
+            color: Colors.red.shade50,
           ),
         ),
-        title: Text(
-          file.name,
-          style: const TextStyle(
+          child: const Icon(
+            Icons.picture_as_pdf,
+            color: Colors.red,
             fontWeight: FontWeight.w600,
             fontSize: 15,
           ),
-          maxLines: 2,
+          title,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
@@ -45,27 +45,35 @@ class FileListItem extends StatelessWidget {
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey.shade600,
-          ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (file.webViewLink != null)
-              IconButton(
-                icon: const Icon(Icons.open_in_new),
-                onPressed: () async {
+        subtitle: subtitle != null
+            ? Text(
+                subtitle!,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                ),
+              )
+            : null,
                   final uri = Uri.parse(file.webViewLink!);
                   if (await canLaunchUrl(uri)) {
                     await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  }
-                },
-              ),
-            const Icon(Icons.chevron_right),
-          ],
-        ),
-        onTap: onTap,
-      ),
-    );
-  }
-}
-
+            IconButton(
+              icon: const Icon(Icons.download),
+              tooltip: 'Télécharger',
+              onPressed: () async {
+                final uri = Uri.parse(downloadUrl);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.open_in_new),
+              tooltip: 'Ouvrir',
+              onPressed: () async {
+                final uri = Uri.parse(fileUrl);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
+              },
+            ),
