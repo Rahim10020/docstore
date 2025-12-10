@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'config/appwrite_config.dart';
 import 'core/theme.dart';
 import 'ui/screens/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialiser Appwrite
+  AppwriteConfig().init();
+
   runApp(
     const ProviderScope(
       child: MyApp(),
