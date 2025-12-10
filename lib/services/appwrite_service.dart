@@ -386,6 +386,16 @@ class AppwriteService {
     return '${AppwriteConfig.endpoint}/storage/buckets/${AppwriteConfig.bucketId}/files/$fileId/view?project=${AppwriteConfig.projectId}';
   }
 
+  /// Récupère l'URL de visualisation d'un fichier
+  String getFileView(String fileId) {
+    return '${AppwriteConfig.endpoint}/storage/buckets/${AppwriteConfig.bucketId}/files/$fileId/view?project=${AppwriteConfig.projectId}';
+  }
+
+  /// Récupère l'URL de téléchargement d'un fichier
+  String getFileDownload(String fileId) {
+    return '${AppwriteConfig.endpoint}/storage/buckets/${AppwriteConfig.bucketId}/files/$fileId/download?project=${AppwriteConfig.projectId}';
+  }
+
   /// Télécharge un fichier
   Future<void> downloadFile(String fileId, String savePath) async {
     try {

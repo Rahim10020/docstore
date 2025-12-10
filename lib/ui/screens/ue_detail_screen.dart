@@ -43,7 +43,7 @@ class UeDetailScreen extends ConsumerWidget {
                             width: 50,
                             height: 50,
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryIndigo.withOpacity(0.1),
+                              color: AppTheme.primaryIndigo.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
@@ -95,7 +95,7 @@ class UeDetailScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 24),
 
               // Section Ressources
