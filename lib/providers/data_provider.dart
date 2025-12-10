@@ -4,12 +4,12 @@ import '../data/models/ecole.dart';
 import '../data/models/filiere.dart';
 import '../data/models/ue.dart';
 import '../data/models/concours.dart';
+
+/// Provider pour le service Appwrite
+final appwriteServiceProvider = Provider<AppwriteService>((ref) {
   return AppwriteService();
 });
 
-// Provider pour charger les fichiers d'un dossier
-final folderFilesProvider = FutureProvider.family<List<DriveFile>, String>(
-  (ref, folderId) async {
 // ========== PROVIDERS ECOLES ==========
 
 /// Provider pour charger toutes les écoles
@@ -48,7 +48,7 @@ final filiereProvider = FutureProvider.family<Filiere, String>(
 final uesByFiliereProvider = FutureProvider.family<List<Ue>, String>(
   (ref, filiereId) async {
     final service = ref.read(appwriteServiceProvider);
-    return await service.getUesByFiliere(filiereId);
+    return await service.getUEsByFiliere(filiereId);
   },
 );
 
@@ -56,7 +56,7 @@ final uesByFiliereProvider = FutureProvider.family<List<Ue>, String>(
 final ueProvider = FutureProvider.family<Ue, String>(
   (ref, ueId) async {
     final service = ref.read(appwriteServiceProvider);
-    return await service.getUe(ueId);
+    return await service.getUE(ueId);
   },
 );
 
@@ -68,16 +68,11 @@ final concoursProvider = FutureProvider<List<Concours>>((ref) async {
   return await service.getConcours();
 });
 
-/// Provider pour charger les concours d'une école
-final concoursByEcoleProvider = FutureProvider.family<List<Concours>, String>(
-  (ref, ecoleId) async {
-
-    return await service.getConcours(ecoleId: ecoleId);
-  },
-);
-
 /// Provider pour charger un concours spécifique par ID
 final concoursDetailProvider = FutureProvider.family<Concours, String>(
   (ref, concoursId) async {
     final service = ref.read(appwriteServiceProvider);
     return await service.getConcoursById(concoursId);
+  },
+);
+

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/appwrite_config.dart';
+import 'services/appwrite_service.dart';
 import 'core/theme.dart';
 import 'ui/screens/home_screen.dart';
 
@@ -9,6 +10,7 @@ void main() {
 
   // Initialiser Appwrite
   AppwriteConfig().init();
+  AppwriteService().init();
 
   runApp(
     const ProviderScope(

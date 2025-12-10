@@ -7,3 +7,4 @@ class AppConstants {
   static const String uesCollectionId = '67f72a8f00239ccc2b36';
   static const String concoursCollectionId = '6893ba70001b392138f7';
   static const String bucketId = '67efdc26000acfe7e2ea';
+}
