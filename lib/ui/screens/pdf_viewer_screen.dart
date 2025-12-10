@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cached_pdfview/flutter_cached_pdfview.dart';
-import '../../data/models/drive_file.dart';
 
+class PdfViewerScreen extends StatelessWidget {
   final String pdfUrl;
   final String title;
 
@@ -9,18 +9,14 @@ import '../../data/models/drive_file.dart';
     super.key,
     required this.pdfUrl,
     required this.title,
-
-  String get _pdfUrl {
-    // Utiliser webContentLink si disponible, sinon webViewLink
-    return file.webContentLink ?? file.webViewLink ?? '';
-    if (pdfUrl.isEmpty) {
+  });
 
   @override
-          title: Text(title),
-    if (_pdfUrl.isEmpty) {
+  Widget build(BuildContext context) {
+    if (pdfUrl.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(file.name),
+          title: Text(title),
         ),
         body: const Center(
           child: Column(
@@ -41,11 +37,11 @@ import '../../data/models/drive_file.dart';
         ),
       );
     }
-          title,
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          file.name,
+          title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -77,11 +73,11 @@ import '../../data/models/drive_file.dart';
         onPageError: (int? page, dynamic error) {
           debugPrint('Erreur page $page: $error');
         },
-        pdfUrl,
+        onLinkHandler: (String? uri) {
           debugPrint('Lien cliqué: $uri');
         },
       ).cachedFromUrl(
-        _pdfUrl,
+        pdfUrl,
         placeholder: (progress) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
