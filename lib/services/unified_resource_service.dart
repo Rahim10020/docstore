@@ -1,5 +1,6 @@
 import 'package:docstore/services/appwrite_service.dart';
 import 'package:docstore/services/google_drive_service.dart';
+import 'package:logger/logger.dart';
 
 /// Type de source pour les ressources
 enum ResourceSource { appwrite, googleDrive }
@@ -48,6 +49,10 @@ class UnifiedResourceService {
 
   final AppwriteService _appwriteService = AppwriteService();
   final GoogleDriveService _googleDriveService = GoogleDriveService();
+  final Logger _logger = Logger();
+
+  // Cache pour les ressources
+  final Map<String, UnifiedResource> _cache = {};
 
   // ========== DÉTECTION DE LA SOURCE ==========
 
@@ -63,13 +68,20 @@ class UnifiedResourceService {
 
   /// Récupère les informations d'une ressource unifiée
   Future<UnifiedResource> getResource(String resourceIdentifier) async {
+    // Vérifier le cache
+    if (_cache.containsKey(resourceIdentifier)) {
+      return _cache[resourceIdentifier]!;
+    }
+
     final source = detectSource(resourceIdentifier);
 
-    if (source == ResourceSource.googleDrive) {
-      return _getGoogleDriveResource(resourceIdentifier);
-    } else {
-      return _getAppwriteResource(resourceIdentifier);
-    }
+    final resource = source == ResourceSource.googleDrive
+        ? await _getGoogleDriveResource(resourceIdentifier)
+        : await _getAppwriteResource(resourceIdentifier);
+
+    // Mettre en cache
+    _cache[resourceIdentifier] = resource;
+    return resource;
   }
 
   /// Récupère une ressource depuis Google Drive
@@ -130,13 +142,21 @@ class UnifiedResourceService {
         final resource = await getResource(identifier);
         resources.add(resource);
       } catch (e) {
-        print('Erreur lors de la récupération de la ressource $identifier: $e');
+        _logger.w(
+          'Erreur lors de la récupération de la ressource $identifier',
+          error: e,
+        );
         // On continue avec les autres ressources
       }
     }
 
     return resources;
   }
+
+  // ========== CACHE ==========
+
+  /// Vide le cache
+  void clearCache() => _cache.clear();
 
   // ========== HELPERS ==========
 
