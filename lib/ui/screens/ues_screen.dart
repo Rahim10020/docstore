@@ -55,7 +55,10 @@ class _UesScreenState extends ConsumerState<UesScreen> {
                   const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 22,
+                    ),
                     decoration: BoxDecoration(
                       gradient: AppTheme.establishmentCardGradient,
                       borderRadius: BorderRadius.circular(22),
@@ -103,7 +106,9 @@ class _UesScreenState extends ConsumerState<UesScreen> {
                   if (filteredUes.isEmpty) {
                     return Center(
                       child: Text(
-                        ues.isEmpty ? 'Aucune UE disponible' : 'Aucune UE trouvee',
+                        ues.isEmpty
+                            ? 'Aucune UE disponible'
+                            : 'Aucune UE trouvee',
                         style: const TextStyle(color: AppTheme.mutedText),
                       ),
                     );
@@ -112,7 +117,7 @@ class _UesScreenState extends ConsumerState<UesScreen> {
                   return ListView.separated(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
                     itemCount: filteredUes.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 14),
+                    separatorBuilder: (_, _) => const SizedBox(height: 14),
                     itemBuilder: (context, index) {
                       final ue = filteredUes[index];
                       return UeCard(
@@ -154,12 +159,17 @@ class _UesScreenState extends ConsumerState<UesScreen> {
                         Text(
                           error.toString(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
                           onPressed: () {
-                            ref.invalidate(uesByFiliereProvider(widget.filiere.id));
+                            ref.invalidate(
+                              uesByFiliereProvider(widget.filiere.id),
+                            );
                           },
                           icon: const Icon(Icons.refresh),
                           label: const Text('Réessayer'),

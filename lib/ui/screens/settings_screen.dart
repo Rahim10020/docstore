@@ -30,10 +30,7 @@ class SettingsScreen extends ConsumerWidget {
                   const Spacer(),
                   const Text(
                     'Parametres',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                   ),
                   const Spacer(),
                   const SizedBox(width: 48),
@@ -42,7 +39,10 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 32),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 18,
+                ),
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(24),
@@ -66,7 +66,7 @@ class SettingsScreen extends ConsumerWidget {
                     const Spacer(),
                     Switch(
                       value: isDark,
-                      activeColor: Colors.white,
+                      activeThumbColor: Colors.white,
                       activeTrackColor: AppTheme.successColor,
                       onChanged: (value) => notifier.toggleTheme(value),
                     ),
@@ -80,4 +80,3 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 }
-

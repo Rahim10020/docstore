@@ -33,7 +33,10 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
     return filieres.where((filiere) {
       return filiere.nom.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           filiere.parcours.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          (filiere.description?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+          (filiere.description?.toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              ) ??
+              false);
     }).toList();
   }
 
@@ -64,7 +67,10 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
                   const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 26,
+                    ),
                     decoration: BoxDecoration(
                       gradient: AppTheme.establishmentCardGradient,
                       borderRadius: BorderRadius.circular(22),
@@ -125,7 +131,7 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
                   return ListView.separated(
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
                     itemCount: filteredFilieres.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    separatorBuilder: (_, _) => const SizedBox(height: 16),
                     itemBuilder: (context, index) {
                       final filiere = filteredFilieres[index];
                       return FiliereCard(
@@ -170,7 +176,10 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
                         Text(
                           error.toString(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(

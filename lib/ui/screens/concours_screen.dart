@@ -44,7 +44,7 @@ class ConcoursScreen extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.only(bottom: 24),
             itemCount: concours.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            separatorBuilder: (_, _) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
               final item = concours[index];
               return ConcoursCard(
@@ -84,10 +84,7 @@ class ConcoursScreen extends ConsumerWidget {
             Text(
               error.toString(),
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: AppTheme.mutedText,
-              ),
+              style: TextStyle(fontSize: 13, color: AppTheme.mutedText),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -101,4 +98,3 @@ class ConcoursScreen extends ConsumerWidget {
     );
   }
 }
-
