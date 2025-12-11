@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/unified_resource_service.dart';
 import '../../core/theme.dart';
@@ -70,13 +71,21 @@ class UnifiedResourceListItem extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               _ActionChip(
-                icon: Icons.visibility,
+                iconWidget: SvgPicture.asset(
+                  'assets/icons/view.svg',
+                  width: 20,
+                  height: 20,
+                ),
                 color: AppTheme.successColor,
                 onTap: () => _handleOpen(context),
               ),
               const SizedBox(width: 8),
               _ActionChip(
-                icon: Icons.download,
+                iconWidget: SvgPicture.asset(
+                  'assets/icons/download.svg',
+                  width: 20,
+                  height: 20,
+                ),
                 color: AppTheme.primaryPurple,
                 onTap: () => _handleDownload(context),
               ),
@@ -201,11 +210,15 @@ class UnifiedResourceListItem extends StatelessWidget {
 }
 
 class _ActionChip extends StatelessWidget {
-  final IconData icon;
+  final Widget iconWidget;
   final Color color;
   final VoidCallback onTap;
 
-  const _ActionChip({required this.icon, required this.color, required this.onTap});
+  const _ActionChip({
+    required this.iconWidget,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -218,7 +231,10 @@ class _ActionChip extends StatelessWidget {
           color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Icon(icon, color: color, size: 20),
+        child: ColorFiltered(
+          colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+          child: iconWidget,
+        ),
       ),
     );
   }

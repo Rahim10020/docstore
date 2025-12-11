@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme.dart';
 
 class DocStoreBottomNavBar extends StatelessWidget {
@@ -33,19 +34,31 @@ class DocStoreBottomNavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _NavItem(
-            icon: Icons.people_alt_outlined,
+            iconWidget: SvgPicture.asset(
+              'assets/icons/ecoles.svg',
+              width: 24,
+              height: 24,
+            ),
             label: 'Ecoles',
             isActive: currentIndex == 0,
             onTap: () => onItemSelected(0),
           ),
           _NavItem(
-            icon: Icons.emoji_events_outlined,
+            iconWidget: SvgPicture.asset(
+              'assets/icons/concours.svg',
+              width: 24,
+              height: 24,
+            ),
             label: 'Concours',
             isActive: currentIndex == 1,
             onTap: () => onItemSelected(1),
           ),
           _NavItem(
-            icon: Icons.search,
+            iconWidget: SvgPicture.asset(
+              'assets/icons/search.svg',
+              width: 24,
+              height: 24,
+            ),
             label: 'Recherche',
             isActive: currentIndex == 2,
             onTap: () => onItemSelected(2),
@@ -57,13 +70,13 @@ class DocStoreBottomNavBar extends StatelessWidget {
 }
 
 class _NavItem extends StatelessWidget {
-  final IconData icon;
+  final Widget iconWidget;
   final String label;
   final bool isActive;
   final VoidCallback onTap;
 
   const _NavItem({
-    required this.icon,
+    required this.iconWidget,
     required this.label,
     required this.isActive,
     required this.onTap,
@@ -79,7 +92,10 @@ class _NavItem extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 24),
+          ColorFiltered(
+            colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            child: iconWidget,
+          ),
           const SizedBox(height: 4),
           Text(
             label,
@@ -94,4 +110,3 @@ class _NavItem extends StatelessWidget {
     );
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme.dart';
 import '../screens/settings_screen.dart';
 
@@ -39,7 +40,11 @@ class DocStoreHeader extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const SettingsScreen()),
                 );
               },
-              icon: const Icon(Icons.settings_outlined),
+              icon: SvgPicture.asset(
+                'assets/icons/settings.svg',
+                width: 24,
+                height: 24,
+              ),
               color: AppTheme.textPrimary,
             ),
           ],

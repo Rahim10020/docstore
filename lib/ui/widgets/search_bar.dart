@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme.dart';
 
 class RoundedSearchBar extends StatefulWidget {
@@ -62,7 +63,15 @@ class _RoundedSearchBarState extends State<RoundedSearchBar> {
       ),
       child: Row(
         children: [
-          Icon(Icons.search, color: AppTheme.mutedText.withValues(alpha: 0.8)),
+          SvgPicture.asset(
+            'assets/icons/search.svg',
+            width: 20,
+            height: 20,
+            colorFilter: ColorFilter.mode(
+              AppTheme.mutedText.withValues(alpha: 0.8),
+              BlendMode.srcIn,
+            ),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
@@ -91,10 +100,14 @@ class _RoundedSearchBarState extends State<RoundedSearchBar> {
                   color: AppTheme.mutedText.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.close,
-                  size: 16,
-                  color: Colors.white,
+                child: SvgPicture.asset(
+                  'assets/icons/close.svg',
+                  width: 16,
+                  height: 16,
+                  colorFilter: const ColorFilter.mode(
+                    Colors.white,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
             ),
