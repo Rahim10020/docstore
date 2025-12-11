@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../../data/models/ue.dart';
 import '../../services/unified_resource_service.dart';
+import '../widgets/rounded_search_input.dart';
 
 class UeDetailScreen extends ConsumerStatefulWidget {
   final Ue ue;
@@ -76,270 +77,150 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
     final filteredResources = _resources != null ? _filterResources(_resources!) : null;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.ue.nom,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
+      backgroundColor: AppTheme.backgroundColorLight,
+      body: SafeArea(
         child: Column(
           children: [
-            // En-tête avec infos de l'UE
-            Container(
-              color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryIndigo.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.book,
-                            color: AppTheme.primaryIndigo,
-                            size: 32,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.ue.nom,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.textPrimary,
-                                ),
-                              ),
-                              if (widget.ue.anneeEnseignement.isNotEmpty) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  widget.ue.anneeEnseignement.join(', '),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                      ),
+                      const Spacer(),
+                      const Icon(Icons.more_horiz),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 6),
                         ),
                       ],
                     ),
-                  ),
-                  if (widget.ue.description != null)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                      child: Text(
-                        widget.ue.description!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade700,
-                          height: 1.4,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.ue.nom,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryPurple.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                widget.ue.anneeEnseignement.isNotEmpty
+                                    ? widget.ue.anneeEnseignement.join(', ')
+                                    : 'Annee',
+                                style: const TextStyle(
+                                  color: AppTheme.primaryPurple,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (widget.ue.description != null) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            widget.ue.description!,
+                            style: TextStyle(
+                              color: AppTheme.textPrimary.withValues(alpha: 0.75),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                  const Divider(height: 1),
+                  ),
                 ],
               ),
             ),
-
-            // Barre de recherche (si des ressources existent)
-            if (widget.ue.ressources.isNotEmpty && _resources != null)
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: 'Rechercher une ressource...',
-                          prefixIcon: const Icon(Icons.search, color: AppTheme.primaryIndigo),
-                          suffixIcon: _searchQuery.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear),
-                                  onPressed: () {
-                                    setState(() {
-                                      _searchController.clear();
-                                      _searchQuery = '';
-                                    });
-                                  },
-                                )
-                              : null,
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _searchQuery = value;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryIndigo.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${filteredResources?.length ?? 0}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryIndigo,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
+            if (widget.ue.ressources.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: RoundedSearchInput(
+                  controller: _searchController,
+                  hintText: 'Rechercher une ressource...',
+                  onChanged: (value) => setState(() => _searchQuery = value),
                 ),
               ),
-
-            // Contenu
+            const SizedBox(height: 16),
             Expanded(
               child: RefreshIndicator(
                 onRefresh: _loadResources,
-                child: _isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          color: AppTheme.primaryIndigo,
-                        ),
-                      )
-                    : _error != null
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(32),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(color: AppTheme.primaryPurple),
+                        )
+                      : _error != null
+                          ? Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
-                                    Icons.error_outline,
-                                    color: AppTheme.errorColor,
-                                    size: 64,
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Text(
-                                    'Erreur lors du chargement',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppTheme.errorColor,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
+                                  const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 54),
+                                  const SizedBox(height: 10),
                                   Text(
                                     _error!,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.grey.shade700,
-                                    ),
                                     textAlign: TextAlign.center,
+                                    style: const TextStyle(color: AppTheme.mutedText),
                                   ),
                                   const SizedBox(height: 16),
                                   ElevatedButton.icon(
                                     onPressed: _loadResources,
                                     icon: const Icon(Icons.refresh),
-                                    label: const Text('Réessayer'),
+                                    label: const Text('Reessayer'),
                                   ),
                                 ],
                               ),
-                            ),
-                          )
-                        : widget.ue.ressources.isEmpty
-                            ? Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.folder_off,
-                                      size: 80,
-                                      color: Colors.grey.shade400,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Aucune ressource disponible',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey.shade600,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
-                            : filteredResources != null && filteredResources.isEmpty
-                                ? Center(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.search_off,
-                                          size: 80,
-                                          color: Colors.grey.shade400,
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          'Aucune ressource trouvée',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.grey.shade600,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          'Essayez avec d\'autres mots-clés',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey.shade500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : ListView.builder(
-                                    padding: const EdgeInsets.all(16),
-                                    itemCount: filteredResources?.length ?? 0,
-                                    itemBuilder: (context, index) {
-                                      return UnifiedResourceListItem(
-                                        resource: filteredResources![index],
-                                      );
-                                    },
+                            )
+                          : widget.ue.ressources.isEmpty
+                              ? const Center(
+                                  child: Text(
+                                    'Aucune ressource disponible',
+                                    style: TextStyle(color: AppTheme.mutedText),
                                   ),
+                                )
+                              : filteredResources != null && filteredResources.isEmpty
+                                  ? const Center(
+                                      child: Text(
+                                        'Aucune ressource trouvee',
+                                        style: TextStyle(color: AppTheme.mutedText),
+                                      ),
+                                    )
+                                  : ListView.builder(
+                                      padding: const EdgeInsets.only(bottom: 24, top: 8),
+                                      itemCount: filteredResources?.length ?? 0,
+                                      itemBuilder: (context, index) {
+                                        return UnifiedResourceListItem(
+                                          resource: filteredResources![index],
+                                        );
+                                      },
+                                    ),
+                ),
               ),
             ),
           ],

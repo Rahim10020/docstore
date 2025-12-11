@@ -15,87 +15,74 @@ class UnifiedResourceListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              // Icône du fichier
-              _buildFileIcon(),
-              const SizedBox(width: 12),
-
-              // Informations du fichier
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          _buildFileIcon(),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  resource.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Row(
                   children: [
-                    // Nom du fichier
-                    Text(
-                      resource.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
+                    _buildSourceBadge(),
+                    if (resource.size != null) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        UnifiedResourceService().formatFileSize(resource.size),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    const SizedBox(height: 4),
-
-                    // Badge de source + taille
-                    Row(
-                      children: [
-                        _buildSourceBadge(),
-                        if (resource.size != null) ...[
-                          const SizedBox(width: 8),
-                          Text(
-                            UnifiedResourceService().formatFileSize(
-                              resource.size,
-                            ),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
+                    ],
                   ],
                 ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _ActionChip(
+                icon: Icons.visibility,
+                color: AppTheme.successColor,
+                onTap: () => _handleOpen(context),
               ),
-
-              // Actions
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Bouton télécharger
-                  IconButton(
-                    icon: const Icon(Icons.download),
-                    tooltip: 'Télécharger',
-                    color: AppTheme.successColor,
-                    iconSize: 22,
-                    onPressed: () => _handleDownload(context),
-                  ),
-
-                  // Bouton ouvrir
-                  IconButton(
-                    icon: const Icon(Icons.open_in_new),
-                    tooltip: 'Ouvrir',
-                    color: AppTheme.primaryBlue,
-                    iconSize: 22,
-                    onPressed: () => _handleOpen(context),
-                  ),
-                ],
+              const SizedBox(width: 8),
+              _ActionChip(
+                icon: Icons.download,
+                color: AppTheme.primaryPurple,
+                onTap: () => _handleDownload(context),
               ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
@@ -208,6 +195,30 @@ class UnifiedResourceListItem extends StatelessWidget {
         content: Text(message),
         backgroundColor: AppTheme.errorColor,
         behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+}
+
+class _ActionChip extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActionChip({required this.icon, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(icon, color: color, size: 20),
       ),
     );
   }
