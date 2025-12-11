@@ -41,6 +41,29 @@ class AppTheme {
     ),
   );
 
+  static ThemeData darkTheme = ThemeData(
+    useMaterial3: true,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: primaryPurple,
+      brightness: Brightness.dark,
+    ),
+    scaffoldBackgroundColor: const Color(0xFF111827),
+    textTheme: GoogleFonts.interTextTheme(ThemeData(brightness: Brightness.dark).textTheme),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF1F2937),
+      foregroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: true,
+    ),
+    cardTheme: CardThemeData(
+      color: const Color(0xFF1F2937),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+  );
+
   // Gradients
   static const LinearGradient schoolGradient = LinearGradient(
     begin: Alignment.topLeft,

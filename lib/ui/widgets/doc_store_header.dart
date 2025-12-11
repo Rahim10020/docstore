@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme.dart';
+import '../screens/settings_screen.dart';
 
 class DocStoreHeader extends StatelessWidget {
   final String pageTitle;
@@ -33,7 +34,11 @@ class DocStoreHeader extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                );
+              },
               icon: const Icon(Icons.settings_outlined),
               color: AppTheme.textPrimary,
             ),
@@ -76,4 +81,3 @@ class DocStoreHeader extends StatelessWidget {
     );
   }
 }
-

@@ -4,6 +4,7 @@ import '../../core/theme.dart';
 import '../../data/models/concours.dart';
 import '../../services/unified_resource_service.dart';
 import '../widgets/unified_resource_list_item.dart';
+import '../widgets/rounded_search_input.dart';
 
 class ConcoursDetailScreen extends ConsumerStatefulWidget {
   final Concours concours;
@@ -17,9 +18,12 @@ class ConcoursDetailScreen extends ConsumerStatefulWidget {
 
 class _ConcoursDetailScreenState extends ConsumerState<ConcoursDetailScreen> {
   final UnifiedResourceService _resourceService = UnifiedResourceService();
+  final TextEditingController _searchController = TextEditingController();
   List<UnifiedResource>? _resources;
+  List<UnifiedResource>? _communiques;
   bool _isLoading = false;
   String? _error;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -28,7 +32,7 @@ class _ConcoursDetailScreenState extends ConsumerState<ConcoursDetailScreen> {
   }
 
   Future<void> _loadResources() async {
-    if (widget.concours.ressources.isEmpty) return;
+    if (widget.concours.ressources.isEmpty && widget.concours.communiques.isEmpty) return;
 
     setState(() {
       _isLoading = true;
@@ -39,9 +43,13 @@ class _ConcoursDetailScreenState extends ConsumerState<ConcoursDetailScreen> {
       final resources = await _resourceService.getResources(
         widget.concours.ressources,
       );
+      final communiques = await _resourceService.getResources(
+        widget.concours.communiques,
+      );
       if (mounted) {
         setState(() {
           _resources = resources;
+          _communiques = communiques;
           _isLoading = false;
         });
       }
@@ -55,226 +63,184 @@ class _ConcoursDetailScreenState extends ConsumerState<ConcoursDetailScreen> {
     }
   }
 
+  List<UnifiedResource> _filterResources(List<UnifiedResource> resources) {
+    if (_searchQuery.isEmpty) return resources;
+
+    return resources.where((resource) {
+      return resource.name.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final filteredResources = _resources != null ? _filterResources(_resources!) : null;
+    final filteredCommuniques = _communiques != null ? _filterResources(_communiques!) : null;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.concours.nom ?? 'Concours'),
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.backgroundGradient,
-        ),
-        child: RefreshIndicator(
-          onRefresh: _loadResources,
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // En-tête avec infos du concours
-                Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+      backgroundColor: AppTheme.backgroundColorLight,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                      ),
+                      const Spacer(),
+                      const Icon(Icons.more_horiz),
+                    ],
                   ),
-                  child: Container(
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      gradient: AppTheme.concoursGradient,
+                      gradient: AppTheme.concoursCardGradient,
+                      borderRadius: BorderRadius.circular(22),
                     ),
-                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.emoji_events,
-                                color: AppTheme.primaryOrange,
-                                size: 36,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    widget.concours.nom ?? 'Concours',
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  if (widget.concours.annee != null) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Année: ${widget.concours.annee}',
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (widget.concours.description != null) ...[
-                          const SizedBox(height: 16),
-                          Text(
-                            widget.concours.description!,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              color: Colors.white,
-                              height: 1.5,
-                            ),
+                        Text(
+                          widget.concours.nom ?? 'Concours',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
                           ),
-                        ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${widget.concours.idEcole ?? 'Ecole'} • ${widget.concours.annee ?? 'Année'}',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Section Ressources
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Ressources disponibles',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
-                      ),
+                  if (widget.concours.ressources.isNotEmpty || widget.concours.communiques.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    RoundedSearchInput(
+                      controller: _searchController,
+                      hintText: 'Rechercher un document...',
+                      onChanged: (value) => setState(() => _searchQuery = value),
                     ),
-                    if (widget.concours.ressources.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryOrange.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          '${widget.concours.ressources.length}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.primaryOrange,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
                   ],
-                ),
-                const SizedBox(height: 16),
-
-                if (_isLoading)
-                  const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: CircularProgressIndicator(
-                        color: AppTheme.primaryOrange,
-                      ),
-                    ),
-                  )
-                else if (_error != null)
-                  Card(
-                    color: AppTheme.errorColor.withValues(alpha: 0.1),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.error_outline,
-                            color: AppTheme.errorColor,
-                            size: 48,
-                          ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            'Erreur lors du chargement',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.errorColor,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            _error!,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade700,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton.icon(
-                            onPressed: _loadResources,
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Réessayer'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                else if (widget.concours.ressources.isEmpty)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.folder_off,
-                              size: 48,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Aucune ressource disponible',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  )
-                else if (_resources != null)
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _resources!.length,
-                    itemBuilder: (context, index) {
-                      return UnifiedResourceListItem(
-                        resource: _resources![index],
-                      );
-                    },
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: _loadResources,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _isLoading
+                      ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryPurple))
+                      : _error != null
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 54),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    _error!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: AppTheme.mutedText),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton.icon(
+                                    onPressed: _loadResources,
+                                    icon: const Icon(Icons.refresh),
+                                    label: const Text('Reessayer'),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : ListView(
+                              padding: const EdgeInsets.only(bottom: 24),
+                              children: [
+                                if (widget.concours.communiques.isNotEmpty)
+                                  _ResourceSection(
+                                    title: 'Communiques officiels',
+                                    count: filteredCommuniques?.length ?? 0,
+                                    children: filteredCommuniques
+                                            ?.map((r) => UnifiedResourceListItem(resource: r))
+                                            .toList() ??
+                                        [],
+                                  ),
+                                if (widget.concours.ressources.isNotEmpty) ...[
+                                  const SizedBox(height: 24),
+                                  _ResourceSection(
+                                    title: 'Ressources et epreuves disponibles',
+                                    count: filteredResources?.length ?? 0,
+                                    children: filteredResources
+                                            ?.map((r) => UnifiedResourceListItem(resource: r))
+                                            .toList() ??
+                                        [],
+                                  ),
+                                ],
+                                if (widget.concours.communiques.isEmpty && widget.concours.ressources.isEmpty)
+                                  const Center(
+                                    child: Text(
+                                      'Aucun document disponible',
+                                      style: TextStyle(color: AppTheme.mutedText),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
+class _ResourceSection extends StatelessWidget {
+  final String title;
+  final int count;
+  final List<Widget> children;
+
+  const _ResourceSection({
+    required this.title,
+    required this.count,
+    required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              '$count',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ...children,
+      ],
+    );
+  }
+}
