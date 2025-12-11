@@ -88,20 +88,18 @@ class UesScreen extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
-                        if (ue.anneeEnseignement != null) ...[
-                          const SizedBox(height: 8),
-                          Chip(
-                            label: Text(
-                              ue.anneeEnseignement!,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            backgroundColor: AppTheme.primaryIndigo.withValues(
-                              alpha: 0.1,
-                            ),
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
+                        const SizedBox(height: 8),
+                        Chip(
+                          label: Text(
+                            ue.anneeEnseignement.join(', '),
+                            style: const TextStyle(fontSize: 12),
                           ),
-                        ],
+                          backgroundColor: AppTheme.primaryIndigo.withValues(
+                            alpha: 0.1,
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
                         if (ue.ressources.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Text(

@@ -2,7 +2,7 @@ class Ue {
   final String id;
   final String nom;
   final String? description;
-  final String? anneeEnseignement;
+  final List<String> anneeEnseignement;
   final List<String> ressources;
   final String idFiliere;
   final DateTime? createdAt;
@@ -12,7 +12,7 @@ class Ue {
     required this.id,
     required this.nom,
     this.description,
-    this.anneeEnseignement,
+    this.anneeEnseignement = const [],
     this.ressources = const [],
     required this.idFiliere,
     this.createdAt,
@@ -24,16 +24,18 @@ class Ue {
       id: map['\$id'] ?? map['id'] ?? '',
       nom: map['nom'] ?? '',
       description: map['description'],
-      anneeEnseignement: map['anneeEnseignement'],
-      ressources: map['ressources'] != null 
-          ? List<String>.from(map['ressources']) 
+      anneeEnseignement: map['anneeEnseignement'] != null
+          ? List<String>.from(map['anneeEnseignement'])
+          : [],
+      ressources: map['ressources'] != null
+          ? List<String>.from(map['ressources'])
           : [],
       idFiliere: map['idFiliere'] ?? '',
-      createdAt: map['\$createdAt'] != null 
-          ? DateTime.parse(map['\$createdAt']) 
+      createdAt: map['\$createdAt'] != null
+          ? DateTime.parse(map['\$createdAt'])
           : null,
-      updatedAt: map['\$updatedAt'] != null 
-          ? DateTime.parse(map['\$updatedAt']) 
+      updatedAt: map['\$updatedAt'] != null
+          ? DateTime.parse(map['\$updatedAt'])
           : null,
     );
   }
@@ -43,7 +45,7 @@ class Ue {
       'id': id,
       'nom': nom,
       if (description != null) 'description': description,
-      if (anneeEnseignement != null) 'anneeEnseignement': anneeEnseignement,
+      'anneeEnseignement': anneeEnseignement,
       'ressources': ressources,
       'idFiliere': idFiliere,
     };
@@ -53,4 +55,3 @@ class Ue {
 
   factory Ue.fromJson(Map<String, dynamic> json) => Ue.fromMap(json);
 }
-

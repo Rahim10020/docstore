@@ -105,10 +105,13 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  if (widget.ue.anneeEnseignement != null) ...[
+                                  if (widget
+                                      .ue
+                                      .anneeEnseignement
+                                      .isNotEmpty) ...[
                                     const SizedBox(height: 4),
                                     Text(
-                                      widget.ue.anneeEnseignement!,
+                                      widget.ue.anneeEnseignement.join(', '),
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade600,
