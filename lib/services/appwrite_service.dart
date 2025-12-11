@@ -109,7 +109,9 @@ class AppwriteService {
         databaseId: AppwriteConfig.databaseId,
         collectionId: AppwriteConfig.filieresCollectionId,
       );
-      return response.documents.map((doc) => Filiere.fromMap(doc.data)).toList();
+      return response.documents
+          .map((doc) => Filiere.fromMap(doc.data))
+          .toList();
     } catch (e) {
       debugPrint('Erreur lors de la récupération des filières: $e');
       rethrow;
@@ -122,11 +124,11 @@ class AppwriteService {
       final response = await _databases.listDocuments(
         databaseId: AppwriteConfig.databaseId,
         collectionId: AppwriteConfig.filieresCollectionId,
-        queries: [
-          Query.equal('ecoleId', ecoleId),
-        ],
+        queries: [Query.equal('idEcole', ecoleId)],
       );
-      return response.documents.map((doc) => Filiere.fromMap(doc.data)).toList();
+      return response.documents
+          .map((doc) => Filiere.fromMap(doc.data))
+          .toList();
     } catch (e) {
       debugPrint('Erreur lors de la récupération des filières: $e');
       rethrow;
@@ -203,7 +205,9 @@ class AppwriteService {
         databaseId: AppwriteConfig.databaseId,
         collectionId: AppwriteConfig.uesCollectionId,
       );
-      return response.documents.map((doc) => ue_model.Ue.fromMap(doc.data)).toList();
+      return response.documents
+          .map((doc) => ue_model.Ue.fromMap(doc.data))
+          .toList();
     } catch (e) {
       debugPrint('Erreur lors de la récupération des UEs: $e');
       rethrow;
@@ -216,11 +220,11 @@ class AppwriteService {
       final response = await _databases.listDocuments(
         databaseId: AppwriteConfig.databaseId,
         collectionId: AppwriteConfig.uesCollectionId,
-        queries: [
-          Query.equal('filiereId', filiereId),
-        ],
+        queries: [Query.equal('filiereId', filiereId)],
       );
-      return response.documents.map((doc) => ue_model.Ue.fromMap(doc.data)).toList();
+      return response.documents
+          .map((doc) => ue_model.Ue.fromMap(doc.data))
+          .toList();
     } catch (e) {
       debugPrint('Erreur lors de la récupération des UEs: $e');
       rethrow;
@@ -297,7 +301,9 @@ class AppwriteService {
         databaseId: AppwriteConfig.databaseId,
         collectionId: AppwriteConfig.concoursCollectionId,
       );
-      return response.documents.map((doc) => Concours.fromMap(doc.data)).toList();
+      return response.documents
+          .map((doc) => Concours.fromMap(doc.data))
+          .toList();
     } catch (e) {
       debugPrint('Erreur lors de la récupération des concours: $e');
       rethrow;
@@ -436,4 +442,3 @@ class AppwriteService {
     }
   }
 }
-
