@@ -1,2 +1,3 @@
-url de l'api: https://docstore-api.vercel.app/
-- apres prendre le lien deploye et l'utiliser pour recuperer les donnees dans mon app flutter.
+
+Partage de ressources
+Téléchargement offlinere le lien deploye et l'utiliser pour recuperer les donnees dans mon app flutter.
