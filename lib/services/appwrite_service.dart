@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:appwrite/appwrite.dart';
 import 'package:docstore/config/appwrite_config.dart';
 import 'package:docstore/data/models/ecole.dart';
@@ -33,7 +34,7 @@ class AppwriteService {
       );
       return response.documents.map((doc) => Ecole.fromMap(doc.data)).toList();
     } catch (e) {
-      print('Erreur lors de la récupération des écoles: $e');
+      debugPrint('Erreur lors de la récupération des écoles: $e');
       rethrow;
     }
   }
@@ -48,7 +49,7 @@ class AppwriteService {
       );
       return Ecole.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la récupération de l\'école: $e');
+      debugPrint('Erreur lors de la récupération de l\'école: $e');
       rethrow;
     }
   }
@@ -64,7 +65,7 @@ class AppwriteService {
       );
       return Ecole.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la création de l\'école: $e');
+      debugPrint('Erreur lors de la création de l\'école: $e');
       rethrow;
     }
   }
@@ -80,7 +81,7 @@ class AppwriteService {
       );
       return Ecole.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la mise à jour de l\'école: $e');
+      debugPrint('Erreur lors de la mise à jour de l\'école: $e');
       rethrow;
     }
   }
@@ -94,7 +95,7 @@ class AppwriteService {
         documentId: ecoleId,
       );
     } catch (e) {
-      print('Erreur lors de la suppression de l\'école: $e');
+      debugPrint('Erreur lors de la suppression de l\'école: $e');
       rethrow;
     }
   }
@@ -110,7 +111,7 @@ class AppwriteService {
       );
       return response.documents.map((doc) => Filiere.fromMap(doc.data)).toList();
     } catch (e) {
-      print('Erreur lors de la récupération des filières: $e');
+      debugPrint('Erreur lors de la récupération des filières: $e');
       rethrow;
     }
   }
@@ -127,7 +128,7 @@ class AppwriteService {
       );
       return response.documents.map((doc) => Filiere.fromMap(doc.data)).toList();
     } catch (e) {
-      print('Erreur lors de la récupération des filières: $e');
+      debugPrint('Erreur lors de la récupération des filières: $e');
       rethrow;
     }
   }
@@ -142,7 +143,7 @@ class AppwriteService {
       );
       return Filiere.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la récupération de la filière: $e');
+      debugPrint('Erreur lors de la récupération de la filière: $e');
       rethrow;
     }
   }
@@ -158,7 +159,7 @@ class AppwriteService {
       );
       return Filiere.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la création de la filière: $e');
+      debugPrint('Erreur lors de la création de la filière: $e');
       rethrow;
     }
   }
@@ -174,7 +175,7 @@ class AppwriteService {
       );
       return Filiere.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la mise à jour de la filière: $e');
+      debugPrint('Erreur lors de la mise à jour de la filière: $e');
       rethrow;
     }
   }
@@ -188,7 +189,7 @@ class AppwriteService {
         documentId: filiereId,
       );
     } catch (e) {
-      print('Erreur lors de la suppression de la filière: $e');
+      debugPrint('Erreur lors de la suppression de la filière: $e');
       rethrow;
     }
   }
@@ -204,7 +205,7 @@ class AppwriteService {
       );
       return response.documents.map((doc) => ue_model.Ue.fromMap(doc.data)).toList();
     } catch (e) {
-      print('Erreur lors de la récupération des UEs: $e');
+      debugPrint('Erreur lors de la récupération des UEs: $e');
       rethrow;
     }
   }
@@ -221,7 +222,7 @@ class AppwriteService {
       );
       return response.documents.map((doc) => ue_model.Ue.fromMap(doc.data)).toList();
     } catch (e) {
-      print('Erreur lors de la récupération des UEs: $e');
+      debugPrint('Erreur lors de la récupération des UEs: $e');
       rethrow;
     }
   }
@@ -236,7 +237,7 @@ class AppwriteService {
       );
       return ue_model.Ue.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la récupération de l\'UE: $e');
+      debugPrint('Erreur lors de la récupération de l\'UE: $e');
       rethrow;
     }
   }
@@ -252,7 +253,7 @@ class AppwriteService {
       );
       return ue_model.Ue.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la création de l\'UE: $e');
+      debugPrint('Erreur lors de la création de l\'UE: $e');
       rethrow;
     }
   }
@@ -268,7 +269,7 @@ class AppwriteService {
       );
       return ue_model.Ue.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la mise à jour de l\'UE: $e');
+      debugPrint('Erreur lors de la mise à jour de l\'UE: $e');
       rethrow;
     }
   }
@@ -282,7 +283,7 @@ class AppwriteService {
         documentId: ueId,
       );
     } catch (e) {
-      print('Erreur lors de la suppression de l\'UE: $e');
+      debugPrint('Erreur lors de la suppression de l\'UE: $e');
       rethrow;
     }
   }
@@ -298,7 +299,7 @@ class AppwriteService {
       );
       return response.documents.map((doc) => Concours.fromMap(doc.data)).toList();
     } catch (e) {
-      print('Erreur lors de la récupération des concours: $e');
+      debugPrint('Erreur lors de la récupération des concours: $e');
       rethrow;
     }
   }
@@ -313,7 +314,7 @@ class AppwriteService {
       );
       return Concours.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la récupération du concours: $e');
+      debugPrint('Erreur lors de la récupération du concours: $e');
       rethrow;
     }
   }
@@ -329,7 +330,7 @@ class AppwriteService {
       );
       return Concours.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la création du concours: $e');
+      debugPrint('Erreur lors de la création du concours: $e');
       rethrow;
     }
   }
@@ -345,7 +346,7 @@ class AppwriteService {
       );
       return Concours.fromMap(response.data);
     } catch (e) {
-      print('Erreur lors de la mise à jour du concours: $e');
+      debugPrint('Erreur lors de la mise à jour du concours: $e');
       rethrow;
     }
   }
@@ -359,7 +360,7 @@ class AppwriteService {
         documentId: concoursId,
       );
     } catch (e) {
-      print('Erreur lors de la suppression du concours: $e');
+      debugPrint('Erreur lors de la suppression du concours: $e');
       rethrow;
     }
   }
@@ -376,7 +377,7 @@ class AppwriteService {
       );
       return file.$id;
     } catch (e) {
-      print('Erreur lors de l\'upload du fichier: $e');
+      debugPrint('Erreur lors de l\'upload du fichier: $e');
       rethrow;
     }
   }
@@ -404,7 +405,7 @@ class AppwriteService {
         fileId: fileId,
       );
     } catch (e) {
-      print('Erreur lors du téléchargement du fichier: $e');
+      debugPrint('Erreur lors du téléchargement du fichier: $e');
       rethrow;
     }
   }
@@ -417,7 +418,7 @@ class AppwriteService {
         fileId: fileId,
       );
     } catch (e) {
-      print('Erreur lors de la suppression du fichier: $e');
+      debugPrint('Erreur lors de la suppression du fichier: $e');
       rethrow;
     }
   }
@@ -430,7 +431,7 @@ class AppwriteService {
       );
       return response.files;
     } catch (e) {
-      print('Erreur lors de la récupération des fichiers: $e');
+      debugPrint('Erreur lors de la récupération des fichiers: $e');
       rethrow;
     }
   }

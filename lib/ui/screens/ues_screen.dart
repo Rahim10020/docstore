@@ -10,24 +10,16 @@ class UesScreen extends ConsumerWidget {
   final Ecole ecole;
   final Filiere filiere;
 
-  const UesScreen({
-    super.key,
-    required this.ecole,
-    required this.filiere,
-  });
+  const UesScreen({super.key, required this.ecole, required this.filiere});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uesAsync = ref.watch(uesByFiliereProvider(filiere.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(filiere.nom),
-      ),
+      appBar: AppBar(title: Text(filiere.nom)),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.backgroundGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
         child: uesAsync.when(
           data: (ues) {
             if (ues.isEmpty) {
@@ -66,7 +58,7 @@ class UesScreen extends ConsumerWidget {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryIndigo.withOpacity(0.1),
+                        color: AppTheme.primaryIndigo.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(
@@ -103,8 +95,11 @@ class UesScreen extends ConsumerWidget {
                               ue.anneeEnseignement!,
                               style: const TextStyle(fontSize: 12),
                             ),
-                            backgroundColor: AppTheme.primaryIndigo.withOpacity(0.1),
-                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            backgroundColor: AppTheme.primaryIndigo.withValues(
+                              alpha: 0.1,
+                            ),
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
                           ),
                         ],
                         if (ue.ressources.isNotEmpty) ...[
@@ -134,9 +129,7 @@ class UesScreen extends ConsumerWidget {
               },
             );
           },
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stack) => Center(
             child: Padding(
               padding: const EdgeInsets.all(32.0),
@@ -161,10 +154,7 @@ class UesScreen extends ConsumerWidget {
                   Text(
                     error.toString(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
@@ -183,4 +173,3 @@ class UesScreen extends ConsumerWidget {
     );
   }
 }
-

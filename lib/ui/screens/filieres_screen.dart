@@ -8,23 +8,16 @@ import 'ues_screen.dart';
 class FilieresScreen extends ConsumerWidget {
   final Ecole ecole;
 
-  const FilieresScreen({
-    super.key,
-    required this.ecole,
-  });
+  const FilieresScreen({super.key, required this.ecole});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filieresAsync = ref.watch(filieresByEcoleProvider(ecole.id));
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(ecole.nom),
-      ),
+      appBar: AppBar(title: Text(ecole.nom)),
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppTheme.backgroundGradient,
-        ),
+        decoration: const BoxDecoration(gradient: AppTheme.backgroundGradient),
         child: filieresAsync.when(
           data: (filieres) {
             if (filieres.isEmpty) {
@@ -63,7 +56,7 @@ class FilieresScreen extends ConsumerWidget {
                       width: 50,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(
@@ -99,8 +92,11 @@ class FilieresScreen extends ConsumerWidget {
                             filiere.parcours,
                             style: const TextStyle(fontSize: 12),
                           ),
-                          backgroundColor: AppTheme.primaryBlue.withOpacity(0.1),
-                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          backgroundColor: AppTheme.primaryBlue.withValues(
+                            alpha: 0.1,
+                          ),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
                         ),
                       ],
                     ),
@@ -109,10 +105,8 @@ class FilieresScreen extends ConsumerWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UesScreen(
-                            ecole: ecole,
-                            filiere: filiere,
-                          ),
+                          builder: (context) =>
+                              UesScreen(ecole: ecole, filiere: filiere),
                         ),
                       );
                     },
@@ -121,9 +115,7 @@ class FilieresScreen extends ConsumerWidget {
               },
             );
           },
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
-          ),
+          loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stack) => Center(
             child: Padding(
               padding: const EdgeInsets.all(32.0),
@@ -148,10 +140,7 @@ class FilieresScreen extends ConsumerWidget {
                   Text(
                     error.toString(),
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
@@ -170,4 +159,3 @@ class FilieresScreen extends ConsumerWidget {
     );
   }
 }
-
