@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 /// Service pour interagir avec Google Drive via le backend
 class GoogleDriveService {
@@ -8,15 +9,23 @@ class GoogleDriveService {
   factory GoogleDriveService() => _instance;
   GoogleDriveService._internal();
 
+  // Logger
+  final Logger _logger = Logger();
+
   // URL du backend Vercel
   static const String backendUrl = 'https://docstore-api.vercel.app';
+
+  // Timeout par défaut
+  static const Duration _timeout = Duration(seconds: 10);
 
   // ========== LISTER LES FICHIERS ==========
 
   /// Récupère la liste de tous les fichiers sur Google Drive
   Future<List<Map<String, dynamic>>> listFiles() async {
     try {
-      final response = await http.get(Uri.parse('$backendUrl/api/files'));
+      final response = await http
+          .get(Uri.parse('$backendUrl/api/files'))
+          .timeout(_timeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -30,7 +39,7 @@ class GoogleDriveService {
         );
       }
     } catch (e) {
-      print('Erreur listFiles: $e');
+      _logger.e('Erreur listFiles', error: e);
       rethrow;
     }
   }
@@ -59,7 +68,7 @@ class GoogleDriveService {
 
       return null;
     } catch (e) {
-      print('Erreur extractFileIdFromUrl: $e');
+      _logger.e('Erreur extractFileIdFromUrl', error: e);
       return null;
     }
   }
@@ -69,9 +78,9 @@ class GoogleDriveService {
   /// Récupère l'URL de prévisualisation d'un fichier
   Future<String?> getPreviewUrl(String fileId) async {
     try {
-      final response = await http.get(
-        Uri.parse('$backendUrl/api/preview?id=$fileId'),
-      );
+      final response = await http
+          .get(Uri.parse('$backendUrl/api/preview?id=$fileId'))
+          .timeout(_timeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -81,7 +90,7 @@ class GoogleDriveService {
       }
       return null;
     } catch (e) {
-      print('Erreur getPreviewUrl: $e');
+      _logger.e('Erreur getPreviewUrl', error: e);
       return null;
     }
   }
@@ -107,15 +116,17 @@ class GoogleDriveService {
     required String base64Data,
   }) async {
     try {
-      final response = await http.post(
-        Uri.parse('$backendUrl/api/upload'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'name': name,
-          'mimeType': mimeType,
-          'data': base64Data,
-        }),
-      );
+      final response = await http
+          .post(
+            Uri.parse('$backendUrl/api/upload'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'name': name,
+              'mimeType': mimeType,
+              'data': base64Data,
+            }),
+          )
+          .timeout(_timeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -125,7 +136,7 @@ class GoogleDriveService {
       }
       return null;
     } catch (e) {
-      print('Erreur uploadFile: $e');
+      _logger.e('Erreur uploadFile', error: e);
       rethrow;
     }
   }
@@ -135,9 +146,9 @@ class GoogleDriveService {
   /// Supprime un fichier de Google Drive
   Future<bool> deleteFile(String fileId) async {
     try {
-      final response = await http.delete(
-        Uri.parse('$backendUrl/api/delete?id=$fileId'),
-      );
+      final response = await http
+          .delete(Uri.parse('$backendUrl/api/delete?id=$fileId'))
+          .timeout(_timeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -145,7 +156,7 @@ class GoogleDriveService {
       }
       return false;
     } catch (e) {
-      print('Erreur deleteFile: $e');
+      _logger.e('Erreur deleteFile', error: e);
       return false;
     }
   }
@@ -164,9 +175,14 @@ class GoogleDriveService {
 
     try {
       final files = await listFiles();
-      return files.firstWhere((file) => file['id'] == fileId, orElse: () => {});
+      try {
+        return files.firstWhere((file) => file['id'] == fileId);
+      } catch (e) {
+        // Aucun fichier trouvé
+        return null;
+      }
     } catch (e) {
-      print('Erreur getFileInfoFromUrl: $e');
+      _logger.e('Erreur getFileInfoFromUrl', error: e);
       return null;
     }
   }

@@ -248,7 +248,7 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                 else if (_resources != null)
                   ..._resources!.map((resource) {
                     return UnifiedResourceListItem(resource: resource);
-                  }).toList(),
+                  }),
               ],
             ),
           ),
