@@ -220,7 +220,7 @@ class AppwriteService {
       final response = await _databases.listDocuments(
         databaseId: AppwriteConfig.databaseId,
         collectionId: AppwriteConfig.uesCollectionId,
-        queries: [Query.equal('filiereId', filiereId)],
+        queries: [Query.equal('idFiliere', filiereId)],
       );
       return response.documents
           .map((doc) => ue_model.Ue.fromMap(doc.data))
