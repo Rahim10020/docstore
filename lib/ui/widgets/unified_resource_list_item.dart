@@ -140,7 +140,7 @@ class UnifiedResourceListItem extends StatelessWidget {
       decoration: BoxDecoration(
         color: isGoogleDrive
             ? Colors.green.shade50
-            : AppTheme.primaryBlue.withOpacity(0.1),
+            : AppTheme.primaryBlue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
