@@ -82,7 +82,9 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                               width: 50,
                               height: 50,
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryIndigo.withOpacity(0.1),
+                                color: AppTheme.primaryIndigo.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: const Icon(
@@ -155,7 +157,7 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.primaryBlue.withOpacity(0.1),
+                          color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -181,7 +183,7 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                 // Erreur
                 else if (_error != null)
                   Card(
-                    color: AppTheme.errorColor.withOpacity(0.1),
+                    color: AppTheme.errorColor.withValues(alpha: 0.1),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -192,9 +194,9 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                             size: 48,
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          const Text(
                             'Erreur lors du chargement',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: AppTheme.errorColor,
                             ),
