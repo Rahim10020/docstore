@@ -1,3 +1,4 @@
 
-Partage de ressources
-Téléchargement offlinere le lien deploye et l'utiliser pour recuperer les donnees dans mon app flutter.
+je viens d'ajouter des icones svg dans le dossiers assets. Je veux que tu remplace les icones de mon app par ceux la. donc tu vas utiliser les svg suivants : close, concours, download, ecoles, search, settings, share, view
+les utilisateurs doivent pouvoir enregistrer (save) les ressources (documents). Donc faut creer un nouvel bottom nav item et une nouvelle page qui va contenir les documents enregistres par l'utilisateur (je te laisse bien penser et coder le design de cette page)
+a cote de l'icone de settings tu va mette une icone notification avec une nouvelle page notification (je te laisse penser et coder le design de cette page) qui va afficher les notifications a l'utilisateur : quand un nouveau document est ajoute, quand une nouvel ecole est ajoute , quand une nouvelle filiere est ajoute.
