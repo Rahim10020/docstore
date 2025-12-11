@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/appwrite_config.dart';
 import 'services/appwrite_service.dart';
 import 'core/theme.dart';
-import 'ui/screens/home_screen.dart';
+import 'ui/screens/app_shell.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       title: 'DocStore EPL',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      home: const DocStoreAppShell(),
     );
   }
 }
