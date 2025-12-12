@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/unified_resource_service.dart';
 import '../../core/theme.dart';
-import '../../providers/data_provider.dart';
+import '../../providers/saved_resources_provider.dart';
 
 class UnifiedResourceListItem extends ConsumerWidget {
   final UnifiedResource resource;
@@ -97,9 +97,14 @@ class UnifiedResourceListItem extends ConsumerWidget {
                 isSaved: ref
                     .watch(savedResourcesProvider)
                     .contains(resource.id),
-                onToggle: () => ref
-                    .read(savedResourcesProvider.notifier)
-                    .toggleSave(resource.id),
+                onToggle: () async {
+                  final result = await ref
+                      .read(savedResourcesProvider.notifier)
+                      .toggleSave(resource.id);
+                  if (result != null && context.mounted) {
+                    _showSaveSnackBar(context, ref, result);
+                  }
+                },
               ),
             ],
           ),
@@ -216,6 +221,30 @@ class UnifiedResourceListItem extends ConsumerWidget {
         content: Text(message),
         backgroundColor: AppTheme.errorColor,
         behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  /// Affiche un snackbar pour les actions de sauvegarde avec possibilité d'annuler
+  void _showSaveSnackBar(
+    BuildContext context,
+    WidgetRef ref,
+    SaveActionResult result,
+  ) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(result.message),
+        backgroundColor: result.wasSaved
+            ? AppTheme.successColor
+            : AppTheme.mutedText,
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: 'Annuler',
+          textColor: Colors.white,
+          onPressed: () {
+            ref.read(savedResourcesProvider.notifier).undoLastAction();
+          },
+        ),
       ),
     );
   }
