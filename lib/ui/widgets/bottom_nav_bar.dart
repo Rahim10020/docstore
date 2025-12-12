@@ -52,16 +52,6 @@ class DocStoreBottomNavBar extends StatelessWidget {
             onTap: () => onItemSelected(1),
           ),
           _CenterButton(onTap: () => onItemSelected(2)),
-          _NavItem(
-            iconWidget: SvgPicture.asset(
-              'assets/icons/search.svg',
-              width: 26,
-              height: 26,
-            ),
-            label: 'Trouver',
-            isActive: currentIndex == 2,
-            onTap: () => onItemSelected(2),
-          ),
           _SavedNavItem(
             isActive: currentIndex == 3,
             onTap: () => onItemSelected(3),
@@ -140,7 +130,11 @@ class _CenterButton extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(Icons.add, size: 32, color: AppTheme.textPrimary),
+        child: SvgPicture.asset(
+          'assets/icons/search.svg',
+          width: 26,
+          height: 26,
+        ),
       ),
     );
   }
