@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/unified_resource_service.dart';
 import '../../core/theme.dart';
+import '../../providers/data_provider.dart';
 
-class UnifiedResourceListItem extends StatelessWidget {
+class UnifiedResourceListItem extends ConsumerWidget {
   final UnifiedResource resource;
   final VoidCallback? onTap;
 
@@ -15,7 +17,7 @@ class UnifiedResourceListItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
@@ -88,6 +90,16 @@ class UnifiedResourceListItem extends StatelessWidget {
                 ),
                 color: AppTheme.primaryPurple,
                 onTap: () => _handleDownload(context),
+              ),
+              const SizedBox(width: 8),
+              _SaveActionChip(
+                resourceId: resource.id,
+                isSaved: ref
+                    .watch(savedResourcesProvider)
+                    .contains(resource.id),
+                onToggle: () => ref
+                    .read(savedResourcesProvider.notifier)
+                    .toggleSave(resource.id),
               ),
             ],
           ),
@@ -234,6 +246,44 @@ class _ActionChip extends StatelessWidget {
         child: ColorFiltered(
           colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
           child: iconWidget,
+        ),
+      ),
+    );
+  }
+}
+
+class _SaveActionChip extends StatelessWidget {
+  final String resourceId;
+  final bool isSaved;
+  final VoidCallback onToggle;
+
+  const _SaveActionChip({
+    required this.resourceId,
+    required this.isSaved,
+    required this.onToggle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onToggle,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: isSaved
+              ? AppTheme.primaryPurple.withValues(alpha: 0.12)
+              : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: SvgPicture.asset(
+          isSaved ? 'assets/icons/saved-fill.svg' : 'assets/icons/saved.svg',
+          width: 20,
+          height: 20,
+          colorFilter: ColorFilter.mode(
+            isSaved ? AppTheme.primaryPurple : Colors.grey.shade600,
+            BlendMode.srcIn,
+          ),
         ),
       ),
     );

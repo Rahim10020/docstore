@@ -65,6 +65,7 @@ dependencies:
   mime: ^2.0.0
   appwrite: ^20.3.2
   device_info_plus: ^12.3.0
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:

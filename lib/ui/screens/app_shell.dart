@@ -5,6 +5,7 @@ import '../widgets/bottom_nav_bar.dart';
 import '../widgets/doc_store_header.dart';
 import 'concours_screen.dart';
 import 'home_screen.dart';
+import 'saved_screen.dart';
 import 'search_screen.dart';
 
 class DocStoreAppShell extends ConsumerStatefulWidget {
@@ -36,6 +37,11 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
       subtitle: 'Rechercher les Ecoles, Facultés, Concours, et UEs',
       body: SearchScreen(),
     ),
+    _PageConfig(
+      title: 'Sauvegardés',
+      subtitle: 'Vos documents sauvegardés pour\nun accès rapide.',
+      body: SavedScreen(),
+    ),
   ];
 
   @override
@@ -56,9 +62,7 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
                 trailing: config.trailing,
               ),
               const SizedBox(height: 24),
-              Expanded(
-                child: config.body,
-              ),
+              Expanded(child: config.body),
             ],
           ),
         ),
@@ -118,4 +122,3 @@ class _ConcoursFilterButton extends StatelessWidget {
     );
   }
 }
-

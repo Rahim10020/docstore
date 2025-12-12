@@ -63,6 +63,10 @@ class DocStoreBottomNavBar extends StatelessWidget {
             isActive: currentIndex == 2,
             onTap: () => onItemSelected(2),
           ),
+          _SavedNavItem(
+            isActive: currentIndex == 3,
+            onTap: () => onItemSelected(3),
+          ),
         ],
       ),
     );
@@ -99,6 +103,43 @@ class _NavItem extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SavedNavItem extends StatelessWidget {
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _SavedNavItem({required this.isActive, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isActive ? AppTheme.primaryPurple : AppTheme.mutedText;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SvgPicture.asset(
+            isActive ? 'assets/icons/saved-fill.svg' : 'assets/icons/saved.svg',
+            width: 24,
+            height: 24,
+            colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Sauvegardés',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
