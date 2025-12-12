@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   desktop_webview_window
   permission_handler_windows
+  share_plus
   syncfusion_pdfviewer_windows
   url_launcher_windows
   window_to_front

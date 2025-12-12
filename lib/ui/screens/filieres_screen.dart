@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme.dart';
 import '../../data/models/ecole.dart';
 import '../../data/models/filiere.dart';
@@ -61,7 +62,11 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
                       const Spacer(),
-                      const Icon(Icons.more_horiz),
+                      SvgPicture.asset(
+                        'assets/icons/more.svg',
+                        width: 20,
+                        height: 20,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),

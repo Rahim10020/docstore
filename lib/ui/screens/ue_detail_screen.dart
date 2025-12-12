@@ -1,6 +1,7 @@
 import 'package:docstore/ui/widgets/unified_resource_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme.dart';
 import '../../data/models/ue.dart';
 import '../../services/unified_resource_service.dart';
@@ -74,7 +75,9 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredResources = _resources != null ? _filterResources(_resources!) : null;
+    final filteredResources = _resources != null
+        ? _filterResources(_resources!)
+        : null;
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColorLight,
@@ -93,13 +96,20 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
                       const Spacer(),
-                      const Icon(Icons.more_horiz),
+                      SvgPicture.asset(
+                        'assets/icons/more.svg',
+                        width: 20,
+                        height: 20,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 22,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(22),
@@ -125,9 +135,14 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                         Row(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryPurple.withValues(alpha: 0.12),
+                                color: AppTheme.primaryPurple.withValues(
+                                  alpha: 0.12,
+                                ),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -147,7 +162,9 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                           Text(
                             widget.ue.description!,
                             style: TextStyle(
-                              color: AppTheme.textPrimary.withValues(alpha: 0.75),
+                              color: AppTheme.textPrimary.withValues(
+                                alpha: 0.75,
+                              ),
                             ),
                           ),
                         ],
@@ -174,52 +191,60 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: _isLoading
                       ? const Center(
-                          child: CircularProgressIndicator(color: AppTheme.primaryPurple),
+                          child: CircularProgressIndicator(
+                            color: AppTheme.primaryPurple,
+                          ),
                         )
                       : _error != null
-                          ? Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 54),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    _error!,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(color: AppTheme.mutedText),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  ElevatedButton.icon(
-                                    onPressed: _loadResources,
-                                    icon: const Icon(Icons.refresh),
-                                    label: const Text('Reessayer'),
-                                  ),
-                                ],
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                color: AppTheme.errorColor,
+                                size: 54,
                               ),
-                            )
-                          : widget.ue.ressources.isEmpty
-                              ? const Center(
-                                  child: Text(
-                                    'Aucune ressource disponible',
-                                    style: TextStyle(color: AppTheme.mutedText),
-                                  ),
-                                )
-                              : filteredResources != null && filteredResources.isEmpty
-                                  ? const Center(
-                                      child: Text(
-                                        'Aucune ressource trouvee',
-                                        style: TextStyle(color: AppTheme.mutedText),
-                                      ),
-                                    )
-                                  : ListView.builder(
-                                      padding: const EdgeInsets.only(bottom: 24, top: 8),
-                                      itemCount: filteredResources?.length ?? 0,
-                                      itemBuilder: (context, index) {
-                                        return UnifiedResourceListItem(
-                                          resource: filteredResources![index],
-                                        );
-                                      },
-                                    ),
+                              const SizedBox(height: 10),
+                              Text(
+                                _error!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: AppTheme.mutedText,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                onPressed: _loadResources,
+                                icon: const Icon(Icons.refresh),
+                                label: const Text('Reessayer'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : widget.ue.ressources.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Aucune ressource disponible',
+                            style: TextStyle(color: AppTheme.mutedText),
+                          ),
+                        )
+                      : filteredResources != null && filteredResources.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Aucune ressource trouvee',
+                            style: TextStyle(color: AppTheme.mutedText),
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.only(bottom: 24, top: 8),
+                          itemCount: filteredResources?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            return UnifiedResourceListItem(
+                              resource: filteredResources![index],
+                            );
+                          },
+                        ),
                 ),
               ),
             ),

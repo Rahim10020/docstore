@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../services/unified_resource_service.dart';
 import '../../core/theme.dart';
 import '../../providers/saved_resources_provider.dart';
+import '../screens/document_viewer_screen.dart';
 
 class UnifiedResourceListItem extends ConsumerWidget {
   final UnifiedResource resource;
@@ -79,7 +80,7 @@ class UnifiedResourceListItem extends ConsumerWidget {
                   height: 20,
                 ),
                 color: AppTheme.successColor,
-                onTap: () => _handleOpen(context),
+                onTap: () => _handleView(context),
               ),
               const SizedBox(width: 8),
               _ActionChip(
@@ -178,6 +179,27 @@ class UnifiedResourceListItem extends ConsumerWidget {
     );
   }
 
+  /// Gère la visualisation du document dans l'application
+  Future<void> _handleView(BuildContext context) async {
+    try {
+      // Open the document in the in-app viewer
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DocumentViewerScreen(
+            documentUrl: resource.viewUrl,
+            documentName: resource.name,
+            isPdf: resource.isPdf,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (context.mounted) {
+        _showErrorSnackBar(context, 'Erreur lors de l\'ouverture du document');
+      }
+    }
+  }
+
   /// Gère le téléchargement du fichier
   Future<void> _handleDownload(BuildContext context) async {
     try {
@@ -192,24 +214,6 @@ class UnifiedResourceListItem extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         _showErrorSnackBar(context, 'Erreur lors du téléchargement');
-      }
-    }
-  }
-
-  /// Gère l'ouverture du fichier
-  Future<void> _handleOpen(BuildContext context) async {
-    try {
-      final uri = Uri.parse(resource.viewUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        if (context.mounted) {
-          _showErrorSnackBar(context, 'Impossible d\'ouvrir le fichier');
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        _showErrorSnackBar(context, 'Erreur lors de l\'ouverture');
       }
     }
   }
