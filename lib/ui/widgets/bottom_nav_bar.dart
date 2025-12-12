@@ -56,6 +56,16 @@ class DocStoreBottomNavBar extends StatelessWidget {
             isActive: currentIndex == 3,
             onTap: () => onItemSelected(3),
           ),
+          _NavItem(
+            iconWidget: SvgPicture.asset(
+              'assets/icons/settings.svg',
+              width: 26,
+              height: 26,
+            ),
+            label: 'Param',
+            isActive: currentIndex == 4,
+            onTap: () => onItemSelected(4),
+          ),
         ],
       ),
     );
@@ -130,11 +140,7 @@ class _CenterButton extends StatelessWidget {
             ),
           ],
         ),
-        child: SvgPicture.asset(
-          'assets/icons/search.svg',
-          width: 26,
-          height: 26,
-        ),
+        child: Icon(Icons.search, size: 26, color: AppTheme.textPrimary),
       ),
     );
   }
@@ -168,7 +174,7 @@ class _SavedNavItem extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Enregistrés',
+              'Favoris',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,

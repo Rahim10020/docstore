@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
-import '../screens/settings_screen.dart';
 import 'notification_icon.dart';
 
 class DocStoreHeader extends ConsumerWidget {
@@ -38,20 +36,6 @@ class DocStoreHeader extends ConsumerWidget {
             ),
             // Notification icon
             const NotificationIcon(),
-            // Settings icon
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
-                );
-              },
-              icon: SvgPicture.asset(
-                'assets/icons/settings.svg',
-                width: 24,
-                height: 24,
-              ),
-              color: AppTheme.textPrimary,
-            ),
           ],
         ),
         const SizedBox(height: 16),
