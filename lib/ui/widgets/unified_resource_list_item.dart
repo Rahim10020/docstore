@@ -225,7 +225,7 @@ class UnifiedResourceListItem extends ConsumerWidget {
     );
   }
 
-  /// Affiche un snackbar pour les actions de sauvegarde avec possibilité d'annuler
+  /// Affiche un snackbar pour les actions de sauvegarde
   void _showSaveSnackBar(
     BuildContext context,
     WidgetRef ref,
@@ -238,13 +238,6 @@ class UnifiedResourceListItem extends ConsumerWidget {
             ? AppTheme.successColor
             : AppTheme.mutedText,
         behavior: SnackBarBehavior.floating,
-        action: SnackBarAction(
-          label: 'Annuler',
-          textColor: Colors.white,
-          onPressed: () {
-            ref.read(savedResourcesProvider.notifier).undoLastAction();
-          },
-        ),
       ),
     );
   }
