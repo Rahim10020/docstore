@@ -8,6 +8,7 @@ import 'concours_screen.dart';
 import 'home_screen.dart';
 import 'saved_screen.dart';
 import 'search_screen.dart';
+import 'settings_screen.dart';
 
 class DocStoreAppShell extends ConsumerStatefulWidget {
   const DocStoreAppShell({super.key});
@@ -51,6 +52,11 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
       title: 'Sauvegardés',
       subtitle: 'Vos documents sauvegardés pour\nun accès rapide.',
       body: SavedScreen(),
+    ),
+    _PageConfig(
+      title: 'Paramètres',
+      subtitle: 'Configurez votre application.',
+      body: SettingsScreen(),
     ),
   ];
 

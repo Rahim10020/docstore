@@ -23,14 +23,12 @@ class DocStoreHeader extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: Center(
-                child: Text(
-                  'DocStore',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    letterSpacing: 0.2,
-                  ),
+              child: Text(
+                'DocStore',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  letterSpacing: 0.2,
                 ),
               ),
             ),
