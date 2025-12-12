@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../screens/settings_screen.dart';
+import 'notification_icon.dart';
 
-class DocStoreHeader extends StatelessWidget {
+class DocStoreHeader extends ConsumerWidget {
   final String pageTitle;
   final String? subtitle;
   final Widget? trailing;
@@ -16,7 +18,7 @@ class DocStoreHeader extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -34,6 +36,9 @@ class DocStoreHeader extends StatelessWidget {
                 ),
               ),
             ),
+            // Notification icon
+            const NotificationIcon(),
+            // Settings icon
             IconButton(
               onPressed: () {
                 Navigator.of(context).push(

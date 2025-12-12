@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
+import '../../services/notification_service.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/doc_store_header.dart';
 import 'concours_screen.dart';
@@ -17,6 +18,15 @@ class DocStoreAppShell extends ConsumerStatefulWidget {
 
 class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize notification service with ref
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService().init(ref);
+    });
+  }
 
   final List<_PageConfig> _pages = const [
     _PageConfig(

@@ -66,6 +66,7 @@ dependencies:
   appwrite: ^20.3.2
   device_info_plus: ^12.3.0
   shared_preferences: ^2.2.2
+  timeago: ^3.7.0
 
 dev_dependencies:
   flutter_test:
