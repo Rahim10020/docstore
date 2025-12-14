@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/unified_resource_service.dart';
+import '../services/google_drive_service.dart';
 
 /// Classe pour représenter le résultat d'une action de sauvegarde
 class SaveActionResult {
@@ -18,8 +19,8 @@ class SaveActionResult {
 /// Provider pour gérer les ressources sauvegardées
 final savedResourcesProvider =
     StateNotifierProvider<SavedResourcesNotifier, List<String>>((ref) {
-      return SavedResourcesNotifier();
-    });
+  return SavedResourcesNotifier();
+});
 
 class SavedResourcesNotifier extends StateNotifier<List<String>> {
   SavedResourcesNotifier() : super([]) {
@@ -32,7 +33,44 @@ class SavedResourcesNotifier extends StateNotifier<List<String>> {
   Future<void> _loadSavedResources() async {
     final prefs = await SharedPreferences.getInstance();
     final saved = prefs.getStringList(_savedResourcesKey) ?? [];
-    state = saved;
+
+    // Normalize saved identifiers: convert Drive URLs to file IDs
+    final gd = GoogleDriveService();
+    final List<String> normalized = [];
+    for (final entry in saved) {
+      final fileId = gd.extractFileIdFromUrl(entry);
+      final value = fileId ?? entry;
+      if (!normalized.contains(value)) normalized.add(value);
+    }
+
+    // Debug: afficher ce qui est chargé et la version normalisée
+    try {
+      // ignore: avoid_print
+      print('SAVED_LOAD: loaded saved ids = $saved');
+      // ignore: avoid_print
+      print('SAVED_LOAD: normalized saved ids = $normalized');
+    } catch (_) {}
+
+    // If normalization changed the list, persist it
+    if (normalized.length != saved.length ||
+        !_listEquals(normalized, saved)) {
+      await prefs.setStringList(_savedResourcesKey, normalized);
+      // Debug: print persistence
+      try {
+        // ignore: avoid_print
+        print('SAVED_LOAD: persisted normalized saved ids');
+      } catch (_) {}
+    }
+
+    state = normalized;
+  }
+
+  bool _listEquals(List<String> a, List<String> b) {
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
   }
 
   Future<void> _saveToPrefs() async {
@@ -105,6 +143,11 @@ final savedUnifiedResourcesProvider = FutureProvider<List<UnifiedResource>>((
   ref,
 ) async {
   final savedIds = ref.watch(savedResourcesProvider);
+  // Debug: afficher IDs passés au service
+  try {
+    // ignore: avoid_print
+    print('SAVED_PROVIDER: fetching unified resources for ids = $savedIds');
+  } catch (_) {}
   final service = UnifiedResourceService();
   return await service.getResources(savedIds);
 });

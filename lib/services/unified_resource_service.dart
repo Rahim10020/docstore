@@ -43,7 +43,7 @@ class UnifiedResource {
 class UnifiedResourceService {
   // Singleton pattern
   static final UnifiedResourceService _instance =
-  UnifiedResourceService._internal();
+      UnifiedResourceService._internal();
   factory UnifiedResourceService() => _instance;
   UnifiedResourceService._internal();
 
@@ -58,9 +58,14 @@ class UnifiedResourceService {
 
   /// Détecte la source d'une ressource depuis son identifiant
   ResourceSource detectSource(String resourceIdentifier) {
-    if (_googleDriveService.isGoogleDriveUrl(resourceIdentifier)) {
+    // Supporter à la fois les URL Drive et les IDs Drive nus (ex: "1AbC...")
+    if (_googleDriveService.isGoogleDriveUrl(resourceIdentifier) ||
+        _googleDriveService.extractFileIdFromUrl(resourceIdentifier) != null) {
+      _logger.d('Detected Google Drive identifier: $resourceIdentifier');
       return ResourceSource.googleDrive;
     }
+
+    _logger.d('Detected Appwrite identifier: $resourceIdentifier');
     return ResourceSource.appwrite;
   }
 
@@ -68,20 +73,30 @@ class UnifiedResourceService {
 
   /// Récupère les informations d'une ressource unifiée
   Future<UnifiedResource> getResource(String resourceIdentifier) async {
+    _logger.d('getResource: start for $resourceIdentifier');
+
     // Vérifier le cache
     if (_cache.containsKey(resourceIdentifier)) {
+      _logger.d('getResource: cache hit for $resourceIdentifier');
       return _cache[resourceIdentifier]!;
     }
 
     final source = detectSource(resourceIdentifier);
+    _logger.d('getResource: detected source $source for $resourceIdentifier');
 
-    final resource = source == ResourceSource.googleDrive
-        ? await _getGoogleDriveResource(resourceIdentifier)
-        : await _getAppwriteResource(resourceIdentifier);
+    try {
+      final resource = source == ResourceSource.googleDrive
+          ? await _getGoogleDriveResource(resourceIdentifier)
+          : await _getAppwriteResource(resourceIdentifier);
 
-    // Mettre en cache
-    _cache[resourceIdentifier] = resource;
-    return resource;
+      // Mettre en cache
+      _cache[resourceIdentifier] = resource;
+      _logger.d('getResource: success for $resourceIdentifier => ${resource.name}');
+      return resource;
+    } catch (e, st) {
+      _logger.w('getResource: failed for $resourceIdentifier - $e\n$st');
+      rethrow;
+    }
   }
 
   /// Récupère une ressource depuis Google Drive
@@ -115,8 +130,8 @@ class UnifiedResourceService {
               : null,
         );
       }
-    } catch (e) {
-      _logger.w('Erreur lors de la récupération du fichier $fileId: $e');
+    } catch (e, st) {
+      _logger.w('Erreur lors de la récupération du fichier $fileId: $e\n$st');
     }
 
     // Fallback si non trouvé
@@ -141,8 +156,8 @@ class UnifiedResourceService {
     final size = fileInfo?['size'] is int
         ? fileInfo!['size'] as int
         : (fileInfo?['size'] != null
-        ? int.tryParse(fileInfo!['size'].toString())
-        : null);
+            ? int.tryParse(fileInfo!['size'].toString())
+            : null);
     final created = fileInfo?['createdAt'] != null
         ? DateTime.tryParse(fileInfo!['createdAt'].toString())
         : null;
@@ -163,23 +178,29 @@ class UnifiedResourceService {
 
   /// Récupère plusieurs ressources à partir d'une liste d'identifiants
   Future<List<UnifiedResource>> getResources(
-      List<String> resourceIdentifiers,
-      ) async {
+    List<String> resourceIdentifiers,
+  ) async {
     final List<UnifiedResource> resources = [];
+
+    if (resourceIdentifiers.isEmpty) {
+      _logger.d('getResources: no identifiers provided');
+      return resources;
+    }
+
+    _logger.d('getResources: starting for ${resourceIdentifiers.length} identifiers');
 
     for (final identifier in resourceIdentifiers) {
       try {
+        _logger.d('getResources: attempting $identifier');
         final resource = await getResource(identifier);
         resources.add(resource);
-      } catch (e) {
-        _logger.w(
-          'Erreur lors de la récupération de la ressource $identifier',
-          error: e,
-        );
+      } catch (e, st) {
+        _logger.w('Erreur lors de la récupération de la ressource $identifier: $e\n$st');
         // On continue avec les autres ressources
       }
     }
 
+    _logger.d('getResources: finished, found ${resources.length} resources');
     return resources;
   }
 
