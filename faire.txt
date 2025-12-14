@@ -1,2 +1,15 @@
 - revoir les couleurs de la bottom navbar
--
+- recuperer les vrais noms des documents et ressources et les afficher
+    dans unified_resource_list_item
+- revoir la card des Concours et le selecteur (voir figma)
+- j'ai fais un save du document(comunique epl) d'un concours mais ca n'apparait
+    pas dans la pages des saves c'est quoi le probleme?
+- finir avec l'implementation des notifications
+- tester les fonctionnalites de partage, de telechargement et d'ouverture
+    sur navigateur
+
+- implementer les fonctionnalites de more_horizontale (la ils sont) voir
+    figma pour savoir quoi mettre.
+
+- voir si on peut gerer la pagination de l'affichage des ressources (documents)
+    (actuellement on charge tout d'un coup)

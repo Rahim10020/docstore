@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/unified_resource_service.dart';
 import '../../core/theme.dart';
 import '../../providers/saved_resources_provider.dart';
@@ -18,87 +19,108 @@ class UnifiedResourceListItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          _buildFileIcon(),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  resource.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
+    // Make the whole tile tappable: opens the in-app viewer when tapped.
+    return GestureDetector(
+      onTap: onTap ?? () => _handleView(context),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            _buildFileIcon(),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    resource.name,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    _buildSourceBadge(),
-                    if (resource.size != null) ...[
-                      const SizedBox(width: 8),
-                      Text(
-                        UnifiedResourceService().formatFileSize(resource.size),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      _buildSourceBadge(),
+                      if (resource.size != null) ...[
+                        const SizedBox(width: 8),
+                        Text(
+                          UnifiedResourceService().formatFileSize(resource.size),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
-                      ),
+                      ],
                     ],
-                  ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // DOWNLOAD action (replaced VIEW)
+                _ActionChip(
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/download.svg',
+                    width: 14,
+                    height: 14,
+                  ),
+                  color: AppTheme.primaryBlue,
+                  onTap: () async {
+                    final url = resource.downloadUrl;
+                    if (url.isEmpty) {
+                      _showErrorSnackBar(context, 'URL de téléchargement non disponible');
+                      return;
+                    }
+                    try {
+                      final uri = Uri.parse(url);
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      } else {
+                        _showErrorSnackBar(context, 'Impossible d\'ouvrir le lien de téléchargement');
+                      }
+                    } catch (e) {
+                      _showErrorSnackBar(context, 'Erreur lors du téléchargement');
+                    }
+                  },
+                ),
+                const SizedBox(width: 6),
+                _SaveActionChip(
+                  resourceId: resource.id,
+                  isSaved: ref
+                      .watch(savedResourcesProvider)
+                      .contains(resource.id),
+                  onToggle: () async {
+                    final result = await ref
+                        .read(savedResourcesProvider.notifier)
+                        .toggleSave(resource.id);
+                    if (result != null && context.mounted) {
+                      _showSaveSnackBar(context, ref, result);
+                    }
+                  },
                 ),
               ],
             ),
-          ),
-          const SizedBox(width: 12),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _ActionChip(
-                iconWidget: SvgPicture.asset(
-                  'assets/icons/view.svg',
-                  width: 14,
-                  height: 14,
-                ),
-                color: AppTheme.successColor,
-                onTap: () => _handleView(context),
-              ),
-              const SizedBox(width: 6),
-              _SaveActionChip(
-                resourceId: resource.id,
-                isSaved: ref
-                    .watch(savedResourcesProvider)
-                    .contains(resource.id),
-                onToggle: () async {
-                  final result = await ref
-                      .read(savedResourcesProvider.notifier)
-                      .toggleSave(resource.id);
-                  if (result != null && context.mounted) {
-                    _showSaveSnackBar(context, ref, result);
-                  }
-                },
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
