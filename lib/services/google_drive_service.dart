@@ -1,246 +1,155 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
 /// Service pour interagir avec Google Drive via le backend
 class GoogleDriveService {
-  // Singleton pattern
-  static final GoogleDriveService _instance = GoogleDriveService._internal();
-  factory GoogleDriveService() => _instance;
-  GoogleDriveService._internal();
-
-  // Logger
   final Logger _logger = Logger();
 
-  // URL du backend Vercel (MISE À JOUR avec votre URL réelle)
+  // URL du backend Vercel
   static const String backendUrl = 'https://docstore-api.vercel.app';
 
-  // Timeout par défaut
-  static const Duration _timeout = Duration(seconds: 10);
+  // Timeout pour les requêtes
+  static const Duration timeout = Duration(seconds: 20);
 
-  // ========== LISTER LES FICHIERS ==========
+  /// Vérifie si une URL est une URL Google Drive
+  bool isGoogleDriveUrl(String url) {
+    return url.contains('drive.google.com') || url.contains('docs.google.com');
+  }
 
-  /// Récupère la liste de tous les fichiers sur Google Drive
-  /// Le backend garantit maintenant que le champ 'name' est toujours présent
+  /// Extrait l'ID du fichier depuis une URL Google Drive
+  String? extractFileIdFromUrl(String url) {
+    // Patterns possibles:
+    // https://drive.google.com/file/d/FILE_ID/view
+    // https://drive.google.com/open?id=FILE_ID
+    // https://docs.google.com/document/d/FILE_ID/edit
+
+    final patterns = [
+      RegExp(r'/file/d/([a-zA-Z0-9_-]+)'),
+      RegExp(r'/folders/([a-zA-Z0-9_-]+)'),
+      RegExp(r'/open\?id=([a-zA-Z0-9_-]+)'),
+      RegExp(r'/document/d/([a-zA-Z0-9_-]+)'),
+      RegExp(r'/spreadsheets/d/([a-zA-Z0-9_-]+)'),
+      RegExp(r'/presentation/d/([a-zA-Z0-9_-]+)'),
+    ];
+
+    for (final pattern in patterns) {
+      final match = pattern.firstMatch(url);
+      if (match != null && match.groupCount >= 1) {
+        return match.group(1);
+      }
+    }
+
+    // Si aucun pattern ne correspond, peut-être que c'est déjà un ID
+    if (url.length >= 25 && url.length <= 50 && !url.contains('/')) {
+      return url;
+    }
+
+    return null;
+  }
+
+  /// Liste tous les fichiers depuis le backend
   Future<List<Map<String, dynamic>>> listFiles() async {
     try {
+      _logger.d('🔍 Récupération de tous les fichiers Google Drive...');
+
       final response = await http
           .get(Uri.parse('$backendUrl/api/files'))
-          .timeout(_timeout);
+          .timeout(timeout);
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['success'] == true && data['files'] != null) {
-          final files = List<Map<String, dynamic>>.from(data['files']);
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
 
-          // Log pour vérifier que les noms sont bien présents
-          _logger.d('Fichiers récupérés: ${files.length}');
+        if (data['success'] == true) {
+          final files = (data['files'] as List)
+              .map((file) => Map<String, dynamic>.from(file))
+              .toList();
+
+          _logger.d('🐛 Fichiers récupérés: ${files.length}');
+
+          // Logs de debug pour voir les fichiers
           for (final file in files) {
-            _logger.d('Fichier: ${file['name']} (ID: ${file['id']})');
+            _logger.d('🐛 Fichier: ${file['name']} (ID: ${file['id']})');
           }
 
           return files;
         }
-        return [];
-      } else {
-        throw Exception(
-          'Erreur lors de la récupération des fichiers: ${response.statusCode}',
-        );
       }
+
+      _logger.e('❌ Erreur HTTP ${response.statusCode}: ${response.body}');
+      return [];
+    } on TimeoutException catch (e) {
+      _logger.e('⛔ Timeout lors de la récupération des fichiers', error: e);
+      return [];
     } catch (e) {
-      _logger.e('Erreur listFiles', error: e);
-      rethrow;
+      _logger.e('⛔ Erreur listFiles', error: e);
+      return [];
     }
   }
 
-  // ========== EXTRAIRE L'ID DEPUIS L'URL ==========
-
-  /// Extrait l'ID du fichier depuis une URL Google Drive
-  /// Formats supportés:
-  /// - https://drive.google.com/file/d/FILE_ID/...
-  /// - https://drive.google.com/open?id=FILE_ID
-  String? extractFileIdFromUrl(String url) {
+  /// 🆕 NOUVELLE MÉTHODE: Récupère les infos d'un fichier spécifique par ID
+  /// Cette méthode interroge le backend pour obtenir les métadonnées
+  Future<Map<String, dynamic>?> getFileInfoFromId(String fileId) async {
     try {
-      // Format: /file/d/FILE_ID/
-      final regex1 = RegExp(r'/file/d/([a-zA-Z0-9_-]+)');
-      final match1 = regex1.firstMatch(url);
-      if (match1 != null) {
-        return match1.group(1);
-      }
+      _logger.d('🔍 Recherche du fichier $fileId dans le backend...');
 
-      // Format: ?id=FILE_ID
-      final regex2 = RegExp(r'[?&]id=([a-zA-Z0-9_-]+)');
-      final match2 = regex2.firstMatch(url);
-      if (match2 != null) {
-        return match2.group(1);
-      }
-
-      return null;
-    } catch (e) {
-      _logger.e('Erreur extractFileIdFromUrl', error: e);
-      return null;
-    }
-  }
-
-  // ========== PRÉVISUALISATION ==========
-
-  /// Récupère l'URL de prévisualisation d'un fichier
-  Future<String?> getPreviewUrl(String fileId) async {
-    try {
+      // Appeler le backend pour récupérer TOUS les fichiers
       final response = await http
-          .get(Uri.parse('$backendUrl/api/preview?id=$fileId'))
-          .timeout(_timeout);
+          .get(Uri.parse('$backendUrl/api/files'))
+          .timeout(timeout);
 
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['success'] == true && data['url'] != null) {
-          return data['url'];
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+        if (data['success'] == true) {
+          final files = data['files'] as List;
+
+          // Chercher le fichier par ID
+          for (final file in files) {
+            if (file is Map && file['id'] == fileId) {
+              _logger.d('✅ Fichier trouvé: ${file['name']}');
+              return Map<String, dynamic>.from(file);
+            }
+          }
+
+          _logger.w('Fichier $fileId non trouvé dans les ${files.length} fichiers retournés');
         }
       }
+
+      return null;
+    } on TimeoutException catch (e) {
+      _logger.e('⛔ Timeout lors de la recherche du fichier $fileId', error: e);
       return null;
     } catch (e) {
-      _logger.e('Erreur getPreviewUrl', error: e);
+      _logger.e('⛔ Erreur getFileInfoFromId pour $fileId', error: e);
       return null;
     }
   }
 
-  /// Génère l'URL de prévisualisation directement (sans appel API)
+  /// Récupère les informations d'un fichier depuis une URL
+  Future<Map<String, dynamic>?> getFileInfoFromUrl(String url) async {
+    final fileId = extractFileIdFromUrl(url);
+    if (fileId == null) {
+      _logger.w('Impossible d\'extraire l\'ID de l\'URL: $url');
+      return null;
+    }
+
+    return getFileInfoFromId(fileId);
+  }
+
+  /// Obtient l'URL de prévisualisation directe
   String getPreviewUrlDirect(String fileId) {
     return 'https://drive.google.com/file/d/$fileId/preview';
   }
 
-  // ========== TÉLÉCHARGEMENT ==========
-
-  /// Récupère l'URL de téléchargement d'un fichier
+  /// Obtient l'URL de téléchargement
   String getDownloadUrl(String fileId) {
-    return '$backendUrl/api/download?id=$fileId';
+    return 'https://drive.google.com/uc?export=download&id=$fileId';
   }
 
-  // ========== UPLOAD ==========
-
-  /// Upload un fichier vers Google Drive
-  Future<Map<String, dynamic>?> uploadFile({
-    required String name,
-    required String mimeType,
-    required String base64Data,
-  }) async {
-    try {
-      final response = await http
-          .post(
-            Uri.parse('$backendUrl/api/upload'),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'name': name,
-              'mimeType': mimeType,
-              'data': base64Data,
-            }),
-          )
-          .timeout(_timeout);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        if (data['success'] == true && data['file'] != null) {
-          return data['file'];
-        }
-      }
-      return null;
-    } catch (e) {
-      _logger.e('Erreur uploadFile', error: e);
-      rethrow;
-    }
-  }
-
-  // ========== SUPPRESSION ==========
-
-  /// Supprime un fichier de Google Drive
-  Future<bool> deleteFile(String fileId) async {
-    try {
-      final response = await http
-          .delete(Uri.parse('$backendUrl/api/delete?id=$fileId'))
-          .timeout(_timeout);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['success'] == true;
-      }
-      return false;
-    } catch (e) {
-      _logger.e('Erreur deleteFile', error: e);
-      return false;
-    }
-  }
-
-  // ========== HELPERS AMÉLIORÉS ==========
-
-  /// Vérifie si une URL est une URL Google Drive
-  bool isGoogleDriveUrl(String url) {
-    return url.contains('drive.google.com');
-  }
-
-  /// Obtient les informations d'un fichier depuis son URL
-  Future<Map<String, dynamic>?> getFileInfoFromUrl(String url) async {
-    final fileId = extractFileIdFromUrl(url);
-    if (fileId == null) {
-      _logger.w('Impossible d\'extraire l\'ID du fichier depuis l\'URL: $url');
-      return null;
-    }
-
-    try {
-      final files = await listFiles();
-
-      // Rechercher le fichier par ID
-      for (final file in files) {
-        final id = file['id']?.toString();
-        if (id == fileId) {
-          // Le backend garantit que ces champs sont présents
-          return {
-            'id': file['id'] ?? fileId,
-            'name': file['name'] ?? 'Sans nom',
-            'mimeType': file['mimeType'] ?? 'application/octet-stream',
-            'size': file['size'],
-            'createdTime': file['createdTime'],
-            'modifiedTime': file['modifiedTime'],
-            'webViewLink': file['webViewLink'],
-            'iconLink': file['iconLink'],
-            'thumbnailLink': file['thumbnailLink'],
-          };
-        }
-      }
-
-      _logger.w('Fichier non trouvé avec l\'ID: $fileId');
-      return null;
-    } catch (e) {
-      _logger.e('Erreur getFileInfoFromUrl', error: e);
-      return null;
-    }
-  }
-
-  /// Obtient les informations d'un fichier depuis son ID
-  Future<Map<String, dynamic>?> getFileInfoFromId(String fileId) async {
-    try {
-      final files = await listFiles();
-
-      for (final file in files) {
-        final id = file['id']?.toString();
-        if (id == fileId) {
-          return {
-            'id': file['id'] ?? fileId,
-            'name': file['name'] ?? 'Sans nom',
-            'mimeType': file['mimeType'] ?? 'application/octet-stream',
-            'size': file['size'],
-            'createdTime': file['createdTime'],
-            'modifiedTime': file['modifiedTime'],
-            'webViewLink': file['webViewLink'],
-            'iconLink': file['iconLink'],
-            'thumbnailLink': file['thumbnailLink'],
-          };
-        }
-      }
-
-      return null;
-    } catch (e) {
-      _logger.e('Erreur getFileInfoFromId', error: e);
-      return null;
-    }
+  /// Obtient l'URL de visualisation
+  String getViewUrl(String fileId) {
+    return 'https://drive.google.com/file/d/$fileId/view';
   }
 }

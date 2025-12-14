@@ -1,4 +1,3 @@
-import 'package:docstore/services/unified_resource_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/appwrite_config.dart';
@@ -16,10 +15,7 @@ void main() async {
 
   // Précharger les métadonnées des fichiers
   await AppwriteService().preloadFileMetadata();
-  // Précharger Google Drive
-  print('⏳ Chargement Google Drive...');
-  await UnifiedResourceService().preloadGoogleDriveFiles();
-  print('✅ Google Drive prêt');
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

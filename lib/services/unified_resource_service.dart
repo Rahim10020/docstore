@@ -54,9 +54,6 @@ class UnifiedResourceService {
   // Cache pour les ressources
   final Map<String, UnifiedResource> _cache = {};
 
-  // 🆕 NOUVEAU: Cache pour tous les fichiers Google Drive
-  List<Map<String, dynamic>>? _allGoogleDriveFiles;
-
   // ========== DÉTECTION DE LA SOURCE ==========
 
   /// Détecte la source d'une ressource depuis son identifiant
@@ -87,22 +84,8 @@ class UnifiedResourceService {
     return resource;
   }
 
-  /// Précharge tous les fichiers Google Drive en cache
-  Future<void> preloadGoogleDriveFiles() async {
-    if (_allGoogleDriveFiles != null) return; // Déjà chargé
-
-    try {
-      _logger.d('📥 Préchargement de tous les fichiers Google Drive...');
-      _allGoogleDriveFiles = await _googleDriveService.listFiles();
-      _logger.d('✅ ${_allGoogleDriveFiles!.length} fichiers Google Drive préchargés');
-    } catch (e) {
-      _logger.e('❌ Erreur lors du préchargement Google Drive', error: e);
-      _allGoogleDriveFiles = [];
-    }
-  }
-
   /// Récupère une ressource depuis Google Drive
-  /// Utilise le cache préchargé
+  /// 🔧 VERSION SIMPLIFIÉE: Demande directement au backend
   Future<UnifiedResource> _getGoogleDriveResource(String url) async {
     final fileId = _googleDriveService.extractFileIdFromUrl(url);
 
@@ -110,47 +93,38 @@ class UnifiedResourceService {
       throw Exception('ID de fichier Google Drive invalide: $url');
     }
 
-    // Précharger les fichiers si ce n'est pas déjà fait
-    await preloadGoogleDriveFiles();
+    try {
+      // 🆕 Utiliser getFileInfoFromId qui interroge le backend
+      final fileInfo = await _googleDriveService.getFileInfoFromId(fileId);
 
-    // Rechercher dans le cache préchargé
-    Map<String, dynamic>? fileInfo;
+      if (fileInfo != null) {
+        _logger.d('✅ Fichier Google Drive trouvé: ${fileInfo['name']}');
 
-    if (_allGoogleDriveFiles != null) {
-      for (final file in _allGoogleDriveFiles!) {
-        if (file['id'] == fileId) {
-          fileInfo = file;
-          break;
-        }
+        return UnifiedResource(
+          id: fileId,
+          name: fileInfo['name'] ?? 'Document Google Drive',
+          source: ResourceSource.googleDrive,
+          viewUrl: _googleDriveService.getPreviewUrlDirect(fileId),
+          downloadUrl: _googleDriveService.getDownloadUrl(fileId),
+          mimeType: fileInfo['mimeType'],
+          size: fileInfo['size'] != null
+              ? int.tryParse(fileInfo['size'].toString())
+              : null,
+          createdTime: fileInfo['createdTime'] != null
+              ? DateTime.tryParse(fileInfo['createdTime'])
+              : null,
+        );
       }
+    } catch (e) {
+      _logger.w('Erreur lors de la récupération du fichier $fileId: $e');
     }
 
-    // Si trouvé dans le cache, utiliser les vraies données
-    if (fileInfo != null) {
-      _logger.d('✅ Fichier trouvé dans le cache: ${fileInfo['name']}');
-
-      return UnifiedResource(
-        id: fileId,
-        name: fileInfo['name'] ?? 'Document Google Drive',
-        source: ResourceSource.googleDrive,
-        viewUrl: _googleDriveService.getPreviewUrlDirect(fileId),
-        downloadUrl: _googleDriveService.getDownloadUrl(fileId),
-        mimeType: fileInfo['mimeType'],
-        size: fileInfo['size'] != null
-            ? int.tryParse(fileInfo['size'].toString())
-            : null,
-        createdTime: fileInfo['createdTime'] != null
-            ? DateTime.tryParse(fileInfo['createdTime'])
-            : null,
-      );
-    }
-
-    // Si pas trouvé, utiliser un fallback avec l'ID
-    _logger.w('Fichier $fileId non trouvé dans le cache, utilisation du fallback');
+    // Fallback si non trouvé
+    _logger.w('Fichier $fileId non trouvé, utilisation du fallback');
 
     return UnifiedResource(
       id: fileId,
-      name: 'Document $fileId', // Utiliser l'ID comme nom
+      name: 'Document Google Drive',
       source: ResourceSource.googleDrive,
       viewUrl: _googleDriveService.getPreviewUrlDirect(fileId),
       downloadUrl: _googleDriveService.getDownloadUrl(fileId),
@@ -188,19 +162,9 @@ class UnifiedResourceService {
   // ========== RÉCUPÉRATION DE PLUSIEURS RESSOURCES ==========
 
   /// Récupère plusieurs ressources à partir d'une liste d'identifiants
-  /// Précharge Google Drive avant de traiter les ressources
   Future<List<UnifiedResource>> getResources(
       List<String> resourceIdentifiers,
       ) async {
-    // Précharger Google Drive une seule fois pour tous les fichiers
-    final hasGoogleDrive = resourceIdentifiers.any(
-          (id) => _googleDriveService.isGoogleDriveUrl(id),
-    );
-
-    if (hasGoogleDrive) {
-      await preloadGoogleDriveFiles();
-    }
-
     final List<UnifiedResource> resources = [];
 
     for (final identifier in resourceIdentifiers) {
@@ -224,13 +188,6 @@ class UnifiedResourceService {
   /// Vide le cache
   void clearCache() {
     _cache.clear();
-    _allGoogleDriveFiles = null; // 🆕 Vider aussi le cache Google Drive
-  }
-
-  /// 🆕 NOUVEAU: Rafraîchir le cache Google Drive
-  Future<void> refreshGoogleDriveCache() async {
-    _allGoogleDriveFiles = null;
-    await preloadGoogleDriveFiles();
   }
 
   // ========== HELPERS ==========
