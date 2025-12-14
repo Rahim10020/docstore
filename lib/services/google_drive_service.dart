@@ -11,7 +11,7 @@ class GoogleDriveService {
   static const String backendUrl = 'https://docstore-api.vercel.app';
 
   // Timeout pour les requêtes
-  static const Duration timeout = Duration(seconds: 20);
+  static const Duration timeout = Duration(seconds: 10);
 
   /// Vérifie si une URL est une URL Google Drive
   bool isGoogleDriveUrl(String url) {
@@ -49,82 +49,41 @@ class GoogleDriveService {
     return null;
   }
 
-  /// Liste tous les fichiers depuis le backend
-  Future<List<Map<String, dynamic>>> listFiles() async {
-    try {
-      _logger.d('🔍 Récupération de tous les fichiers Google Drive...');
-
-      final response = await http
-          .get(Uri.parse('$backendUrl/api/files'))
-          .timeout(timeout);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-
-        if (data['success'] == true) {
-          final files = (data['files'] as List)
-              .map((file) => Map<String, dynamic>.from(file))
-              .toList();
-
-          _logger.d('🐛 Fichiers récupérés: ${files.length}');
-
-          // Logs de debug pour voir les fichiers
-          for (final file in files) {
-            _logger.d('🐛 Fichier: ${file['name']} (ID: ${file['id']})');
-          }
-
-          return files;
-        }
-      }
-
-      _logger.e('❌ Erreur HTTP ${response.statusCode}: ${response.body}');
-      return [];
-    } on TimeoutException catch (e) {
-      _logger.e('⛔ Timeout lors de la récupération des fichiers', error: e);
-      return [];
-    } catch (e) {
-      _logger.e('⛔ Erreur listFiles', error: e);
-      return [];
-    }
-  }
-
-  /// 🆕 NOUVELLE MÉTHODE: Récupère les infos d'un fichier spécifique par ID
-  /// Cette méthode interroge le backend pour obtenir les métadonnées
+  /// Récupère les infos d'un fichier spécifique par ID
+  /// Utilise l'endpoint /api/file/[id] pour une requête ciblée et rapide
   Future<Map<String, dynamic>?> getFileInfoFromId(String fileId) async {
     try {
-      _logger.d('🔍 Recherche du fichier $fileId dans le backend...');
+      _logger.d('Récupération du fichier $fileId...');
 
-      // Appeler le backend pour récupérer TOUS les fichiers
+      // Appel direct au fichier spécifique (beaucoup plus rapide !)
       final response = await http
-          .get(Uri.parse('$backendUrl/api/files'))
+          .get(Uri.parse('$backendUrl/api/file/$fileId'))
           .timeout(timeout);
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
 
-        if (data['success'] == true) {
-          final files = data['files'] as List;
-
-          // Chercher le fichier par ID
-          for (final file in files) {
-            if (file is Map && file['id'] == fileId) {
-              _logger.d('✅ Fichier trouvé: ${file['name']}');
-              return Map<String, dynamic>.from(file);
-            }
-          }
-
-          _logger.w('Fichier $fileId non trouvé dans les ${files.length} fichiers retournés');
+        if (data['success'] == true && data['file'] != null) {
+          final file = Map<String, dynamic>.from(data['file']);
+          _logger.d('Fichier trouvé: ${file['name']}');
+          return file;
         }
+      } else if (response.statusCode == 404) {
+        _logger.w('Fichier $fileId non trouvé (404)');
+        return null;
+      } else {
+        _logger.e('Erreur HTTP ${response.statusCode}: ${response.body}');
+        return null;
       }
-
-      return null;
     } on TimeoutException catch (e) {
-      _logger.e('⛔ Timeout lors de la recherche du fichier $fileId', error: e);
+      _logger.e('Timeout lors de la récupération du fichier $fileId', error: e);
       return null;
     } catch (e) {
-      _logger.e('⛔ Erreur getFileInfoFromId pour $fileId', error: e);
+      _logger.e('Erreur getFileInfoFromId pour $fileId', error: e);
       return null;
     }
+
+    return null;
   }
 
   /// Récupère les informations d'un fichier depuis une URL
@@ -136,6 +95,36 @@ class GoogleDriveService {
     }
 
     return getFileInfoFromId(fileId);
+  }
+
+  /// Liste tous les fichiers depuis le backend (utilisé uniquement si nécessaire)
+  Future<List<Map<String, dynamic>>> listFiles() async {
+    try {
+      _logger.d('Récupération de tous les fichiers Google Drive...');
+
+      final response = await http
+          .get(Uri.parse('$backendUrl/api/files'))
+          .timeout(Duration(seconds: 30)); // Timeout plus long pour cette requête
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+
+        if (data['success'] == true) {
+          final files = (data['files'] as List)
+              .map((file) => Map<String, dynamic>.from(file))
+              .toList();
+
+          _logger.d('Fichiers récupérés: ${files.length}');
+          return files;
+        }
+      }
+
+      _logger.e('Erreur HTTP ${response.statusCode}');
+      return [];
+    } catch (e) {
+      _logger.e('Erreur listFiles', error: e);
+      return [];
+    }
   }
 
   /// Obtient l'URL de prévisualisation directe
