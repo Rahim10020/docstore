@@ -1,10 +1,2 @@
-
-je viens d'ajouter des icones svg dans le dossiers assets. Je veux que tu remplace les 
-    icones de mon app par ceux la. donc tu vas utiliser les svg suivants : close, concours, 
-    download, ecoles, search, settings, share, view
-
-a cote de l'icone de settings tu va mette une icone notification avec une 
-    nouvelle page notification (je te laisse penser et coder le design de cette page) 
-    qui va afficher les notifications a l'utilisateur : quand un nouveau document est ajoute, 
-    quand une nouvel ecole est ajoute , quand une nouvelle filiere est ajoute.
-et dans la page des parametres on va permettre a l'utilisateur  de decider s'il veut recevoir les notificatons ou pas.
+- revoir les couleurs de la bottom navbar
+-

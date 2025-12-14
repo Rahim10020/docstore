@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../services/unified_resource_service.dart';
 import '../../core/theme.dart';
 import '../../providers/saved_resources_provider.dart';
@@ -76,23 +75,13 @@ class UnifiedResourceListItem extends ConsumerWidget {
               _ActionChip(
                 iconWidget: SvgPicture.asset(
                   'assets/icons/view.svg',
-                  width: 20,
-                  height: 20,
+                  width: 14,
+                  height: 14,
                 ),
                 color: AppTheme.successColor,
                 onTap: () => _handleView(context),
               ),
-              const SizedBox(width: 8),
-              _ActionChip(
-                iconWidget: SvgPicture.asset(
-                  'assets/icons/download.svg',
-                  width: 20,
-                  height: 20,
-                ),
-                color: AppTheme.primaryPurple,
-                onTap: () => _handleDownload(context),
-              ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 6),
               _SaveActionChip(
                 resourceId: resource.id,
                 isSaved: ref
@@ -200,24 +189,6 @@ class UnifiedResourceListItem extends ConsumerWidget {
     }
   }
 
-  /// Gère le téléchargement du fichier
-  Future<void> _handleDownload(BuildContext context) async {
-    try {
-      final uri = Uri.parse(resource.downloadUrl);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        if (context.mounted) {
-          _showErrorSnackBar(context, 'Impossible de télécharger le fichier');
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        _showErrorSnackBar(context, 'Erreur lors du téléchargement');
-      }
-    }
-  }
-
   /// Affiche un message d'erreur
   void _showErrorSnackBar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -263,15 +234,17 @@ class _ActionChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: ColorFiltered(
-          colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-          child: iconWidget,
+        child: Center(
+          child: ColorFiltered(
+            colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            child: iconWidget,
+          ),
         ),
       ),
     );
@@ -294,21 +267,23 @@ class _SaveActionChip extends StatelessWidget {
     return GestureDetector(
       onTap: onToggle,
       child: Container(
-        width: 40,
-        height: 40,
+        width: 30,
+        height: 30,
         decoration: BoxDecoration(
           color: isSaved
               ? AppTheme.primaryPurple.withValues(alpha: 0.12)
               : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
         ),
-        child: SvgPicture.asset(
-          isSaved ? 'assets/icons/saved-fill.svg' : 'assets/icons/saved.svg',
-          width: 20,
-          height: 20,
-          colorFilter: ColorFilter.mode(
-            isSaved ? AppTheme.primaryPurple : Colors.grey.shade600,
-            BlendMode.srcIn,
+        child: Center(
+          child: SvgPicture.asset(
+            isSaved ? 'assets/icons/saved-fill.svg' : 'assets/icons/saved.svg',
+            width: 14,
+            height: 14,
+            colorFilter: ColorFilter.mode(
+              isSaved ? AppTheme.primaryPurple : Colors.grey.shade600,
+              BlendMode.srcIn,
+            ),
           ),
         ),
       ),
