@@ -325,6 +325,21 @@ class AppwriteService {
     }
   }
 
+  /// Récupère les concours d'une ecole
+  Future<List<Concours>> getConcoursByEcole(String ecoleId) async {
+    try {
+      final response = await _databases.listDocuments(
+        databaseId: AppwriteConfig.databaseId,
+        collectionId: AppwriteConfig.concoursCollectionId,
+        queries: [Query.equal('idEcole', ecoleId)],
+      );
+      return response.documents.map((d) => Concours.fromMap(d.data)).toList();
+    } catch (e) {
+      debugPrint('Erreur lors de la récupération des concours pour l\'école $ecoleId: $e');
+      rethrow;
+    }
+  }
+
   /// Crée un nouveau concours
   Future<Concours> createConcours(Concours concours) async {
     try {

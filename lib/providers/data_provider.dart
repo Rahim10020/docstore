@@ -74,10 +74,19 @@ final concoursProvider = FutureProvider<List<Concours>>((ref) async {
 });
 
 /// Provider pour charger un concours spécifique par ID
-final concoursDetailProvider = FutureProvider.family<Concours, String>((
+final concoursDetailProvider = FutureProvider.family<Concours, String>( (
   ref,
   concoursId,
 ) async {
   final service = ref.read(appwriteServiceProvider);
   return await service.getConcoursById(concoursId);
+});
+
+/// Provider pour charger les concours d'une école
+final concoursByEcoleProvider = FutureProvider.family<List<Concours>, String>( (
+  ref,
+  ecoleId,
+) async {
+  final service = ref.read(appwriteServiceProvider);
+  return await service.getConcoursByEcole(ecoleId);
 });

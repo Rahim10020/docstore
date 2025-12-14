@@ -7,7 +7,9 @@ import '../../data/models/filiere.dart';
 import '../../providers/data_provider.dart';
 import '../widgets/filiere_card.dart';
 import '../widgets/rounded_search_input.dart';
+import '../widgets/concours_card.dart';
 import 'ues_screen.dart';
+import 'concours_detail_screen.dart';
 
 class FilieresScreen extends ConsumerStatefulWidget {
   final Ecole ecole;
@@ -44,6 +46,7 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
   @override
   Widget build(BuildContext context) {
     final filieresAsync = ref.watch(filieresByEcoleProvider(widget.ecole.id));
+    final concoursAsync = ref.watch(concoursByEcoleProvider(widget.ecole.id));
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColorLight,
@@ -102,6 +105,33 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
                         ],
                       ],
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Afficher le concours d'entree s'il existe
+                  concoursAsync.when(
+                    data: (concoursList) {
+                      if (concoursList.isEmpty) return const SizedBox.shrink();
+                      // On affiche le premier concours (s'il y en a plusieurs, on pourrait lister)
+                      final concours = concoursList.first;
+                      return Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          ConcoursCard(
+                            concours: concours,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ConcoursDetailScreen(concours: concours),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, __) => const SizedBox.shrink(),
                   ),
                   const SizedBox(height: 16),
                   RoundedSearchInput(
