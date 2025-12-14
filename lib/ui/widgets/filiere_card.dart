@@ -66,28 +66,20 @@ class FiliereCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryPurple.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Text(
-                      filiere.parcours,
-                      style: const TextStyle(
-                        color: AppTheme.primaryPurple,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
                   Row(
                     children: [
-                      const Text(
-                        'Type de licence',
-                        style: TextStyle(
-                          color: AppTheme.primaryPurple,
-                          fontWeight: FontWeight.w600,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryPurple.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Text(
+                          filiere.parcours,
+                          style: const TextStyle(
+                            color: AppTheme.primaryPurple,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       const Spacer(),
