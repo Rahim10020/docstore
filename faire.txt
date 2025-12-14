@@ -11,10 +11,7 @@
 - implementer les fonctionnalites de more_horizontale (la ils sont) voir
     figma pour savoir quoi mettre.
 
-- voir si on peut gerer la pagination de l'affichage des ressources (documents)
-    (actuellement on charge tout d'un coup)
-
-- tu vas remarquer que chaque ecole a son concours d'entree.
-Donc ce que je veux qu'on fasse c'est que dans la page de detail
-des ecoles, on affiche le concours d'entree de cette ecole et quand
-la personne va cliquer dessus, on va lui afficher les details de ce concours.
+- on dois revoir comment les documents sont sauvegarder, dans mes favoris. Et on dois
+ verifier que tous les documents peuvent etre sauvegarder. (doc concours, et tous les autres.
+ actuellement j'arrive a afficher les noms des documents mais quand je viens dans la page des docs sauvegardes
+  rien n'apparait) c'est quoi le probleme? Trouve ca et regle le.
