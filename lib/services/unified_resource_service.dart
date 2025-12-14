@@ -34,16 +34,16 @@ class UnifiedResource {
   /// Détermine si c'est une image
   bool get isImage =>
       mimeType?.contains('image') == true ||
-      name.toLowerCase().endsWith('.png') ||
-      name.toLowerCase().endsWith('.jpg') ||
-      name.toLowerCase().endsWith('.jpeg');
+          name.toLowerCase().endsWith('.png') ||
+          name.toLowerCase().endsWith('.jpg') ||
+          name.toLowerCase().endsWith('.jpeg');
 }
 
 /// Service unifié pour gérer les ressources de différentes sources
 class UnifiedResourceService {
   // Singleton pattern
   static final UnifiedResourceService _instance =
-      UnifiedResourceService._internal();
+  UnifiedResourceService._internal();
   factory UnifiedResourceService() => _instance;
   UnifiedResourceService._internal();
 
@@ -53,6 +53,9 @@ class UnifiedResourceService {
 
   // Cache pour les ressources
   final Map<String, UnifiedResource> _cache = {};
+
+  // 🆕 NOUVEAU: Cache pour tous les fichiers Google Drive
+  List<Map<String, dynamic>>? _allGoogleDriveFiles;
 
   // ========== DÉTECTION DE LA SOURCE ==========
 
@@ -84,7 +87,22 @@ class UnifiedResourceService {
     return resource;
   }
 
+  /// Précharge tous les fichiers Google Drive en cache
+  Future<void> preloadGoogleDriveFiles() async {
+    if (_allGoogleDriveFiles != null) return; // Déjà chargé
+
+    try {
+      _logger.d('📥 Préchargement de tous les fichiers Google Drive...');
+      _allGoogleDriveFiles = await _googleDriveService.listFiles();
+      _logger.d('✅ ${_allGoogleDriveFiles!.length} fichiers Google Drive préchargés');
+    } catch (e) {
+      _logger.e('❌ Erreur lors du préchargement Google Drive', error: e);
+      _allGoogleDriveFiles = [];
+    }
+  }
+
   /// Récupère une ressource depuis Google Drive
+  /// Utilise le cache préchargé
   Future<UnifiedResource> _getGoogleDriveResource(String url) async {
     final fileId = _googleDriveService.extractFileIdFromUrl(url);
 
@@ -92,37 +110,50 @@ class UnifiedResourceService {
       throw Exception('ID de fichier Google Drive invalide: $url');
     }
 
-    // Récupérer les infos du fichier depuis le backend amélioré
-    final fileInfo = await _googleDriveService.getFileInfoFromId(fileId);
+    // Précharger les fichiers si ce n'est pas déjà fait
+    await preloadGoogleDriveFiles();
 
-    if (fileInfo == null) {
-      _logger.w(
-        'Impossible de récupérer les infos du fichier $fileId, utilisation des valeurs par défaut',
-      );
-      // Fallback avec le nom par défaut
+    // Rechercher dans le cache préchargé
+    Map<String, dynamic>? fileInfo;
+
+    if (_allGoogleDriveFiles != null) {
+      for (final file in _allGoogleDriveFiles!) {
+        if (file['id'] == fileId) {
+          fileInfo = file;
+          break;
+        }
+      }
+    }
+
+    // Si trouvé dans le cache, utiliser les vraies données
+    if (fileInfo != null) {
+      _logger.d('✅ Fichier trouvé dans le cache: ${fileInfo['name']}');
+
       return UnifiedResource(
         id: fileId,
-        name: 'Document Google Drive',
+        name: fileInfo['name'] ?? 'Document Google Drive',
         source: ResourceSource.googleDrive,
         viewUrl: _googleDriveService.getPreviewUrlDirect(fileId),
         downloadUrl: _googleDriveService.getDownloadUrl(fileId),
+        mimeType: fileInfo['mimeType'],
+        size: fileInfo['size'] != null
+            ? int.tryParse(fileInfo['size'].toString())
+            : null,
+        createdTime: fileInfo['createdTime'] != null
+            ? DateTime.tryParse(fileInfo['createdTime'])
+            : null,
       );
     }
 
-    // Le backend garantit maintenant que 'name' est toujours présent
+    // Si pas trouvé, utiliser un fallback avec l'ID
+    _logger.w('Fichier $fileId non trouvé dans le cache, utilisation du fallback');
+
     return UnifiedResource(
       id: fileId,
-      name: fileInfo['name'] ?? 'Document',
+      name: 'Document $fileId', // Utiliser l'ID comme nom
       source: ResourceSource.googleDrive,
       viewUrl: _googleDriveService.getPreviewUrlDirect(fileId),
       downloadUrl: _googleDriveService.getDownloadUrl(fileId),
-      mimeType: fileInfo['mimeType'],
-      size: fileInfo['size'] != null
-          ? int.tryParse(fileInfo['size'].toString())
-          : null,
-      createdTime: fileInfo['createdTime'] != null
-          ? DateTime.tryParse(fileInfo['createdTime'])
-          : null,
     );
   }
 
@@ -136,8 +167,8 @@ class UnifiedResourceService {
     final size = fileInfo?['size'] is int
         ? fileInfo!['size'] as int
         : (fileInfo?['size'] != null
-              ? int.tryParse(fileInfo!['size'].toString())
-              : null);
+        ? int.tryParse(fileInfo!['size'].toString())
+        : null);
     final created = fileInfo?['createdAt'] != null
         ? DateTime.tryParse(fileInfo!['createdAt'].toString())
         : null;
@@ -157,9 +188,19 @@ class UnifiedResourceService {
   // ========== RÉCUPÉRATION DE PLUSIEURS RESSOURCES ==========
 
   /// Récupère plusieurs ressources à partir d'une liste d'identifiants
+  /// Précharge Google Drive avant de traiter les ressources
   Future<List<UnifiedResource>> getResources(
-    List<String> resourceIdentifiers,
-  ) async {
+      List<String> resourceIdentifiers,
+      ) async {
+    // Précharger Google Drive une seule fois pour tous les fichiers
+    final hasGoogleDrive = resourceIdentifiers.any(
+          (id) => _googleDriveService.isGoogleDriveUrl(id),
+    );
+
+    if (hasGoogleDrive) {
+      await preloadGoogleDriveFiles();
+    }
+
     final List<UnifiedResource> resources = [];
 
     for (final identifier in resourceIdentifiers) {
@@ -181,7 +222,16 @@ class UnifiedResourceService {
   // ========== CACHE ==========
 
   /// Vide le cache
-  void clearCache() => _cache.clear();
+  void clearCache() {
+    _cache.clear();
+    _allGoogleDriveFiles = null; // 🆕 Vider aussi le cache Google Drive
+  }
+
+  /// 🆕 NOUVEAU: Rafraîchir le cache Google Drive
+  Future<void> refreshGoogleDriveCache() async {
+    _allGoogleDriveFiles = null;
+    await preloadGoogleDriveFiles();
+  }
 
   // ========== HELPERS ==========
 
