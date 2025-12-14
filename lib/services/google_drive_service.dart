@@ -176,19 +176,26 @@ class GoogleDriveService {
     try {
       final files = await listFiles();
       for (final f in files) {
-        if (f is Map) {
-          final Map<String, dynamic> m = Map<String, dynamic>.from(f);
-          // try multiple possible id keys
-          final ids = <String?>[m['id']?.toString(), m['\$id']?.toString(), m['fileId']?.toString()];
-          if (ids.any((i) => i == fileId)) {
-            return {
-              'id': m['id'] ?? m['\$id'] ?? m['fileId'] ?? fileId,
-              'name': m['name'] ?? m['fileName'] ?? m['title'] ?? m['filename'] ?? 'Document',
-              'mimeType': m['mimeType'] ?? m['contentType'] ?? m['type'],
-              'size': m['size'] ?? m['bytes'] ?? m['fileSize'] ?? null,
-              'createdTime': m['createdTime'] ?? m['createdAt'] ?? m['created'] ?? null,
-            };
-          }
+        // try multiple possible id keys
+        final ids = <String?>[
+          f['id']?.toString(),
+          f['\$id']?.toString(),
+          f['fileId']?.toString(),
+        ];
+        if (ids.any((i) => i == fileId)) {
+          return {
+            'id': f['id'] ?? f['\$id'] ?? f['fileId'] ?? fileId,
+            'name':
+                f['name'] ??
+                f['fileName'] ??
+                f['title'] ??
+                f['filename'] ??
+                'Document',
+            'mimeType': f['mimeType'] ?? f['contentType'] ?? f['type'],
+            'size': f['size'] ?? f['bytes'] ?? f['fileSize'] ?? null,
+            'createdTime':
+                f['createdTime'] ?? f['createdAt'] ?? f['created'] ?? null,
+          };
         }
       }
       return null;
