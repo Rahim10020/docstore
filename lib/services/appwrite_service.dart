@@ -17,6 +17,9 @@ class AppwriteService {
   late final Databases _databases;
   late final Storage _storage;
 
+  /// Cache pour les métadonnées des fichiers
+  final Map<String, Map<String, dynamic>> _fileMetadataCache = {};
+
   /// Initialise le service
   void init() {
     _databases = _config.databases;
@@ -335,7 +338,9 @@ class AppwriteService {
       );
       return response.documents.map((d) => Concours.fromMap(d.data)).toList();
     } catch (e) {
-      debugPrint('Erreur lors de la récupération des concours pour l\'école $ecoleId: $e');
+      debugPrint(
+        'Erreur lors de la récupération des concours pour l\'école $ecoleId: $e',
+      );
       rethrow;
     }
   }
@@ -386,7 +391,7 @@ class AppwriteService {
     }
   }
 
-  // ========== STORAGE ==========
+  // ========== STORAGE - MÉTHODES AMÉLIORÉES ==========
 
   /// Upload un fichier
   Future<String> uploadFile(String filePath, String fileName) async {
@@ -438,6 +443,8 @@ class AppwriteService {
         bucketId: AppwriteConfig.bucketId,
         fileId: fileId,
       );
+      // Supprimer du cache
+      _fileMetadataCache.remove(fileId);
     } catch (e) {
       debugPrint('Erreur lors de la suppression du fichier: $e');
       rethrow;
@@ -445,6 +452,7 @@ class AppwriteService {
   }
 
   /// Liste tous les fichiers
+  /// AMÉLIORATION: Cette méthode retourne maintenant les objets File complets
   Future<List<dynamic>> listFiles() async {
     try {
       final response = await _storage.listFiles(
@@ -457,33 +465,167 @@ class AppwriteService {
     }
   }
 
-  /// Récupère les métadonnées d'un fichier (nom, mimeType, taille)
+  /// Récupère les métadonnées d'un fichier spécifique
+  /// NOUVELLE MÉTHODE AMÉLIORÉE: Utilise getFile() au lieu de listFiles()
   Future<Map<String, dynamic>?> getFileInfo(String fileId) async {
+    // Vérifier le cache d'abord
+    if (_fileMetadataCache.containsKey(fileId)) {
+      debugPrint('📦 Métadonnées de $fileId récupérées depuis le cache');
+      return _fileMetadataCache[fileId];
+    }
+
     try {
+      debugPrint('🔍 Récupération des métadonnées pour le fichier: $fileId');
+
+      // Méthode directe: utiliser getFile() pour obtenir les métadonnées
+      final file = await _storage.getFile(
+        bucketId: AppwriteConfig.bucketId,
+        fileId: fileId,
+      );
+
+      // Construire le dictionnaire de métadonnées
+      final metadata = {
+        'id': file.$id,
+        'name': file.name,
+        'mimeType': file.mimeType,
+        'size': file.sizeOriginal,
+        'createdAt': file.$createdAt,
+        'updatedAt': file.$updatedAt,
+      };
+
+      // Mettre en cache
+      _fileMetadataCache[fileId] = metadata;
+
+      debugPrint(
+        '✅ Métadonnées récupérées: ${metadata['name']} (${metadata['size']} bytes)',
+      );
+
+      return metadata;
+    } catch (e) {
+      debugPrint(
+        '❌ Erreur lors de la récupération des métadonnées du fichier $fileId: $e',
+      );
+
+      // Fallback: Essayer avec listFiles() si getFile() échoue
+      try {
+        debugPrint('🔄 Tentative de fallback avec listFiles()...');
+        final files = await listFiles();
+
+        for (final f in files) {
+          if (f is Map) {
+            final Map<String, dynamic> m = Map<String, dynamic>.from(f);
+            final candidateIds = <String?>[
+              m['\$id']?.toString(),
+              m['id']?.toString(),
+              m['fileId']?.toString(),
+            ];
+
+            if (candidateIds.any((id) => id == fileId)) {
+              final metadata = {
+                'id': m['\$id'] ?? m['id'] ?? m['fileId'] ?? fileId,
+                'name':
+                    m['name'] ??
+                    m['\$name'] ??
+                    m['fileName'] ??
+                    m['filename'] ??
+                    'Document Appwrite',
+                'mimeType': m['mimeType'] ?? m['contentType'] ?? m['type'],
+                'size':
+                    m['sizeOriginal'] ?? m['size'] ?? m['\$size'] ?? m['bytes'],
+                'createdAt': m['\$createdAt'] ?? m['createdAt'],
+                'updatedAt': m['\$updatedAt'] ?? m['updatedAt'],
+              };
+
+              // Mettre en cache
+              _fileMetadataCache[fileId] = metadata;
+
+              debugPrint(
+                '✅ Métadonnées récupérées via fallback: ${metadata['name']}',
+              );
+              return metadata;
+            }
+          }
+        }
+      } catch (fallbackError) {
+        debugPrint('❌ Fallback échoué: $fallbackError');
+      }
+
+      return null;
+    }
+  }
+
+  /// Récupère les métadonnées de plusieurs fichiers en batch
+  /// NOUVELLE MÉTHODE: Optimisée pour récupérer plusieurs fichiers
+  Future<Map<String, Map<String, dynamic>>> getMultipleFilesInfo(
+    List<String> fileIds,
+  ) async {
+    final Map<String, Map<String, dynamic>> results = {};
+
+    debugPrint(
+      '📚 Récupération des métadonnées de ${fileIds.length} fichiers...',
+    );
+
+    for (final fileId in fileIds) {
+      try {
+        final info = await getFileInfo(fileId);
+        if (info != null) {
+          results[fileId] = info;
+        }
+      } catch (e) {
+        debugPrint('⚠️ Impossible de récupérer les métadonnées de $fileId: $e');
+        // Continuer avec les autres fichiers
+      }
+    }
+
+    debugPrint(
+      '✅ ${results.length}/${fileIds.length} fichiers récupérés avec succès',
+    );
+
+    return results;
+  }
+
+  /// Vide le cache des métadonnées
+  void clearFileMetadataCache() {
+    _fileMetadataCache.clear();
+    debugPrint('🗑️ Cache des métadonnées vidé');
+  }
+
+  /// Précharge les métadonnées des fichiers
+  /// NOUVELLE MÉTHODE: Utile pour charger toutes les métadonnées en une fois
+  Future<void> preloadFileMetadata() async {
+    try {
+      debugPrint('⏳ Préchargement des métadonnées de tous les fichiers...');
       final files = await listFiles();
-      // Les éléments retournés par listFiles sont généralement des maps.
+
       for (final f in files) {
         if (f is Map) {
           final Map<String, dynamic> m = Map<String, dynamic>.from(f);
-          // Plusieurs clefs possibles selon la version / wrapper : '$id', 'id'
-          final candidateIds = <String?>[m['\$id']?.toString(), m['id']?.toString(), m['fileId']?.toString()];
-          if (candidateIds.any((id) => id == fileId)) {
-            // Normaliser les noms de champs les plus courants
-            return {
-              'id': m['\$id'] ?? m['id'] ?? m['fileId'] ?? fileId,
-              'name': m['name'] ?? m['\$name'] ?? m['fileName'] ?? m['filename'] ?? 'Fichier',
+          final fileId = m['\$id'] ?? m['id'] ?? m['fileId'];
+
+          if (fileId != null) {
+            final metadata = {
+              'id': fileId,
+              'name':
+                  m['name'] ??
+                  m['\$name'] ??
+                  m['fileName'] ??
+                  m['filename'] ??
+                  'Document',
               'mimeType': m['mimeType'] ?? m['contentType'] ?? m['type'],
-              'size': m['sizeOriginal'] ?? m['size'] ?? m['\$size'] ?? m['bytes'],
+              'size':
+                  m['sizeOriginal'] ?? m['size'] ?? m['\$size'] ?? m['bytes'],
               'createdAt': m['\$createdAt'] ?? m['createdAt'],
+              'updatedAt': m['\$updatedAt'] ?? m['updatedAt'],
             };
+
+            _fileMetadataCache[fileId.toString()] = metadata;
           }
         }
       }
 
-      return null;
+      debugPrint('✅ ${_fileMetadataCache.length} fichiers préchargés en cache');
     } catch (e) {
-      debugPrint('Impossible de récupérer les métadonnées du fichier Appwrite $fileId: $e');
-      return null;
+      debugPrint('❌ Erreur lors du préchargement: $e');
     }
   }
 }

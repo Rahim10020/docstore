@@ -6,18 +6,17 @@ import 'core/theme.dart';
 import 'ui/screens/app_shell.dart';
 import 'providers/theme_provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialiser Appwrite
   AppwriteConfig().init();
   AppwriteService().init();
 
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  // Précharger les métadonnées des fichiers
+  await AppwriteService().preloadFileMetadata();
+
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
