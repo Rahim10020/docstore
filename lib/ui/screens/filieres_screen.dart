@@ -7,7 +7,7 @@ import '../../data/models/filiere.dart';
 import '../../providers/data_provider.dart';
 import '../widgets/filiere_card.dart';
 import '../widgets/rounded_search_input.dart';
-import '../widgets/concours_card.dart';
+import '../widgets/compact_concours_card.dart';
 import 'ues_screen.dart';
 import 'concours_detail_screen.dart';
 
@@ -115,9 +115,9 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
                       final concours = concoursList.first;
                       return Column(
                         children: [
-                          const SizedBox(height: 12),
-                          ConcoursCard(
-                            concours: concours,
+                          const SizedBox(height: 8),
+                          CompactConcoursCard(
+                            title: 'Concours d\'entree a ${widget.ecole.nom}',
                             onTap: () {
                               Navigator.push(
                                 context,
