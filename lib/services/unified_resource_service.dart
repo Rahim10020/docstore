@@ -89,24 +89,39 @@ class UnifiedResourceService {
     final fileId = _googleDriveService.extractFileIdFromUrl(url);
 
     if (fileId == null) {
-      throw Exception('ID de fichier Google Drive invalide');
+      throw Exception('ID de fichier Google Drive invalide: $url');
     }
 
-    // Essayer de récupérer les infos du fichier
-    final fileInfo = await _googleDriveService.getFileInfoFromUrl(url);
+    // Récupérer les infos du fichier depuis le backend amélioré
+    final fileInfo = await _googleDriveService.getFileInfoFromId(fileId);
 
+    if (fileInfo == null) {
+      _logger.w(
+        'Impossible de récupérer les infos du fichier $fileId, utilisation des valeurs par défaut',
+      );
+      // Fallback avec le nom par défaut
+      return UnifiedResource(
+        id: fileId,
+        name: 'Document Google Drive',
+        source: ResourceSource.googleDrive,
+        viewUrl: _googleDriveService.getPreviewUrlDirect(fileId),
+        downloadUrl: _googleDriveService.getDownloadUrl(fileId),
+      );
+    }
+
+    // Le backend garantit maintenant que 'name' est toujours présent
     return UnifiedResource(
       id: fileId,
-      name: fileInfo?['name'] ?? fileId,
+      name: fileInfo['name'] ?? 'Document',
       source: ResourceSource.googleDrive,
       viewUrl: _googleDriveService.getPreviewUrlDirect(fileId),
       downloadUrl: _googleDriveService.getDownloadUrl(fileId),
-      mimeType: fileInfo?['mimeType'],
-      size: fileInfo?['size'] != null
-          ? int.tryParse(fileInfo!['size'].toString())
+      mimeType: fileInfo['mimeType'],
+      size: fileInfo['size'] != null
+          ? int.tryParse(fileInfo['size'].toString())
           : null,
-      createdTime: fileInfo?['createdTime'] != null
-          ? DateTime.tryParse(fileInfo!['createdTime'])
+      createdTime: fileInfo['createdTime'] != null
+          ? DateTime.tryParse(fileInfo['createdTime'])
           : null,
     );
   }
@@ -114,16 +129,15 @@ class UnifiedResourceService {
   /// Récupère une ressource depuis Appwrite
   Future<UnifiedResource> _getAppwriteResource(String fileId) async {
     // Essayer de récupérer les infos du fichier depuis Appwrite
-    // Note: Appwrite ne fournit pas directement les métadonnées via l'URL
-    // On utilise donc les URLs générées par le service
-
     final fileInfo = await _appwriteService.getFileInfo(fileId);
 
-    final name = fileInfo?['name'] ?? fileId;
+    final name = fileInfo?['name'] ?? 'Fichier Appwrite';
     final mimeType = fileInfo?['mimeType'];
     final size = fileInfo?['size'] is int
         ? fileInfo!['size'] as int
-        : (fileInfo?['size'] != null ? int.tryParse(fileInfo!['size'].toString()) : null);
+        : (fileInfo?['size'] != null
+              ? int.tryParse(fileInfo!['size'].toString())
+              : null);
     final created = fileInfo?['createdAt'] != null
         ? DateTime.tryParse(fileInfo!['createdAt'].toString())
         : null;
