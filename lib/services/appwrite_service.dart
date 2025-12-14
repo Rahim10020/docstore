@@ -441,4 +441,34 @@ class AppwriteService {
       rethrow;
     }
   }
+
+  /// Récupère les métadonnées d'un fichier (nom, mimeType, taille)
+  Future<Map<String, dynamic>?> getFileInfo(String fileId) async {
+    try {
+      final files = await listFiles();
+      // Les éléments retournés par listFiles sont généralement des maps.
+      for (final f in files) {
+        if (f is Map) {
+          final Map<String, dynamic> m = Map<String, dynamic>.from(f);
+          // Plusieurs clefs possibles selon la version / wrapper : '$id', 'id'
+          final candidateIds = <String?>[m['\$id']?.toString(), m['id']?.toString(), m['fileId']?.toString()];
+          if (candidateIds.any((id) => id == fileId)) {
+            // Normaliser les noms de champs les plus courants
+            return {
+              'id': m['\$id'] ?? m['id'] ?? m['fileId'] ?? fileId,
+              'name': m['name'] ?? m['\$name'] ?? m['fileName'] ?? m['filename'] ?? 'Fichier',
+              'mimeType': m['mimeType'] ?? m['contentType'] ?? m['type'],
+              'size': m['sizeOriginal'] ?? m['size'] ?? m['\$size'] ?? m['bytes'],
+              'createdAt': m['\$createdAt'] ?? m['createdAt'],
+            };
+          }
+        }
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Impossible de récupérer les métadonnées du fichier Appwrite $fileId: $e');
+      return null;
+    }
+  }
 }

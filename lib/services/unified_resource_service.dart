@@ -97,7 +97,7 @@ class UnifiedResourceService {
 
     return UnifiedResource(
       id: fileId,
-      name: fileInfo?['name'] ?? 'Document Google Drive',
+      name: fileInfo?['name'] ?? fileId,
       source: ResourceSource.googleDrive,
       viewUrl: _googleDriveService.getPreviewUrlDirect(fileId),
       downloadUrl: _googleDriveService.getDownloadUrl(fileId),
@@ -117,15 +117,26 @@ class UnifiedResourceService {
     // Note: Appwrite ne fournit pas directement les métadonnées via l'URL
     // On utilise donc les URLs générées par le service
 
+    final fileInfo = await _appwriteService.getFileInfo(fileId);
+
+    final name = fileInfo?['name'] ?? fileId;
+    final mimeType = fileInfo?['mimeType'];
+    final size = fileInfo?['size'] is int
+        ? fileInfo!['size'] as int
+        : (fileInfo?['size'] != null ? int.tryParse(fileInfo!['size'].toString()) : null);
+    final created = fileInfo?['createdAt'] != null
+        ? DateTime.tryParse(fileInfo!['createdAt'].toString())
+        : null;
+
     return UnifiedResource(
       id: fileId,
-      name: 'Document', // Appwrite ne fournit pas le nom via l'URL
+      name: name,
       source: ResourceSource.appwrite,
       viewUrl: _appwriteService.getFileView(fileId),
       downloadUrl: _appwriteService.getFileDownload(fileId),
-      mimeType: null, // Non disponible sans appel API
-      size: null,
-      createdTime: null,
+      mimeType: mimeType,
+      size: size,
+      createdTime: created,
     );
   }
 

@@ -1,6 +1,6 @@
 - revoir les couleurs de la bottom navbar
 - recuperer les vrais noms des documents et ressources et les afficher
-    dans unified_resource_list_item
+    dans unified_resource_list_item je ne veux plus voir Document et Document Google Drive
 - revoir la card des Concours et le selecteur (voir figma)
 - j'ai fais un save du document(comunique epl) d'un concours mais ca n'apparait
     pas dans la pages des saves c'est quoi le probleme?
@@ -13,3 +13,8 @@
 
 - voir si on peut gerer la pagination de l'affichage des ressources (documents)
     (actuellement on charge tout d'un coup)
+
+- tu vas remarquer que chaque ecole a son concours d'entree.
+Donc ce que je veux qu'on fasse c'est que dans la page de detail
+des ecoles, on affiche le concours d'entree de cette ecole et quand
+la personne va cliquer dessus, on va lui afficher les details de ce concours.

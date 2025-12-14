@@ -175,12 +175,23 @@ class GoogleDriveService {
 
     try {
       final files = await listFiles();
-      try {
-        return files.firstWhere((file) => file['id'] == fileId);
-      } catch (e) {
-        // Aucun fichier trouvé
-        return null;
+      for (final f in files) {
+        if (f is Map) {
+          final Map<String, dynamic> m = Map<String, dynamic>.from(f);
+          // try multiple possible id keys
+          final ids = <String?>[m['id']?.toString(), m['\$id']?.toString(), m['fileId']?.toString()];
+          if (ids.any((i) => i == fileId)) {
+            return {
+              'id': m['id'] ?? m['\$id'] ?? m['fileId'] ?? fileId,
+              'name': m['name'] ?? m['fileName'] ?? m['title'] ?? m['filename'] ?? 'Document',
+              'mimeType': m['mimeType'] ?? m['contentType'] ?? m['type'],
+              'size': m['size'] ?? m['bytes'] ?? m['fileSize'] ?? null,
+              'createdTime': m['createdTime'] ?? m['createdAt'] ?? m['created'] ?? null,
+            };
+          }
+        }
       }
+      return null;
     } catch (e) {
       _logger.e('Erreur getFileInfoFromUrl', error: e);
       return null;
