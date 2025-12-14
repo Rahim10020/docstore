@@ -12,7 +12,7 @@ class GoogleDriveService {
   // Logger
   final Logger _logger = Logger();
 
-  // URL du backend Vercel
+  // URL du backend Vercel (MISE À JOUR avec votre URL réelle)
   static const String backendUrl = 'https://docstore-api.vercel.app';
 
   // Timeout par défaut
@@ -21,6 +21,7 @@ class GoogleDriveService {
   // ========== LISTER LES FICHIERS ==========
 
   /// Récupère la liste de tous les fichiers sur Google Drive
+  /// Le backend garantit maintenant que le champ 'name' est toujours présent
   Future<List<Map<String, dynamic>>> listFiles() async {
     try {
       final response = await http
@@ -30,7 +31,15 @@ class GoogleDriveService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['success'] == true && data['files'] != null) {
-          return List<Map<String, dynamic>>.from(data['files']);
+          final files = List<Map<String, dynamic>>.from(data['files']);
+
+          // Log pour vérifier que les noms sont bien présents
+          _logger.d('Fichiers récupérés: ${files.length}');
+          for (final file in files) {
+            _logger.d('Fichier: ${file['name']} (ID: ${file['id']})');
+          }
+
+          return files;
         }
         return [];
       } else {
@@ -161,7 +170,7 @@ class GoogleDriveService {
     }
   }
 
-  // ========== HELPERS ==========
+  // ========== HELPERS AMÉLIORÉS ==========
 
   /// Vérifie si une URL est une URL Google Drive
   bool isGoogleDriveUrl(String url) {
@@ -171,36 +180,66 @@ class GoogleDriveService {
   /// Obtient les informations d'un fichier depuis son URL
   Future<Map<String, dynamic>?> getFileInfoFromUrl(String url) async {
     final fileId = extractFileIdFromUrl(url);
-    if (fileId == null) return null;
+    if (fileId == null) {
+      _logger.w('Impossible d\'extraire l\'ID du fichier depuis l\'URL: $url');
+      return null;
+    }
 
     try {
       final files = await listFiles();
-      for (final f in files) {
-        // try multiple possible id keys
-        final ids = <String?>[
-          f['id']?.toString(),
-          f['\$id']?.toString(),
-          f['fileId']?.toString(),
-        ];
-        if (ids.any((i) => i == fileId)) {
+
+      // Rechercher le fichier par ID
+      for (final file in files) {
+        final id = file['id']?.toString();
+        if (id == fileId) {
+          // Le backend garantit que ces champs sont présents
           return {
-            'id': f['id'] ?? f['\$id'] ?? f['fileId'] ?? fileId,
-            'name':
-                f['name'] ??
-                f['fileName'] ??
-                f['title'] ??
-                f['filename'] ??
-                'Document',
-            'mimeType': f['mimeType'] ?? f['contentType'] ?? f['type'],
-            'size': f['size'] ?? f['bytes'] ?? f['fileSize'] ?? null,
-            'createdTime':
-                f['createdTime'] ?? f['createdAt'] ?? f['created'] ?? null,
+            'id': file['id'] ?? fileId,
+            'name': file['name'] ?? 'Sans nom',
+            'mimeType': file['mimeType'] ?? 'application/octet-stream',
+            'size': file['size'],
+            'createdTime': file['createdTime'],
+            'modifiedTime': file['modifiedTime'],
+            'webViewLink': file['webViewLink'],
+            'iconLink': file['iconLink'],
+            'thumbnailLink': file['thumbnailLink'],
           };
         }
       }
+
+      _logger.w('Fichier non trouvé avec l\'ID: $fileId');
       return null;
     } catch (e) {
       _logger.e('Erreur getFileInfoFromUrl', error: e);
+      return null;
+    }
+  }
+
+  /// Obtient les informations d'un fichier depuis son ID
+  Future<Map<String, dynamic>?> getFileInfoFromId(String fileId) async {
+    try {
+      final files = await listFiles();
+
+      for (final file in files) {
+        final id = file['id']?.toString();
+        if (id == fileId) {
+          return {
+            'id': file['id'] ?? fileId,
+            'name': file['name'] ?? 'Sans nom',
+            'mimeType': file['mimeType'] ?? 'application/octet-stream',
+            'size': file['size'],
+            'createdTime': file['createdTime'],
+            'modifiedTime': file['modifiedTime'],
+            'webViewLink': file['webViewLink'],
+            'iconLink': file['iconLink'],
+            'thumbnailLink': file['thumbnailLink'],
+          };
+        }
+      }
+
+      return null;
+    } catch (e) {
+      _logger.e('Erreur getFileInfoFromId', error: e);
       return null;
     }
   }
