@@ -10,8 +10,3 @@
 
 - implementer les fonctionnalites de more_horizontale (la ils sont) voir
     figma pour savoir quoi mettre.
-
-- on dois revoir comment les documents sont sauvegarder, dans mes favoris. Et on dois
- verifier que tous les documents peuvent etre sauvegarder. (doc concours, et tous les autres.
- actuellement j'arrive a afficher les noms des documents mais quand je viens dans la page des docs sauvegardes
-  rien n'apparait) c'est quoi le probleme? Trouve ca et regle le.

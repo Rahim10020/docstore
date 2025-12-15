@@ -73,6 +73,9 @@ final concoursProvider = FutureProvider<List<Concours>>((ref) async {
   return await service.getConcours();
 });
 
+/// Provider pour stocker l'année sélectionnée pour le filtrage des concours
+final selectedConcoursYearProvider = StateProvider<String>((ref) => 'Tous');
+
 /// Provider pour charger un concours spécifique par ID
 final concoursDetailProvider = FutureProvider.family<Concours, String>( (
   ref,
