@@ -87,7 +87,7 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? AppTheme.textPrimary : AppTheme.mutedText;
+    final color = isActive ? AppTheme.primaryPurple : AppTheme.textPrimary;
 
     return InkWell(
       onTap: onTap,
@@ -107,7 +107,6 @@ class _NavItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                color: color,
               ),
             ),
           ],
