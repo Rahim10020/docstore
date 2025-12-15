@@ -29,7 +29,7 @@ class _DocStoreBottomNavBarState extends State<DocStoreBottomNavBar>
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       // outer background of the bar
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
@@ -53,9 +53,9 @@ class _DocStoreBottomNavBarState extends State<DocStoreBottomNavBar>
                 final alignX = -1.0 + widget.currentIndex * step;
                 final isCenter = widget.currentIndex == 2;
 
-                final double highlightWidth = isCenter ? 64 : 72;
-                final double highlightHeight = isCenter ? 64 : 44;
-                final double borderRadius = isCenter ? 36 : 14;
+                final double highlightWidth = isCenter ? 60 : 72;
+                final double highlightHeight = isCenter ? 60 : 53;
+                final double borderRadius = isCenter ? 36 : 30;
 
                 return AnimatedAlign(
                   alignment: Alignment(alignX, 0),
@@ -75,7 +75,7 @@ class _DocStoreBottomNavBarState extends State<DocStoreBottomNavBar>
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [Colors.white, Colors.white.withValues(alpha: 0.12)],
+                              colors: [AppTheme.primaryYellow, AppTheme.primaryYellow],
                             ),
                             border: Border.all(
                               color: Colors.white.withValues(alpha: 0.08),
@@ -83,9 +83,9 @@ class _DocStoreBottomNavBarState extends State<DocStoreBottomNavBar>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.06),
+                                color: Colors.black.withValues(alpha: 0.12),
                                 blurRadius: 12,
-                                offset: const Offset(0, 6),
+                                offset: const Offset(0, 4),
                               ),
                             ],
                           ),
@@ -163,7 +163,7 @@ class _AnimatedNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeColor = AppTheme.primaryPurple;
+    final activeColor = AppTheme.textPrimary;
     final inactiveColor = AppTheme.textPrimary;
 
     return InkWell(
