@@ -72,7 +72,7 @@ class ConcoursScreen extends ConsumerWidget {
                 child: Row(
                   children: [
                     const Text(
-                      'Tous',
+                      '',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
                         fontSize: 16,

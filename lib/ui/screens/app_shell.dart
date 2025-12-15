@@ -41,7 +41,6 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
       subtitle:
           'Decouvrez tous les concours d\'entree disponibles pour les differentes ecoles.',
       body: ConcoursScreen(),
-      trailing: _ConcoursFilterButton(),
     ),
     _PageConfig(
       title: 'Recherche',
@@ -75,7 +74,6 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
               DocStoreHeader(
                 pageTitle: config.title,
                 subtitle: config.subtitle,
-                trailing: config.trailing,
               ),
               const SizedBox(height: 24),
               Expanded(child: config.body),
@@ -99,42 +97,10 @@ class _PageConfig {
   final String title;
   final String? subtitle;
   final Widget body;
-  final Widget? trailing;
 
   const _PageConfig({
     required this.title,
     this.subtitle,
     required this.body,
-    this.trailing,
   });
-}
-
-class _ConcoursFilterButton extends StatelessWidget {
-  const _ConcoursFilterButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppTheme.mutedText.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: const [
-          Text(
-            'Tous',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppTheme.textPrimary,
-            ),
-          ),
-          SizedBox(width: 4),
-          Icon(Icons.keyboard_arrow_down_rounded, size: 18),
-        ],
-      ),
-    );
-  }
 }
