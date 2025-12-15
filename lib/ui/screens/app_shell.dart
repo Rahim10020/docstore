@@ -19,6 +19,7 @@ class DocStoreAppShell extends ConsumerStatefulWidget {
 
 class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
   int _currentIndex = 0;
+  final PageController _pageController = PageController(initialPage: 0);
 
   @override
   void initState() {
@@ -27,6 +28,12 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       NotificationService().init(ref);
     });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   final List<_PageConfig> _pages = const [
@@ -76,7 +83,13 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
                 subtitle: config.subtitle,
               ),
               const SizedBox(height: 24),
-              Expanded(child: config.body),
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (index) => setState(() => _currentIndex = index),
+                  children: _pages.map((p) => p.body).toList(),
+                ),
+              ),
             ],
           ),
         ),
@@ -84,9 +97,11 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
       bottomNavigationBar: DocStoreBottomNavBar(
         currentIndex: _currentIndex,
         onItemSelected: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 340),
+            curve: Curves.easeOutCubic,
+          );
         },
       ),
     );

@@ -1,8 +1,10 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme.dart';
 
-class DocStoreBottomNavBar extends StatelessWidget {
+class DocStoreBottomNavBar extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onItemSelected;
 
@@ -13,72 +15,146 @@ class DocStoreBottomNavBar extends StatelessWidget {
   });
 
   @override
+  State<DocStoreBottomNavBar> createState() => _DocStoreBottomNavBarState();
+}
+
+class _DocStoreBottomNavBarState extends State<DocStoreBottomNavBar>
+    with SingleTickerProviderStateMixin {
+  static const int _itemCount = 5;
+
+  @override
   Widget build(BuildContext context) {
+
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      // outer background of the bar
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.20),
+            blurRadius: 1,
+            offset: const Offset(1, 2),
           ),
         ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _NavItem(
-            iconWidget: SvgPicture.asset(
-              'assets/icons/ecoles.svg',
-              width: 26,
-              height: 26,
+      child: SizedBox(
+        height: 72,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            // Sliding glass highlight
+            Positioned.fill(
+              child: LayoutBuilder(builder: (context, constraints) {
+                // compute alignment x from index
+                final step = 2.0 / (_itemCount - 1);
+                final alignX = -1.0 + widget.currentIndex * step;
+                final isCenter = widget.currentIndex == 2;
+
+                final double highlightWidth = isCenter ? 64 : 72;
+                final double highlightHeight = isCenter ? 64 : 44;
+                final double borderRadius = isCenter ? 36 : 14;
+
+                return AnimatedAlign(
+                  alignment: Alignment(alignX, 0),
+                  duration: const Duration(milliseconds: 320),
+                  curve: Curves.easeOutCubic,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: (constraints.maxWidth - _itemCount * highlightWidth) / (_itemCount * 2).clamp(0.0, double.infinity)),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(borderRadius),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 320),
+                          width: highlightWidth,
+                          height: highlightHeight,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Colors.white, Colors.white.withValues(alpha: 0.12)],
+                            ),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.08),
+                              width: 0.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.06),
+                                blurRadius: 12,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
             ),
-            label: 'Ecoles',
-            isActive: currentIndex == 0,
-            onTap: () => onItemSelected(0),
-          ),
-          _NavItem(
-            iconWidget: SvgPicture.asset(
-              'assets/icons/concours.svg',
-              width: 26,
-              height: 26,
+
+            // Row of items on top
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _AnimatedNavItem(
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/ecoles.svg',
+                    width: 26,
+                    height: 26,
+                  ),
+                  label: 'Ecoles',
+                  isActive: widget.currentIndex == 0,
+                  onTap: () => widget.onItemSelected(0),
+                ),
+                _AnimatedNavItem(
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/concours.svg',
+                    width: 26,
+                    height: 26,
+                  ),
+                  label: 'Concours',
+                  isActive: widget.currentIndex == 1,
+                  onTap: () => widget.onItemSelected(1),
+                ),
+                _AnimatedCenterButton(
+                  isActive: widget.currentIndex == 2,
+                  onTap: () => widget.onItemSelected(2),
+                ),
+                _SavedAnimatedNavItem(
+                  isActive: widget.currentIndex == 3,
+                  onTap: () => widget.onItemSelected(3),
+                ),
+                _AnimatedNavItem(
+                  iconWidget: SvgPicture.asset(
+                    'assets/icons/settings.svg',
+                    width: 26,
+                    height: 26,
+                  ),
+                  label: 'Param',
+                  isActive: widget.currentIndex == 4,
+                  onTap: () => widget.onItemSelected(4),
+                ),
+              ],
             ),
-            label: 'Concours',
-            isActive: currentIndex == 1,
-            onTap: () => onItemSelected(1),
-          ),
-          _CenterButton(onTap: () => onItemSelected(2)),
-          _SavedNavItem(
-            isActive: currentIndex == 3,
-            onTap: () => onItemSelected(3),
-          ),
-          _NavItem(
-            iconWidget: SvgPicture.asset(
-              'assets/icons/settings.svg',
-              width: 26,
-              height: 26,
-            ),
-            label: 'Param',
-            isActive: currentIndex == 4,
-            onTap: () => onItemSelected(4),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _NavItem extends StatelessWidget {
+class _AnimatedNavItem extends StatelessWidget {
   final Widget iconWidget;
   final String label;
   final bool isActive;
   final VoidCallback onTap;
 
-  const _NavItem({
+  const _AnimatedNavItem({
     required this.iconWidget,
     required this.label,
     required this.isActive,
@@ -87,7 +163,8 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? AppTheme.primaryPurple : AppTheme.textPrimary;
+    final activeColor = AppTheme.primaryPurple;
+    final inactiveColor = AppTheme.textPrimary;
 
     return InkWell(
       onTap: onTap,
@@ -97,17 +174,30 @@ class _NavItem extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ColorFiltered(
-              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: isActive ? 1.12 : 1.0, end: isActive ? 1.12 : 1.0),
+              duration: const Duration(milliseconds: 260),
+              curve: Curves.easeOut,
+              builder: (context, scale, child) {
+                return Transform.scale(
+                  scale: scale,
+                  child: ColorFiltered(
+                    colorFilter: ColorFilter.mode(isActive ? activeColor : inactiveColor, BlendMode.srcIn),
+                    child: child,
+                  ),
+                );
+              },
               child: iconWidget,
             ),
             const SizedBox(height: 6),
-            Text(
-              label,
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 260),
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                color: isActive ? activeColor : inactiveColor,
               ),
+              child: Text(label),
             ),
           ],
         ),
@@ -116,71 +206,91 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-class _CenterButton extends StatelessWidget {
+class _SavedAnimatedNavItem extends StatelessWidget {
+  final bool isActive;
   final VoidCallback onTap;
 
-  const _CenterButton({required this.onTap});
+  const _SavedAnimatedNavItem({required this.isActive, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: isActive ? 1.12 : 1.0, end: isActive ? 1.12 : 1.0),
+              duration: const Duration(milliseconds: 260),
+              curve: Curves.easeOut,
+              builder: (context, scale, child) {
+                return Transform.scale(
+                  scale: scale,
+                  child: child,
+                );
+              },
+              child: SvgPicture.asset(
+                'assets/icons/saved.svg',
+                width: 26,
+                height: 26,
+                colorFilter: ColorFilter.mode(AppTheme.textPrimary, BlendMode.srcIn),
+              ),
+            ),
+            const SizedBox(height: 6),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 260),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                color: AppTheme.textPrimary,
+              ),
+              child: const Text('Favoris'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AnimatedCenterButton extends StatelessWidget {
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _AnimatedCenterButton({required this.isActive, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final activeColor = AppTheme.primaryPurple;
+    final iconColor = isActive ? activeColor : AppTheme.textPrimary;
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 56,
-        height: 56,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        width: isActive ? 50 : 46,
+        height: isActive ? 50 : 46,
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.1),
+              color: Colors.black.withValues(alpha: 0.10),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
         ),
-        child: Icon(Icons.search, size: 26, color: AppTheme.textPrimary),
-      ),
-    );
-  }
-}
-
-class _SavedNavItem extends StatelessWidget {
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const _SavedNavItem({required this.isActive, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isActive ? AppTheme.textPrimary : AppTheme.mutedText;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              isActive
-                  ? 'assets/icons/saved-fill.svg'
-                  : 'assets/icons/saved.svg',
-              width: 26,
-              height: 26,
-              colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Favoris',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                color: color,
-              ),
-            ),
-          ],
+        child: Center(
+          child: AnimatedScale(
+            scale: isActive ? 1.06 : 1.0,
+            duration: const Duration(milliseconds: 260),
+            child: Icon(Icons.search, size: 26, color: iconColor),
+          ),
         ),
       ),
     );
