@@ -67,11 +67,16 @@ class _ConcoursDetailScreenState extends ConsumerState<ConcoursDetailScreen> {
     }
   }
 
+  // helper safe lower
+  String _safeLower(Object? v) => v == null ? '' : v.toString().toLowerCase();
+
   List<UnifiedResource> _filterResources(List<UnifiedResource> resources) {
     if (_searchQuery.isEmpty) return resources;
 
+    final q = _safeLower(_searchQuery);
     return resources.where((resource) {
-      return resource.name.toLowerCase().contains(_searchQuery.toLowerCase());
+      final name = _safeLower(resource.name);
+      return name.contains(q);
     }).toList();
   }
 

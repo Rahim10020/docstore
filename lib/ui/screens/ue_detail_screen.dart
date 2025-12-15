@@ -36,6 +36,9 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
     super.dispose();
   }
 
+  // helper safe lower
+  String _safeLower(Object? v) => v == null ? '' : v.toString().toLowerCase();
+
   /// Charge les ressources de l'UE
   Future<void> _loadResources() async {
     if (widget.ue.ressources.isEmpty) return;
@@ -68,8 +71,10 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
   List<UnifiedResource> _filterResources(List<UnifiedResource> resources) {
     if (_searchQuery.isEmpty) return resources;
 
+    final q = _safeLower(_searchQuery);
     return resources.where((resource) {
-      return resource.name.toLowerCase().contains(_searchQuery.toLowerCase());
+      final name = _safeLower(resource.name);
+      return name.contains(q);
     }).toList();
   }
 

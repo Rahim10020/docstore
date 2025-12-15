@@ -27,16 +27,18 @@ class UnifiedResource {
     this.createdTime,
   });
 
+  String _safeLower(String? s) => (s ?? '').toString().toLowerCase();
+
   /// Détermine si c'est un PDF
   bool get isPdf =>
-      mimeType?.contains('pdf') == true || name.toLowerCase().endsWith('.pdf');
+      mimeType?.contains('pdf') == true || _safeLower(name).endsWith('.pdf');
 
   /// Détermine si c'est une image
   bool get isImage =>
       mimeType?.contains('image') == true ||
-          name.toLowerCase().endsWith('.png') ||
-          name.toLowerCase().endsWith('.jpg') ||
-          name.toLowerCase().endsWith('.jpeg');
+          _safeLower(name).endsWith('.png') ||
+          _safeLower(name).endsWith('.jpg') ||
+          _safeLower(name).endsWith('.jpeg');
 }
 
 /// Service unifié pour gérer les ressources de différentes sources
