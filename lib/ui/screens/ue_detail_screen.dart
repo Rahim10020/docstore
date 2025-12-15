@@ -1,7 +1,6 @@
 import 'package:docstore/ui/widgets/unified_resource_list_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme.dart';
 import '../../data/models/ue.dart';
 import '../../services/unified_resource_service.dart';
@@ -99,12 +98,6 @@ class _UeDetailScreenState extends ConsumerState<UeDetailScreen> {
                       IconButton(
                         onPressed: () => Navigator.pop(context),
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-                      ),
-                      const Spacer(),
-                      SvgPicture.asset(
-                        'assets/icons/more.svg',
-                        width: 20,
-                        height: 20,
                       ),
                     ],
                   ),

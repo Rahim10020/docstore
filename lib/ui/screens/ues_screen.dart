@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/theme.dart';
 import '../../data/models/ecole.dart';
 import '../../data/models/filiere.dart';
@@ -24,16 +23,6 @@ class _UesScreenState extends ConsumerState<UesScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  // Filtre d'année sélectionné (ex: Tous, 1ere annee, ...)
-  String _anneeFilter = 'Tous';
-
-  static const List<String> _anneeOptions = [
-    'Tous',
-    '1ere annee',
-    '2 eme annee',
-    '3 eme annee',
-  ];
-
   @override
   void dispose() {
     _searchController.dispose();
@@ -47,19 +36,7 @@ class _UesScreenState extends ConsumerState<UesScreen> {
     var result = ues;
 
     try {
-      // Appliquer le filtre d'année si nécessaire
-      if (_anneeFilter != 'Tous') {
-        final filterLower = _safeLower(_anneeFilter);
-        result = result.where((ue) {
-          // Protection robuste: convertir chaque élément en String via toString()
-          return ue.anneeEnseignement.any((a) {
-            final s = _safeLower(a);
-            return s.contains(filterLower);
-          });
-        }).toList();
-      }
-
-      // Puis appliquer la recherche texte
+      // Appliquer la recherche texte
       if (_searchQuery.isEmpty) return result;
 
       final q = _safeLower(_searchQuery);
@@ -100,51 +77,8 @@ class _UesScreenState extends ConsumerState<UesScreen> {
                         icon: const Icon(Icons.arrow_back_ios_new, size: 20),
                       ),
                       const Spacer(),
-                      // Menu "more" pour filtrer les UEs par année
-                      PopupMenuButton<String>(
-                        tooltip: 'Filtrer par année',
-                        icon: SvgPicture.asset(
-                          'assets/icons/more.svg',
-                          width: 20,
-                          height: 20,
-                        ),
-                        onSelected: (value) {
-                          setState(() {
-                            _anneeFilter = value;
-                          });
-                        },
-                        itemBuilder: (context) {
-                          return _anneeOptions.map((option) {
-                            return PopupMenuItem<String>(
-                              value: option,
-                              child: Row(
-                                children: [
-                                  _anneeFilter == option
-                                      ? Icon(Icons.check, size: 18, color: AppTheme.primaryPurple)
-                                      : const SizedBox(width: 18),
-                                  const SizedBox(width: 8),
-                                  Flexible(child: Text(option)),
-                                ],
-                              ),
-                            );
-                          }).toList();
-                        },
-                      ),
                     ],
                   ),
-
-                  // Indicateur du filtre d'année courant
-                  if (_anneeFilter != 'Tous') ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      'Année: $_anneeFilter',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                  ],
 
                   const SizedBox(height: 12),
                   Container(
