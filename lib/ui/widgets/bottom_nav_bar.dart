@@ -51,14 +51,21 @@ class _DocStoreBottomNavBarState extends State<DocStoreBottomNavBar>
                 // compute alignment x from index
                 final step = 2.0 / (_itemCount - 1);
                 final alignX = -1.0 + widget.currentIndex * step;
-                final isCenter = widget.currentIndex == 2;
 
-                final double highlightWidth = isCenter ? 60 : 72;
-                final double highlightHeight = isCenter ? 60 : 53;
-                final double borderRadius = isCenter ? 36 : 30;
+                // We use a small square glass that only covers the icon and is
+                // vertically offset upwards so the label stays uncovered.
+
+                // Sizes chosen to cover the 26px icon plus padding and
+                // accommodate the animated scale (1.12).
+                final double highlightWidth = 48.0;
+                final double highlightHeight = 36.0;
+                final double borderRadius = 30.0;
+
+                // move the highlight up so it sits behind the icon, not the label
+                final double alignY = -0.45;
 
                 return AnimatedAlign(
-                  alignment: Alignment(alignX, 0),
+                  alignment: Alignment(alignX, alignY),
                   duration: const Duration(milliseconds: 320),
                   curve: Curves.easeOutCubic,
                   child: Padding(
@@ -75,7 +82,7 @@ class _DocStoreBottomNavBarState extends State<DocStoreBottomNavBar>
                             gradient: LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
-                              colors: [AppTheme.primaryYellow, AppTheme.primaryYellow],
+                              colors: [AppTheme.primaryPurple, AppTheme.primaryPurple],
                             ),
                             border: Border.all(
                               color: Colors.white.withValues(alpha: 0.08),
@@ -163,7 +170,7 @@ class _AnimatedNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final activeColor = AppTheme.textPrimary;
+    final activeColor = Colors.white;
     final inactiveColor = AppTheme.textPrimary;
 
     return InkWell(
@@ -195,7 +202,7 @@ class _AnimatedNavItem extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                color: isActive ? activeColor : inactiveColor,
+                color: inactiveColor,
               ),
               child: Text(label),
             ),
@@ -214,7 +221,8 @@ class _SavedAnimatedNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    final activeColor = Colors.white;
+    final inactiveColor = AppTheme.textPrimary;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -237,7 +245,7 @@ class _SavedAnimatedNavItem extends StatelessWidget {
                 'assets/icons/saved.svg',
                 width: 26,
                 height: 26,
-                colorFilter: ColorFilter.mode(AppTheme.textPrimary, BlendMode.srcIn),
+                colorFilter: ColorFilter.mode( isActive? activeColor: inactiveColor, BlendMode.srcIn),
               ),
             ),
             const SizedBox(height: 6),
