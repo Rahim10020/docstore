@@ -4,12 +4,27 @@ import '../../core/theme.dart';
 import '../../providers/data_provider.dart';
 import '../widgets/concours_card.dart';
 import 'concours_detail_screen.dart';
+import '../widgets/search_bar.dart';
 
-class ConcoursScreen extends ConsumerWidget {
+class ConcoursScreen extends ConsumerStatefulWidget {
   const ConcoursScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConcoursScreen> createState() => _ConcoursScreenState();
+}
+
+class _ConcoursScreenState extends ConsumerState<ConcoursScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final concoursAsync = ref.watch(concoursProvider);
     final selectedYear = ref.watch(selectedConcoursYearProvider);
 
@@ -22,6 +37,14 @@ class ConcoursScreen extends ConsumerWidget {
             return ListView(
               padding: const EdgeInsets.only(top: 160),
               children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: RoundedSearchBar(
+                    controller: _searchController,
+                    hint: 'Rechercher des concours...',
+                    onChanged: (v) => setState(() => _searchQuery = v),
+                  ),
+                ),
                 Icon(
                   Icons.emoji_events_outlined,
                   size: 80,
@@ -60,13 +83,28 @@ class ConcoursScreen extends ConsumerWidget {
           });
 
           // Filtrer côté client selon l'année sélectionnée
-          final filtered = selectedYear == 'Tous'
+          final byYear = selectedYear == 'Tous'
               ? concours
               : concours.where((c) => c.annee == selectedYear).toList();
 
+          // Filtrage selon la barre de recherche (nom, description, annee, idEcole)
+          final query = _searchQuery.trim().toLowerCase();
+          final filtered = query.isEmpty
+              ? byYear
+              : byYear.where((c) {
+                  final nom = (c.nom ?? '').toLowerCase();
+                  final desc = (c.description ?? '').toLowerCase();
+                  final annee = (c.annee ?? '').toLowerCase();
+                  final ecole = (c.idEcole ?? '').toLowerCase();
+                  return nom.contains(query) ||
+                      desc.contains(query) ||
+                      annee.contains(query) ||
+                      ecole.contains(query);
+                }).toList();
+
           return Column(
             children: [
-              // Header with selector
+              // Header with selector + search
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
@@ -82,37 +120,53 @@ class ConcoursScreen extends ConsumerWidget {
                     Expanded(
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.03),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: selectedYear,
-                              items: years
-                                  .map(
-                                    (y) => DropdownMenuItem(
-                                      value: y,
-                                      child: Text(y),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.03),
+                                      blurRadius: 6,
+                                      offset: const Offset(0, 2),
                                     ),
-                                  )
-                                  .toList(),
-                              onChanged: (v) {
-                                if (v != null) {
-                                  ref.read(selectedConcoursYearProvider.notifier).state = v;
-                                }
-                              },
+                                  ],
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: selectedYear,
+                                    items: years
+                                        .map(
+                                          (y) => DropdownMenuItem(
+                                            value: y,
+                                            child: Text(y),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (v) {
+                                      if (v != null) {
+                                        ref.read(selectedConcoursYearProvider.notifier).state = v;
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            // Search bar
+                            SizedBox(
+                              width: 220,
+                              child: RoundedSearchBar(
+                                controller: _searchController,
+                                hint: 'Rechercher des concours...',
+                                onChanged: (v) => setState(() => _searchQuery = v),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),

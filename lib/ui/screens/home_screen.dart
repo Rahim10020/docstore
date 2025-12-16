@@ -4,12 +4,27 @@ import '../../providers/data_provider.dart';
 import '../../core/theme.dart';
 import 'filieres_screen.dart';
 import '../widgets/establishment_card.dart';
+import '../widgets/search_bar.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final ecolesAsync = ref.watch(ecolesProvider);
 
     return RefreshIndicator(
@@ -17,10 +32,30 @@ class HomeScreen extends ConsumerWidget {
       edgeOffset: 16,
       child: ecolesAsync.when(
         data: (ecoles) {
-          if (ecoles.isEmpty) {
+          // Filtrage local selon la query
+          final query = _searchQuery.trim().toLowerCase();
+          final filtered = query.isEmpty
+              ? ecoles
+              : ecoles.where((e) {
+                  final name = e.nom.toLowerCase();
+                  final desc = (e.description ?? '').toLowerCase();
+                  return name.contains(query) || desc.contains(query);
+                }).toList();
+
+          // Construire une ListView avec header (search) + résultats
+          if (filtered.isEmpty) {
             return ListView(
-              padding: const EdgeInsets.only(top: 160),
+              padding: const EdgeInsets.only(top: 16),
               children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: RoundedSearchBar(
+                    controller: _searchController,
+                    hint: 'Rechercher des écoles...',
+                    onChanged: (v) => setState(() => _searchQuery = v),
+                  ),
+                ),
+                const SizedBox(height: 40),
                 Icon(
                   Icons.school_outlined,
                   size: 80,
@@ -43,10 +78,21 @@ class HomeScreen extends ConsumerWidget {
 
           return ListView.separated(
             padding: const EdgeInsets.only(bottom: 24),
-            itemCount: ecoles.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 16),
+            itemCount: filtered.length + 1, // +1 pour l'entête (search)
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
-              final ecole = ecoles[index];
+              if (index == 0) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: RoundedSearchBar(
+                    controller: _searchController,
+                    hint: 'Rechercher des écoles...',
+                    onChanged: (v) => setState(() => _searchQuery = v),
+                  ),
+                );
+              }
+
+              final ecole = filtered[index - 1];
               return EstablishmentCard(
                 ecole: ecole,
                 onTap: () {
