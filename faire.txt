@@ -1,10 +1,3 @@
-- revoir les couleurs de la bottom navbar
-- revoir la card des Concours et le selecteur (voir figma)
 - finir avec l'implementation des notifications
 - tester les fonctionnalites de partage, de telechargement et d'ouverture
-    sur navigateur
-
-- Je veux qu'on code une launch page qui s'affiche au demarrage de l'application. j'ai
-ajoute une icone launch.png dans le dossier assets/icons tu vas utiliser cette icone
-et tu vas me proposer un design sympa pour la launch page.
-Tu peux t'inspirer de ce que tu trouves sur le net.
+    de documents telephone et dans le navigateur
