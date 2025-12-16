@@ -4,13 +4,6 @@
 - tester les fonctionnalites de partage, de telechargement et d'ouverture
     sur navigateur
 
-- voila bottom navbar le slide fonctionne bien quand je navigue entre les pages mais
-ce que je veux faire c'est que pour le bouton recherche (Center button)
-la couleur remplisse le rond dand lequel se trouve l'icone. j'espere que tu vois
-ce que je veux dire. Pour le moment quand je clique sur le bouton recherche le slide
-reste en dessous de l'icone mais je veux que le rond entier change de couleur
-et la couleur de l'icone devient blanche. Est ce que c'est possible?
-
 - Je veux qu'on code une launch page qui s'affiche au demarrage de l'application. j'ai
 ajoute une icone launch.png dans le dossier assets/icons tu vas utiliser cette icone
 et tu vas me proposer un design sympa pour la launch page.
