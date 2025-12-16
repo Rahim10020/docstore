@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
-import '../../providers/theme_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../services/notification_test_helper.dart';
 

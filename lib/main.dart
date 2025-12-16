@@ -5,7 +5,6 @@ import 'services/appwrite_service.dart';
 import 'core/theme.dart';
 import 'ui/screens/app_shell.dart';
 import 'ui/screens/launch_screen.dart';
-import 'providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,13 +24,9 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-
     return MaterialApp(
       title: 'DocStore',
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode,
       debugShowCheckedModeBanner: false,
       home: const DocStoreAppShell(),
     );

@@ -23,10 +23,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final notifications = ref.watch(notificationsProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? AppTheme.backgroundColorDark : AppTheme.backgroundColorLight,
+      backgroundColor: AppTheme.backgroundColorLight,
       body: SafeArea(
         child: Column(
           children: [
@@ -80,8 +79,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             // Content
             Expanded(
               child: notifications.isEmpty
-                  ? _buildEmptyState(isDark)
-                  : _buildNotificationsList(notifications, isDark),
+                  ? _buildEmptyState()
+                  : _buildNotificationsList(notifications),
             ),
           ],
         ),
@@ -89,7 +88,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
+  Widget _buildEmptyState() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -97,33 +96,31 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.05)
-                  : AppTheme.primaryBlue.withValues(alpha: 0.1),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(
+            child: const Icon(
               Icons.notifications_none_rounded,
               size: 64,
-              color: isDark ? Colors.white54 : AppTheme.primaryBlue,
+              color: AppTheme.primaryBlue,
             ),
           ),
           const SizedBox(height: 24),
-          Text(
+          const Text(
             'Aucune notification',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : AppTheme.textPrimary,
+              color: AppTheme.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          const Text(
             'Vous serez notifié des nouveaux\ndocuments, écoles et filières',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? Colors.white54 : AppTheme.textSecondary,
+              color: AppTheme.textSecondary,
               height: 1.5,
             ),
           ),
@@ -132,7 +129,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  Widget _buildNotificationsList(List<AppNotification> notifications, bool isDark) {
+  Widget _buildNotificationsList(List<AppNotification> notifications) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       itemCount: notifications.length,
@@ -141,7 +138,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         final notification = notifications[index];
         return _NotificationCard(
           notification: notification,
-          isDark: isDark,
           onTap: () {
             ref.read(notificationsProvider.notifier).markAsRead(notification.id);
           },
@@ -182,27 +178,27 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
 class _NotificationCard extends StatelessWidget {
   final AppNotification notification;
-  final bool isDark;
   final VoidCallback onTap;
   final VoidCallback onDismiss;
 
   const _NotificationCard({
     required this.notification,
-    required this.isDark,
     required this.onTap,
     required this.onDismiss,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isUnread = !notification.isRead;
+
     return Dismissible(
       key: Key(notification.id),
       direction: DismissDirection.endToStart,
       background: Container(
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: Colors.red.shade500,
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Icon(
@@ -211,97 +207,96 @@ class _NotificationCard extends StatelessWidget {
         ),
       ),
       onDismissed: (_) => onDismiss(),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1F2937) : Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: !notification.isRead
-                ? Border.all(
-                    color: AppTheme.primaryBlue.withValues(alpha: 0.3),
-                    width: 2,
-                  )
-                : null,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Icon
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: _getTypeColor(notification.type).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
-            ],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Icon
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: _getTypeColor(notification.type).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Center(
-                  child: Text(
-                    notification.type.icon,
-                    style: const TextStyle(fontSize: 24),
-                  ),
+              child: Center(
+                child: Text(
+                  notification.type.icon,
+                  style: const TextStyle(fontSize: 24),
                 ),
               ),
-              const SizedBox(width: 12),
+            ),
+            const SizedBox(width: 12),
 
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            notification.title,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: isDark ? Colors.white : AppTheme.textPrimary,
-                            ),
+            // Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          notification.title,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textPrimary,
                           ),
                         ),
-                        if (!notification.isRead)
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryBlue,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                      ],
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        timeago.format(notification.createdAt, locale: 'fr'),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    notification.message,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppTheme.textSecondary,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      notification.message,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: isDark ? Colors.white70 : AppTheme.textSecondary,
-                        height: 1.4,
+                  ),
+                  const SizedBox(height: 8),
+                  if (isUnread)
+                    Container(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: const Text(
+                        'Nouveau',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryBlue,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      timeago.format(notification.createdAt, locale: 'fr'),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? Colors.white54 : AppTheme.mutedText,
-                      ),
-                    ),
-                  ],
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -310,12 +305,11 @@ class _NotificationCard extends StatelessWidget {
   Color _getTypeColor(NotificationType type) {
     switch (type) {
       case NotificationType.document:
-        return Colors.blue;
+        return AppTheme.primaryBlue;
       case NotificationType.ecole:
-        return Colors.green;
+        return AppTheme.primaryIndigo;
       case NotificationType.filiere:
-        return Colors.orange;
+        return AppTheme.primaryOrange;
     }
   }
 }
-
