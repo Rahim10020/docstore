@@ -51,14 +51,12 @@ class ConcoursCard extends StatelessWidget {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      _IconText(
-                        icon: Icons.calendar_today_outlined,
-                        text: concours.annee ?? 'Année',
-                      ),
-                      const SizedBox(width: 12),
-                      _IconText(
-                        icon: Icons.school_outlined,
-                        text: concours.idEcole ?? 'Nom de l\'ecole',
+                      Text(
+                        concours.annee ?? '2023',
+                        style: const TextStyle(
+                          color: AppTheme.mutedText,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
