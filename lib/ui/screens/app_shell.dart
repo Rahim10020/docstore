@@ -36,7 +36,7 @@ class _DocStoreAppShellState extends ConsumerState<DocStoreAppShell> {
     super.dispose();
   }
 
-  final List<_PageConfig> _pages = const [
+  final List<_PageConfig> _pages = [
     _PageConfig(
       title: 'Etablissements',
       subtitle:

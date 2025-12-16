@@ -109,64 +109,52 @@ class _ConcoursScreenState extends ConsumerState<ConcoursScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
                   children: [
-                    const Text(
-                      '',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
+                    // Search bar on the left taking ~3/4 of the space
+                    Expanded(
+                      flex: 3,
+                      child: RoundedSearchBar(
+                        controller: _searchController,
+                        hint: 'Rechercher des concours...',
+                        onChanged: (v) => setState(() => _searchQuery = v),
                       ),
                     ),
                     const SizedBox(width: 12),
+                    // Year selector on the right taking ~1/4 of the space
                     Expanded(
+                      flex: 1,
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.03),
-                                      blurRadius: 6,
-                                      offset: const Offset(0, 2),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.03),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: selectedYear,
+                              items: years
+                                  .map(
+                                    (y) => DropdownMenuItem(
+                                      value: y,
+                                      child: Text(y),
                                     ),
-                                  ],
-                                ),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<String>(
-                                    value: selectedYear,
-                                    items: years
-                                        .map(
-                                          (y) => DropdownMenuItem(
-                                            value: y,
-                                            child: Text(y),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChanged: (v) {
-                                      if (v != null) {
-                                        ref.read(selectedConcoursYearProvider.notifier).state = v;
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ),
+                                  )
+                                  .toList(),
+                              onChanged: (v) {
+                                if (v != null) {
+                                  ref.read(selectedConcoursYearProvider.notifier).state = v;
+                                }
+                              },
                             ),
-                            const SizedBox(width: 12),
-                            // Search bar
-                            SizedBox(
-                              width: 220,
-                              child: RoundedSearchBar(
-                                controller: _searchController,
-                                hint: 'Rechercher des concours...',
-                                onChanged: (v) => setState(() => _searchQuery = v),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
