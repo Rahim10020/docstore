@@ -112,45 +112,66 @@ class _DocStoreBottomNavBarState extends State<DocStoreBottomNavBar>
 
              // Row of items on top
              Row(
-               mainAxisAlignment: MainAxisAlignment.spaceAround,
+               // Use equal spacing via Expanded so each item center aligns with
+               // the linear alignX mapping used for the sliding highlight.
                children: [
-                 _AnimatedNavItem(
-                   iconWidget: SvgPicture.asset(
-                     'assets/icons/ecoles.svg',
-                     width: 26,
-                     height: 26,
+                 Expanded(
+                   child: Center(
+                     child: _AnimatedNavItem(
+                       iconWidget: SvgPicture.asset(
+                         'assets/icons/ecoles.svg',
+                         width: 26,
+                         height: 26,
+                       ),
+                       label: 'Ecoles',
+                       isActive: widget.currentIndex == 0,
+                       onTap: () => widget.onItemSelected(0),
+                     ),
                    ),
-                   label: 'Ecoles',
-                   isActive: widget.currentIndex == 0,
-                   onTap: () => widget.onItemSelected(0),
                  ),
-                 _AnimatedNavItem(
-                   iconWidget: SvgPicture.asset(
-                     'assets/icons/concours.svg',
-                     width: 26,
-                     height: 26,
+                 Expanded(
+                   child: Center(
+                     child: _AnimatedNavItem(
+                       iconWidget: SvgPicture.asset(
+                         'assets/icons/concours.svg',
+                         width: 26,
+                         height: 26,
+                       ),
+                       label: 'Concours',
+                       isActive: widget.currentIndex == 1,
+                       onTap: () => widget.onItemSelected(1),
+                     ),
                    ),
-                   label: 'Concours',
-                   isActive: widget.currentIndex == 1,
-                   onTap: () => widget.onItemSelected(1),
                  ),
-                 _AnimatedCenterButton(
-                   isActive: widget.currentIndex == 2,
-                   onTap: () => widget.onItemSelected(2),
-                 ),
-                 _SavedAnimatedNavItem(
-                   isActive: widget.currentIndex == 3,
-                   onTap: () => widget.onItemSelected(3),
-                 ),
-                 _AnimatedNavItem(
-                   iconWidget: SvgPicture.asset(
-                     'assets/icons/settings.svg',
-                     width: 26,
-                     height: 26,
+                 Expanded(
+                   child: Center(
+                     child: _AnimatedCenterButton(
+                       isActive: widget.currentIndex == 2,
+                       onTap: () => widget.onItemSelected(2),
+                     ),
                    ),
-                   label: 'Param',
-                   isActive: widget.currentIndex == 4,
-                   onTap: () => widget.onItemSelected(4),
+                 ),
+                 Expanded(
+                   child: Center(
+                     child: _SavedAnimatedNavItem(
+                       isActive: widget.currentIndex == 3,
+                       onTap: () => widget.onItemSelected(3),
+                     ),
+                   ),
+                 ),
+                 Expanded(
+                   child: Center(
+                     child: _AnimatedNavItem(
+                       iconWidget: SvgPicture.asset(
+                         'assets/icons/settings.svg',
+                         width: 26,
+                         height: 26,
+                       ),
+                       label: 'Param',
+                       isActive: widget.currentIndex == 4,
+                       onTap: () => widget.onItemSelected(4),
+                     ),
+                   ),
                  ),
                ],
              ),
