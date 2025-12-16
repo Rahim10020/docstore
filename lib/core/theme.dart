@@ -94,4 +94,14 @@ class AppTheme {
     end: Alignment.bottomRight,
     colors: [backgroundColorLight, backgroundColorDark],
   );
+
+  static const headlineStyle = TextStyle(
+    fontWeight: FontWeight.w700,
+    fontSize: 26,
+    color: AppTheme.primaryPurple,
+  );
+
+  static const subtitleStyle = TextStyle(
+    color: AppTheme.textSecondary,
+  );
 }

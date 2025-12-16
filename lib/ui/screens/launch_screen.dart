@@ -67,15 +67,6 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
   @override
   Widget build(BuildContext context) {
 
-    final headlineStyle = Theme.of(context).textTheme.headlineMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-          color: AppTheme.textPrimary,
-        );
-
-    final subtitleStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: AppTheme.mutedText,
-        );
-
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -93,81 +84,72 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
                   opacity: _fadeAnimation,
                   child: ScaleTransition(
                     scale: _logoScaleAnimation,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding:
-                          const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.55),
-                            borderRadius: BorderRadius.circular(999),
-                            border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.35),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding:
+                            const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.55),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.35),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: AppTheme.successColor,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'DocStore',
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: AppTheme.textPrimary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 8,
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppTheme.successColor,
-                                ),
+                          const SizedBox(height: 10,),
+                          SizedBox(
+                            width: 200,
+                            height: 200,
+                            child: Padding(
+                              padding: const EdgeInsets.all(22.0),
+                              child: Image.asset(
+                                'assets/icons/launch.png',
+                                fit: BoxFit.contain,
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                'DocStore',
-                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.textPrimary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10,),
-                        Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withValues(alpha: 0.85),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.08),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(22.0),
-                            child: Image.asset(
-                              'assets/icons/launch.png',
-                              fit: BoxFit.contain,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Vos documents, toujours accessibles',
-                          style: headlineStyle,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Consultez, sauvegardez et partagez les sujets, corrections et ressources académiques de l'UL.",
-                          textAlign: TextAlign.center,
-                          style: subtitleStyle,
-                        ),
-                      ],
+                          const SizedBox(height: 24),
+                          Text(
+                            'Vos documents, toujours accessibles',
+                            style: AppTheme.headlineStyle,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            "Consultez, sauvegardez et partagez les sujets, corrections et ressources académiques de l'UL.",
+                            style: AppTheme.subtitleStyle,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
 
-                const Spacer(flex: 3),
+                const Spacer(flex: 2),
 
                 // Bottom loading + hint
                 FadeTransition(
@@ -197,14 +179,7 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Connexion sécure à Appwrite & préchargement des métadonnées.',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppTheme.mutedText,
-                            ),
-                      ),
+
                     ],
                   ),
                 ),
