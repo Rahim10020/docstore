@@ -11,7 +11,7 @@ ce que je veux dire. Pour le moment quand je clique sur le bouton recherche le s
 reste en dessous de l'icone mais je veux que le rond entier change de couleur
 et la couleur de l'icone devient blanche. Est ce que c'est possible?
 
-Je veux qu'on code une launch page qui s'affiche au demarrage de l'application. j'ai
-ajoute une icone launch.png dans le dossier assets/icons tu vas utilser cette icone
+- Je veux qu'on code une launch page qui s'affiche au demarrage de l'application. j'ai
+ajoute une icone launch.png dans le dossier assets/icons tu vas utiliser cette icone
 et tu vas me proposer un design sympa pour la launch page.
 Tu peux t'inspirer de ce que tu trouves sur le net.

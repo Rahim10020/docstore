@@ -391,6 +391,131 @@ class AppwriteService {
     }
   }
 
+  /// Recherche paginée des écoles (serveur)
+  Future<List<Ecole>> searchEcoles(String query, {int limit = 20, int offset = 0}) async {
+    try {
+      final List<Ecole> results = [];
+
+      // Première passe: chercher par nom
+      final byName = await _databases.listDocuments(
+        databaseId: AppwriteConfig.databaseId,
+        collectionId: AppwriteConfig.ecolesCollectionId,
+        queries: [
+          Query.search('nom', query),
+          Query.limit(limit),
+          Query.offset(offset),
+        ],
+      );
+      results.addAll(byName.documents.map((d) => Ecole.fromMap(d.data)));
+
+      // Si on n'a pas assez de résultats, chercher dans la description et ajouter sans dupliquer
+      if (results.length < limit) {
+        final remaining = limit - results.length;
+        final byDesc = await _databases.listDocuments(
+          databaseId: AppwriteConfig.databaseId,
+          collectionId: AppwriteConfig.ecolesCollectionId,
+          queries: [
+            Query.search('description', query),
+            Query.limit(remaining),
+            Query.offset(0),
+          ],
+        );
+        for (final d in byDesc.documents) {
+          final e = Ecole.fromMap(d.data);
+          if (!results.any((r) => r.id == e.id)) results.add(e);
+          if (results.length == limit) break;
+        }
+      }
+
+      return results;
+    } catch (e) {
+      debugPrint('Erreur lors de la recherche des écoles: $e');
+      rethrow;
+    }
+  }
+
+  /// Recherche paginée des concours (serveur)
+  Future<List<Concours>> searchConcours(String query, {int limit = 20, int offset = 0}) async {
+    try {
+      final List<Concours> results = [];
+
+      final byName = await _databases.listDocuments(
+        databaseId: AppwriteConfig.databaseId,
+        collectionId: AppwriteConfig.concoursCollectionId,
+        queries: [
+          Query.search('nom', query),
+          Query.limit(limit),
+          Query.offset(offset),
+        ],
+      );
+      results.addAll(byName.documents.map((d) => Concours.fromMap(d.data)));
+
+      if (results.length < limit) {
+        final remaining = limit - results.length;
+        final byDesc = await _databases.listDocuments(
+          databaseId: AppwriteConfig.databaseId,
+          collectionId: AppwriteConfig.concoursCollectionId,
+          queries: [
+            Query.search('description', query),
+            Query.limit(remaining),
+            Query.offset(0),
+          ],
+        );
+        for (final d in byDesc.documents) {
+          final c = Concours.fromMap(d.data);
+          if (!results.any((r) => r.id == c.id)) results.add(c);
+          if (results.length == limit) break;
+        }
+      }
+
+      return results;
+    } catch (e) {
+      debugPrint('Erreur lors de la recherche des concours: $e');
+      rethrow;
+    }
+  }
+
+  /// Recherche paginée des UEs (serveur)
+  Future<List<ue_model.Ue>> searchUEs(String query, {int limit = 20, int offset = 0}) async {
+    try {
+      final List<ue_model.Ue> results = [];
+
+      final byName = await _databases.listDocuments(
+        databaseId: AppwriteConfig.databaseId,
+        collectionId: AppwriteConfig.uesCollectionId,
+        queries: [
+          Query.search('nom', query),
+          Query.limit(limit),
+          Query.offset(offset),
+        ],
+      );
+      results.addAll(byName.documents.map((d) => ue_model.Ue.fromMap(d.data)));
+
+      if (results.length < limit) {
+        final remaining = limit - results.length;
+        final byDesc = await _databases.listDocuments(
+          databaseId: AppwriteConfig.databaseId,
+          collectionId: AppwriteConfig.uesCollectionId,
+          queries: [
+            Query.search('description', query),
+            Query.limit(remaining),
+            Query.offset(0),
+          ],
+        );
+        for (final d in byDesc.documents) {
+          final u = ue_model.Ue.fromMap(d.data);
+          if (!results.any((r) => r.id == u.id)) results.add(u);
+          if (results.length == limit) break;
+        }
+      }
+
+      return results;
+    } catch (e) {
+      debugPrint('Erreur lors de la recherche des UEs: $e');
+      rethrow;
+    }
+  }
+
   // ========== STORAGE - MÉTHODES AMÉLIORÉES ==========
 
   /// Upload un fichier

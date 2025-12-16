@@ -4,16 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../widgets/search_bar.dart';
-import '../../services/unified_resource_service.dart';
-import '../../providers/data_provider.dart';
-import '../../data/models/ecole.dart';
-import '../../data/models/concours.dart';
-import '../../data/models/ue.dart' as ue_model;
-import '../widgets/unified_resource_list_item.dart';
+import '../../providers/search_provider.dart';
+import '../../providers/search_history_provider.dart';
 import '../widgets/compact_concours_card.dart';
 import 'filieres_screen.dart';
 import 'concours_detail_screen.dart';
 import 'ue_detail_screen.dart';
+import '../widgets/search_suggestion_chip.dart';
+import '../widgets/unified_resource_list_item.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -25,120 +23,41 @@ class SearchScreen extends ConsumerStatefulWidget {
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final _controller = TextEditingController();
   Timer? _debounce;
-  bool _isLoading = false;
-  String? _error;
+  final ScrollController _scrollController = ScrollController();
 
-  List<Ecole> _ecoles = [];
-  List<Concours> _concours = [];
-  List<ue_model.Ue> _ues = [];
-  List<UnifiedResource> _resources = [];
+  @override
+  void initState() {
+    super.initState();
+    _setupScroll();
+  }
 
   @override
   void dispose() {
     _debounce?.cancel();
     _controller.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   void _onSearchChanged(String value) {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      _performSearch(value.trim());
+      // trigger provider search
+      ref.read(searchProvider.notifier).search(value.trim(), reset: true);
+      // add to history when user stops typing and query non-empty
+      if (value.trim().isNotEmpty) {
+        ref.read(searchHistoryProvider.notifier).add(value.trim());
+      }
     });
   }
 
-  Future<void> _performSearch(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _ecoles = [];
-        _concours = [];
-        _ues = [];
-        _resources = [];
-        _isLoading = false;
-        _error = null;
-      });
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-      _error = null;
+  void _setupScroll() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 120) {
+        // near bottom
+        ref.read(searchProvider.notifier).loadMore();
+      }
     });
-
-    try {
-      final service = ref.read(appwriteServiceProvider);
-      final unifiedService = UnifiedResourceService();
-
-      // Charger toutes les entités (simple approach)
-      final results = await Future.wait([
-        service.getEcoles(),
-        service.getConcours(),
-        service.getUEs(),
-      ]);
-
-      final allEcoles = results[0] as List<Ecole>;
-      final allConcours = results[1] as List<Concours>;
-      final allUes = results[2] as List<ue_model.Ue>;
-
-      final q = query.toLowerCase();
-
-      final matchedEcoles = allEcoles.where((e) {
-        final name = e.nom.toLowerCase();
-        final desc = (e.description ?? '').toLowerCase();
-        return name.contains(q) || desc.contains(q);
-      }).toList();
-
-      final matchedConcours = allConcours.where((c) {
-        final nom = (c.nom ?? '').toLowerCase();
-        final desc = (c.description ?? '').toLowerCase();
-        final annee = (c.annee ?? '').toLowerCase();
-        final ecole = (c.idEcole ?? '').toLowerCase();
-        return nom.contains(q) || desc.contains(q) || annee.contains(q) || ecole.contains(q);
-      }).toList();
-
-      final matchedUes = allUes.where((u) {
-        final nom = u.nom.toLowerCase();
-        final desc = (u.description ?? '').toLowerCase();
-        return nom.contains(q) || desc.contains(q);
-      }).toList();
-
-      // Collecter identifiants de ressources depuis concours + ues
-      final resourceIds = <String>{};
-      for (final c in matchedConcours) {
-        resourceIds.addAll(c.ressources);
-        resourceIds.addAll(c.communiques);
-      }
-      for (final u in matchedUes) {
-        resourceIds.addAll(u.ressources);
-      }
-
-      // Limiter la quantité de requêtes aux ressources (safety)
-      final limitedIds = resourceIds.take(40).toList();
-      List<UnifiedResource> matchedResources = [];
-      if (limitedIds.isNotEmpty) {
-        final fetched = await unifiedService.getResources(limitedIds);
-        matchedResources = fetched.where((r) => r.name.toLowerCase().contains(q)).toList();
-      }
-
-      // Mettre à jour l'état
-      if (mounted) {
-        setState(() {
-          _ecoles = matchedEcoles;
-          _concours = matchedConcours;
-          _ues = matchedUes;
-          _resources = matchedResources;
-          _isLoading = false;
-          _error = null;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _error = e.toString();
-        });
-      }
-    }
   }
 
   Widget _buildSectionHeader(String title, int count) {
@@ -174,99 +93,131 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        if (_isLoading) const LinearProgressIndicator(),
-        if (_error != null) ...[
-          const SizedBox(height: 12),
-          Center(
-            child: Text(
-              'Erreur: $_error',
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
+        // Observer l'etat du provider
+        Consumer(builder: (context, ref2, _) {
+          final state = ref2.watch(searchProvider);
+          if (state.isLoading) {
+            return const LinearProgressIndicator();
+          }
+          if (state.error != null) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Center(child: Text('Erreur: ${state.error}', style: const TextStyle(color: Colors.red))),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
         Expanded(
-          child: Builder(builder: (context) {
-            final isEmptyQuery = _controller.text.trim().isEmpty;
+          child: Consumer(builder: (context, ref2, _) {
+            final state = ref2.watch(searchProvider);
+            final history = ref2.watch(searchHistoryProvider);
+
+            final isEmptyQuery = _controller.text.trim().isEmpty && state.query.isEmpty;
             if (isEmptyQuery) {
-              return Center(
-                child: Text(
-                  'Commencez votre recherche',
-                  style: TextStyle(color: AppTheme.mutedText),
+              // Show suggestions from history
+              if (history.isEmpty) {
+                return Center(child: Text('Commencez votre recherche', style: TextStyle(color: AppTheme.mutedText)));
+              }
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: history.map((h) => SearchSuggestionChip(
+                        text: h,
+                        onTap: () {
+                          _controller.text = h;
+                          ref.read(searchProvider.notifier).search(h, reset: true);
+                        },
+                      )).toList(),
                 ),
               );
             }
 
-            if (!_isLoading && _ecoles.isEmpty && _concours.isEmpty && _ues.isEmpty && _resources.isEmpty) {
-              return Center(
-                child: Text(
-                  'Aucun résultat',
-                  style: TextStyle(color: AppTheme.mutedText),
-                ),
-              );
+            final results = state.results;
+            final hasAny = results.ecoles.isNotEmpty || results.concours.isNotEmpty || results.ues.isNotEmpty;
+            if (!state.isLoading && !hasAny) {
+              return Center(child: Text('Aucun résultat', style: TextStyle(color: AppTheme.mutedText)));
             }
 
+            // Build the combined list with badges/icons and partial display notice
+            final children = <Widget>[];
+
+            if (results.ecoles.isNotEmpty) {
+              children.add(_buildSectionHeader('Écoles', results.ecoles.length));
+              for (final e in results.ecoles) {
+                children.add(Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.blue.shade50,
+                      child: Icon(Icons.school, color: Colors.blue),
+                    ),
+                    tileColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    title: Text(e.nom),
+                    subtitle: e.description != null ? Text(e.description!) : null,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => FilieresScreen(ecole: e))),
+                  ),
+                ));
+              }
+            }
+
+            if (results.concours.isNotEmpty) {
+              children.add(_buildSectionHeader('Concours', results.concours.length));
+              for (final c in results.concours) {
+                children.add(Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: CompactConcoursCard(
+                    title: c.nom ?? 'Concours',
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ConcoursDetailScreen(concours: c))),
+                  ),
+                ));
+              }
+            }
+
+            if (results.ues.isNotEmpty) {
+              children.add(_buildSectionHeader('UEs', results.ues.length));
+              for (final u in results.ues) {
+                children.add(Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.purple.shade50,
+                      child: Icon(Icons.menu_book, color: Colors.purple),
+                    ),
+                    tileColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    title: Text(u.nom),
+                    subtitle: u.description != null ? Text(u.description!) : null,
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => UeDetailScreen(ue: u))),
+                  ),
+                ));
+              }
+            }
+
+            if (results.resources.isNotEmpty) {
+              children.add(_buildSectionHeader('Documents', results.resources.length));
+              for (final r in results.resources) {
+                children.add(UnifiedResourceListItem(resource: r));
+              }
+            }
+
+            // Partial results note
+            if (state.hasMore) {
+              children.add(Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Center(
+                  child: Text('Affichage partiel — chargez plus de résultats en descendant', style: TextStyle(color: AppTheme.mutedText)),
+                ),
+              ));
+            }
+
+            // Attach a ListView with scroll controller for lazy loading
             return ListView(
               padding: const EdgeInsets.only(bottom: 24),
-              children: [
-                if (_ecoles.isNotEmpty) ...[
-                  _buildSectionHeader('Écoles', _ecoles.length),
-                  ..._ecoles.map((e) => Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          tileColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          title: Text(e.nom),
-                          subtitle: e.description != null ? Text(e.description!) : null,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => FilieresScreen(ecole: e)),
-                            );
-                          },
-                        ),
-                      ))
-                ],
-
-                if (_concours.isNotEmpty) ...[
-                  _buildSectionHeader('Concours', _concours.length),
-                  ..._concours.map((c) => Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: CompactConcoursCard(
-                          title: c.nom ?? 'Concours',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => ConcoursDetailScreen(concours: c)),
-                            );
-                          },
-                        ),
-                      ))
-                ],
-
-                if (_ues.isNotEmpty) ...[
-                  _buildSectionHeader('UEs', _ues.length),
-                  ..._ues.map((u) => Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: ListTile(
-                          tileColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          title: Text(u.nom),
-                          subtitle: u.description != null ? Text(u.description!) : null,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => UeDetailScreen(ue: u)),
-                            );
-                          },
-                        ),
-                      ))
-                ],
-
-                if (_resources.isNotEmpty) ...[
-                  _buildSectionHeader('Documents', _resources.length),
-                  ..._resources.map((r) => UnifiedResourceListItem(resource: r)),
-                ],
-              ],
+              controller: _scrollController,
+              children: children,
             );
           }),
         ),
