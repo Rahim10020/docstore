@@ -10,62 +10,15 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeProvider);
-    final notifier = ref.read(themeModeProvider.notifier);
     final notificationPrefs = ref.watch(notificationPreferencesProvider);
     final notificationNotifier = ref.read(
       notificationPreferencesProvider.notifier,
     );
 
-    final isDark = themeMode == ThemeMode.dark;
-
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 32),
-
-          // Appearance Section
-          const Text(
-            'Apparence',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: AppTheme.mutedText,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                const Text(
-                  'Mode nuit',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const Spacer(),
-                Switch(
-                  value: isDark,
-                  activeThumbColor: Colors.white,
-                  activeTrackColor: AppTheme.successColor,
-                  onChanged: (value) => notifier.toggleTheme(value),
-                ),
-              ],
-            ),
-          ),
-
           const SizedBox(height: 32),
 
           // Notifications Section
