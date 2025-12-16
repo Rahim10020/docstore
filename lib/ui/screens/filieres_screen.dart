@@ -102,7 +102,11 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
                                 children: [
                                   // Check pour l'option sélectionnée
                                   _parcoursFilter == option
-                                      ? Icon(Icons.check, size: 18, color: AppTheme.primaryPurple)
+                                      ? Icon(
+                                          Icons.check,
+                                          size: 18,
+                                          color: AppTheme.primaryPurple,
+                                        )
                                       : const SizedBox(width: 18),
                                   const SizedBox(width: 8),
                                   Flexible(child: Text(option)),
@@ -126,169 +130,170 @@ class _FilieresScreenState extends ConsumerState<FilieresScreen> {
                     ),
                     const SizedBox(height: 4),
                   ],
-                   const SizedBox(height: 12),
-                   Container(
-                     width: double.infinity,
-                     padding: const EdgeInsets.symmetric(
-                       horizontal: 20,
-                       vertical: 26,
-                     ),
-                     decoration: BoxDecoration(
-                       gradient: AppTheme.establishmentCardGradient,
-                       borderRadius: BorderRadius.circular(22),
-                     ),
-                     child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: [
-                         Text(
-                           widget.ecole.nom,
-                           style: const TextStyle(
-                             color: Colors.white,
-                             fontSize: 20,
-                             fontWeight: FontWeight.w700,
-                           ),
-                         ),
-                         if (widget.ecole.description != null) ...[
-                           const SizedBox(height: 6),
-                           Text(
-                             widget.ecole.description!,
-                             style: TextStyle(
-                               color: Colors.white.withValues(alpha: 0.9),
-                             ),
-                           ),
-                         ],
-                       ],
-                     ),
-                   ),
-                   const SizedBox(height: 12),
-                   // Afficher le concours d'entree s'il existe
-                   concoursAsync.when(
-                     data: (concoursList) {
-                       if (concoursList.isEmpty) return const SizedBox.shrink();
-                       // On affiche le premier concours (s'il y en a plusieurs, on pourrait lister)
-                       final concours = concoursList.first;
-                       return Column(
-                         children: [
-                           const SizedBox(height: 8),
-                           CompactConcoursCard(
-                             title: 'Concours d\'entree a ${widget.ecole.nom}',
-                             onTap: () {
-                               Navigator.push(
-                                 context,
-                                 MaterialPageRoute(
-                                   builder: (_) => ConcoursDetailScreen(concours: concours),
-                                 ),
-                               );
-                             },
-                           ),
-                         ],
-                       );
-                     },
-                     loading: () => const SizedBox.shrink(),
-                     error: (_, __) => const SizedBox.shrink(),
-                   ),
-                   const SizedBox(height: 16),
-                   RoundedSearchInput(
-                     controller: _searchController,
-                     hintText: 'Rechercher des filieres...',
-                     onChanged: (value) {
-                       setState(() => _searchQuery = value);
-                     },
-                   ),
-                 ],
-               ),
-             ),
-             Expanded(
-               child: filieresAsync.when(
-                 data: (filieres) {
-                   final filteredFilieres = _filterFilieres(filieres);
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 26,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.establishmentCardGradient,
+                      borderRadius: BorderRadius.circular(22),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.ecole.nom,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (widget.ecole.description != null) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            widget.ecole.description!,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.9),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  // Afficher le concours d'entree s'il existe
+                  concoursAsync.when(
+                    data: (concoursList) {
+                      if (concoursList.isEmpty) return const SizedBox.shrink();
+                      // On affiche le premier concours (s'il y en a plusieurs, on pourrait lister)
+                      final concours = concoursList.first;
+                      return Column(
+                        children: [
+                          const SizedBox(height: 8),
+                          CompactConcoursCard(
+                            title: 'Concours d\'entree a ${widget.ecole.nom}',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ConcoursDetailScreen(concours: concours),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
+                  ),
+                  const SizedBox(height: 16),
+                  RoundedSearchInput(
+                    controller: _searchController,
+                    hintText: 'Rechercher des filieres...',
+                    onChanged: (value) {
+                      setState(() => _searchQuery = value);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: filieresAsync.when(
+                data: (filieres) {
+                  final filteredFilieres = _filterFilieres(filieres);
 
-                   if (filteredFilieres.isEmpty) {
-                     return Center(
-                       child: Text(
-                         filieres.isEmpty
-                             ? 'Aucune filiere disponible'
-                             : 'Aucune filiere trouvee',
-                         style: const TextStyle(
-                           color: AppTheme.mutedText,
-                           fontSize: 15,
-                         ),
-                       ),
-                     );
-                   }
+                  if (filteredFilieres.isEmpty) {
+                    return Center(
+                      child: Text(
+                        filieres.isEmpty
+                            ? 'Aucune filiere disponible'
+                            : 'Aucune filiere trouvee',
+                        style: const TextStyle(
+                          color: AppTheme.mutedText,
+                          fontSize: 15,
+                        ),
+                      ),
+                    );
+                  }
 
-                   return ListView.separated(
-                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-                     itemCount: filteredFilieres.length,
-                     separatorBuilder: (_, _) => const SizedBox(height: 16),
-                     itemBuilder: (context, index) {
-                       final filiere = filteredFilieres[index];
-                       return FiliereCard(
-                         filiere: filiere,
-                         onTap: () {
-                           Navigator.push(
-                             context,
-                             MaterialPageRoute(
-                               builder: (context) => UesScreen(
-                                 ecole: widget.ecole,
-                                 filiere: filiere,
-                               ),
-                             ),
-                           );
-                         },
-                       );
-                     },
-                   );
-                 },
-                 loading: () => const Center(child: CircularProgressIndicator()),
-                 error: (error, stack) => Center(
-                   child: Padding(
-                     padding: const EdgeInsets.all(32.0),
-                     child: Column(
-                       mainAxisAlignment: MainAxisAlignment.center,
-                       children: [
-                         Icon(
-                           Icons.error_outline,
-                           size: 64,
-                           color: AppTheme.errorColor,
-                         ),
-                         const SizedBox(height: 16),
-                         const Text(
-                           'Erreur lors du chargement',
-                           style: TextStyle(
-                             fontSize: 16,
-                             color: AppTheme.errorColor,
-                             fontWeight: FontWeight.bold,
-                           ),
-                         ),
-                         const SizedBox(height: 8),
-                         Text(
-                           error.toString(),
-                           textAlign: TextAlign.center,
-                           style: TextStyle(
-                             fontSize: 12,
-                             color: Colors.grey.shade600,
-                           ),
-                         ),
-                         const SizedBox(height: 16),
-                         ElevatedButton.icon(
-                           onPressed: () {
-                             ref.invalidate(
-                               filieresByEcoleProvider(widget.ecole.id),
-                             );
-                           },
-                           icon: const Icon(Icons.refresh),
-                           label: const Text('Reessayer'),
-                         ),
-                       ],
-                     ),
-                   ),
-                 ),
-               ),
-             ),
-           ],
-         ),
-       ),
-     );
-   }
- }
+                  return ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                    itemCount: filteredFilieres.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final filiere = filteredFilieres[index];
+                      return FiliereCard(
+                        filiere: filiere,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UesScreen(
+                                ecole: widget.ecole,
+                                filiere: filiere,
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: AppTheme.errorColor,
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Erreur lors du chargement',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppTheme.errorColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          error.toString(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            ref.invalidate(
+                              filieresByEcoleProvider(widget.ecole.id),
+                            );
+                          },
+                          icon: const Icon(Icons.refresh),
+                          label: const Text('Reessayer'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -79,7 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           return ListView.separated(
             padding: const EdgeInsets.only(bottom: 24),
             itemCount: filtered.length + 1, // +1 pour l'entête (search)
-            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            separatorBuilder: (_, _) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
               if (index == 0) {
                 return Padding(

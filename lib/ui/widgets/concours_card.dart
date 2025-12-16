@@ -6,11 +6,7 @@ class ConcoursCard extends StatelessWidget {
   final Concours concours;
   final VoidCallback? onTap;
 
-  const ConcoursCard({
-    super.key,
-    required this.concours,
-    this.onTap,
-  });
+  const ConcoursCard({super.key, required this.concours, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +35,8 @@ class ConcoursCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    concours.description ?? 'Concours d\'entree a + nom de l\'ecole',
+                    concours.description ??
+                        'Concours d\'entree a + nom de l\'ecole',
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppTheme.textPrimary,
@@ -132,33 +129,3 @@ class _CardHeader extends StatelessWidget {
     );
   }
 }
-
-class _IconText extends StatelessWidget {
-  final IconData icon;
-  final String text;
-
-  const _IconText({required this.icon, required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: AppTheme.mutedText),
-          const SizedBox(width: 6),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                color: AppTheme.mutedText,
-                fontSize: 13,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-

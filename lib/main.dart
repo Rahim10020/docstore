@@ -4,7 +4,6 @@ import 'config/appwrite_config.dart';
 import 'services/appwrite_service.dart';
 import 'core/theme.dart';
 import 'ui/screens/app_shell.dart';
-import 'ui/screens/launch_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

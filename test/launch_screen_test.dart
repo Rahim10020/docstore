@@ -6,8 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets('LaunchScreen shows logo and tagline', (tester) async {
-    const String flutterTestEnvName = 'FLUTTER_TEST';
-
     await tester.runAsync(() async {
       await tester.pumpWidget(
         ProviderScope(
