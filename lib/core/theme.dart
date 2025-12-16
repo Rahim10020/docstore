@@ -35,9 +35,7 @@ class AppTheme {
     ),
     cardTheme: CardThemeData(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   );
 
@@ -48,7 +46,9 @@ class AppTheme {
       brightness: Brightness.dark,
     ),
     scaffoldBackgroundColor: const Color(0xFF111827),
-    textTheme: GoogleFonts.interTextTheme(ThemeData(brightness: Brightness.dark).textTheme),
+    textTheme: GoogleFonts.interTextTheme(
+      ThemeData(brightness: Brightness.dark).textTheme,
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Color(0xFF1F2937),
       foregroundColor: Colors.white,
@@ -58,9 +58,7 @@ class AppTheme {
     cardTheme: CardThemeData(
       color: const Color(0xFF1F2937),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
   );
 
@@ -101,7 +99,5 @@ class AppTheme {
     color: AppTheme.primaryPurple,
   );
 
-  static const subtitleStyle = TextStyle(
-    color: AppTheme.textSecondary,
-  );
+  static const subtitleStyle = TextStyle(color: AppTheme.textSecondary);
 }
