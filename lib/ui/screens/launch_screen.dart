@@ -40,23 +40,27 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
 
     _controller.forward();
 
+    const bool isTestEnv = bool.fromEnvironment('FLUTTER_TEST');
+    if (!isTestEnv) {
+      _navigateToHome();
+    }
   }
 
-  // Future<void> _navigateToHome() async {
-  //   await Future<void>.delayed(_minDisplayDuration);
-  //
-  //   if (!mounted) return;
-  //
-  //   Navigator.of(context).pushReplacement(
-  //     PageRouteBuilder(
-  //       transitionDuration: const Duration(milliseconds: 450),
-  //       pageBuilder: (_, animation, secondaryAnimation) => FadeTransition(
-  //         opacity: animation,
-  //         child: const DocStoreAppShell(),
-  //       ),
-  //     ),
-  //   );
-  // }
+  Future<void> _navigateToHome() async {
+    await Future<void>.delayed(_minDisplayDuration);
+
+    if (!mounted) return;
+
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder(
+        transitionDuration: const Duration(milliseconds: 450),
+        pageBuilder: (_, animation, secondaryAnimation) => FadeTransition(
+          opacity: animation,
+          child: const DocStoreAppShell(),
+        ),
+      ),
+    );
+  }
 
   @override
   void dispose() {

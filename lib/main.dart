@@ -33,8 +33,7 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
-      // home: const DocStoreAppShell(),
-      home: const LaunchScreen(),
+      home: const DocStoreAppShell(),
     );
   }
 }
