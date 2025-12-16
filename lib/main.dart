@@ -4,6 +4,7 @@ import 'config/appwrite_config.dart';
 import 'services/appwrite_service.dart';
 import 'core/theme.dart';
 import 'ui/screens/app_shell.dart';
+import 'ui/screens/launch_screen.dart';
 import 'providers/theme_provider.dart';
 
 void main() async {
@@ -32,7 +33,8 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
       debugShowCheckedModeBanner: false,
-      home: const DocStoreAppShell(),
+      // home: const DocStoreAppShell(),
+      home: const LaunchScreen(),
     );
   }
 }
