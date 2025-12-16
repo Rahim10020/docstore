@@ -40,28 +40,23 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
 
     _controller.forward();
 
-    // Ne pas démarrer la navigation auto pendant les tests pour éviter les timers pendants.
-    const bool isTestEnv = bool.fromEnvironment('FLUTTER_TEST');
-    if (!isTestEnv) {
-      _navigateToHome();
-    }
   }
 
-  Future<void> _navigateToHome() async {
-    await Future<void>.delayed(_minDisplayDuration);
-
-    if (!mounted) return;
-
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        transitionDuration: const Duration(milliseconds: 450),
-        pageBuilder: (_, animation, secondaryAnimation) => FadeTransition(
-          opacity: animation,
-          child: const DocStoreAppShell(),
-        ),
-      ),
-    );
-  }
+  // Future<void> _navigateToHome() async {
+  //   await Future<void>.delayed(_minDisplayDuration);
+  //
+  //   if (!mounted) return;
+  //
+  //   Navigator.of(context).pushReplacement(
+  //     PageRouteBuilder(
+  //       transitionDuration: const Duration(milliseconds: 450),
+  //       pageBuilder: (_, animation, secondaryAnimation) => FadeTransition(
+  //         opacity: animation,
+  //         child: const DocStoreAppShell(),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
@@ -71,17 +66,14 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final headlineStyle = Theme.of(context).textTheme.headlineMedium?.copyWith(
           fontWeight: FontWeight.w700,
-          color: isDark ? Colors.white : AppTheme.textPrimary,
+          color: AppTheme.textPrimary,
         );
 
     final subtitleStyle = Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: isDark
-              ? Colors.white.withOpacity(0.72)
-              : AppTheme.mutedText,
+          color: AppTheme.mutedText,
         );
 
     return Scaffold(
@@ -94,44 +86,6 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
             child: Column(
               children: [
-                // Top-right subtle pill with app name
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(isDark ? 0.06 : 0.55),
-                      borderRadius: BorderRadius.circular(999),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(isDark ? 0.08 : 0.35),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppTheme.successColor,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'DocStore EPL',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? Colors.white.withOpacity(0.9)
-                                    : AppTheme.textPrimary,
-                              ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
                 const Spacer(flex: 2),
 
                 // Animated logo + title
@@ -143,14 +97,47 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          width: 120,
-                          height: 120,
+                          padding:
+                          const EdgeInsets.symmetric(horizontal: 14.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.55),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.35),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppTheme.successColor,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'DocStore',
+                                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10,),
+                        Container(
+                          width: 200,
+                          height: 200,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(isDark ? 0.04 : 0.85),
+                            color: Colors.white.withValues(alpha: 0.85),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.08),
+                                color: Colors.black.withValues(alpha: 0.08),
                                 blurRadius: 20,
                                 offset: const Offset(0, 10),
                               ),
@@ -167,12 +154,11 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
                         const SizedBox(height: 24),
                         Text(
                           'Vos documents, toujours accessibles',
-                          textAlign: TextAlign.center,
                           style: headlineStyle,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Consultez, sauvegardez et partagez les sujets, corrections et ressources académiques de l'EPL.",
+                          "Consultez, sauvegardez et partagez les sujets, corrections et ressources académiques de l'UL.",
                           textAlign: TextAlign.center,
                           style: subtitleStyle,
                         ),
@@ -198,9 +184,7 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
                             child: CircularProgressIndicator(
                               strokeWidth: 2.4,
                               valueColor: AlwaysStoppedAnimation<Color>(
-                                isDark
-                                    ? AppTheme.primaryPurple
-                                    : AppTheme.primaryBlue,
+                                AppTheme.primaryBlue,
                               ),
                             ),
                           ),
@@ -208,9 +192,7 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
                           Text(
                             'Initialisation de votre espace documents…',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: isDark
-                                      ? Colors.white.withOpacity(0.7)
-                                      : AppTheme.textSecondary,
+                                  color: AppTheme.textSecondary,
                                 ),
                           ),
                         ],
@@ -220,9 +202,7 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen>
                         'Connexion sécure à Appwrite & préchargement des métadonnées.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: isDark
-                                  ? Colors.white.withOpacity(0.5)
-                                  : AppTheme.mutedText,
+                              color: AppTheme.mutedText,
                             ),
                       ),
                     ],
